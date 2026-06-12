@@ -538,7 +538,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
-        <section className="py-24 sm:py-32 lg:py-44 bg-white">
+        <section className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden">
           <div className="max-w-5xl mx-auto px-6 sm:px-8">
             <Reveal>
               <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">The Problem</p>
@@ -587,10 +587,15 @@ export default function HomePage() {
               </motion.div>
             </Reveal>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== MODULES ===================== */}
-        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70">
+        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70 relative overflow-hidden">
           <div className="max-w-6xl mx-auto px-6 sm:px-8">
             <Reveal className="max-w-3xl mx-auto text-center">
               <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Core Modules</p>
@@ -634,10 +639,13 @@ export default function HomePage() {
               })}
             </StaggerReveal>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#ffffff"/>
+            </svg>
+          </div>
         </section>
-
-        {/* ===================== EXECUTIVE DASHBOARD ===================== */}
-        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden">
+        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden relative">
           <div className="max-w-6xl mx-auto px-6 sm:px-8">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               {/* Image */}
@@ -693,6 +701,11 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 0L60 8C120 16 240 32 360 42.5C480 53 600 58 720 55C840 52 960 41 1080 35C1200 29 1320 28 1380 27.5L1440 27V100H0Z" fill="#172554"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== BENEFITS ===================== */}
@@ -735,10 +748,15 @@ export default function HomePage() {
               })}
             </StaggerReveal>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 100L60 85C120 70 240 40 360 27.5C480 15 600 20 720 27.5C840 35 960 45 1080 52.5C1200 60 1320 65 1380 67.5L1440 70V100H0Z" fill="#ffffff"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== BUILT FOR AFRICA ===================== */}
-        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white">
+        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden">
           <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
             <Reveal>
               <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
@@ -784,10 +802,15 @@ export default function HomePage() {
               })}
             </StaggerReveal>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== VALUE PROPOSITION ===================== */}
-        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70">
+        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden">
           <div className="max-w-4xl mx-auto px-6 sm:px-8">
             <Reveal>
               <div className="relative rounded-3xl bg-white border border-gray-100 p-8 sm:p-14 lg:p-16 shadow-sm">
@@ -810,13 +833,16 @@ export default function HomePage() {
               </div>
             </Reveal>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#172554"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
         <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
-          {/* Top fade */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent" />
 
           <div className="relative max-w-3xl mx-auto px-6 sm:px-8 text-center">
             <Reveal>
