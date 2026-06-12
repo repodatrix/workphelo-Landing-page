@@ -398,13 +398,6 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               {/* Left: Text + Form */}
               <div className="text-center lg:text-left">
-                <Reveal delay={0.3}>
-                  <Badge variant="secondary" className="mb-6 bg-orange-500/15 text-orange-300 border-orange-500/20 px-4 py-1.5 text-sm backdrop-blur-sm">
-                    <Zap className="mr-1.5 h-3.5 w-3.5" />
-                    Powered by Datrix Tech Solutions
-                  </Badge>
-                </Reveal>
-
                 <Reveal delay={0.4}>
                   <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem] font-extrabold tracking-tight text-white leading-[1.08]">
                     One Platform.{' '}

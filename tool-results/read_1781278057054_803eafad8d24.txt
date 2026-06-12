@@ -1,0 +1,909 @@
+     1→'use client';
+     2→
+     3→import Image from 'next/image';
+     4→import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
+     5→import {
+     6→  Users,
+     7→  Calculator,
+     8→  Megaphone,
+     9→  Settings,
+    10→  BarChart3,
+    11→  ShieldCheck,
+    12→  Globe,
+    13→  Zap,
+    14→  ArrowRight,
+    15→  CheckCircle2,
+    16→  ChevronDown,
+    17→  TrendingUp,
+    18→  Building2,
+    19→  MonitorSmartphone,
+    20→  Lock,
+    21→  Layers,
+    22→  Menu,
+    23→  X,
+    24→} from 'lucide-react';
+    25→import { Button } from '@/components/ui/button';
+    26→import { Badge } from '@/components/ui/badge';
+    27→import { Separator } from '@/components/ui/separator';
+    28→import { WaitlistForm } from '@/components/waitlist-form';
+    29→import { useState, useRef } from 'react';
+    30→
+    31→/* ================================================================== */
+    32→/*  ANIMATION CONFIG                                                   */
+    33→/* ================================================================== */
+    34→const smoothSpring = { type: 'spring' as const, stiffness: 80, damping: 20, mass: 1 };
+    35→const snappySpring = { type: 'spring' as const, stiffness: 400, damping: 30, mass: 0.6 };
+    36→const gentleSpring = { type: 'spring' as const, stiffness: 120, damping: 24, mass: 0.8 };
+    37→
+    38→/* -- Variant: fade up with subtle blur (Apple materialisation) -------- */
+    39→const fadeUp = {
+    40→  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
+    41→  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+    42→};
+    43→
+    44→/* -- Variant: fade in ------------------------------------------------ */
+    45→const fadeIn = {
+    46→  hidden: { opacity: 0 },
+    47→  visible: { opacity: 1 },
+    48→};
+    49→
+    50→/* -- Variant: scale in ---------------------------------------------- */
+    51→const scaleIn = {
+    52→  hidden: { opacity: 0, scale: 0.92, y: 20 },
+    53→  visible: { opacity: 1, scale: 1, y: 0 },
+    54→};
+    55→
+    56→/* -- Variant: stagger container -------------------------------------- */
+    57→const stagger = {
+    58→  hidden: {},
+    59→  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+    60→};
+    61→
+    62→/* -- Variant: slow stagger for long lists ---------------------------- */
+    63→const slowStagger = {
+    64→  hidden: {},
+    65→  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+    66→};
+    67→
+    68→/* ================================================================== */
+    69→/*  HELPER COMPONENTS                                                  */
+    70→/* ================================================================== */
+    71→
+    72→/** Apple-style section reveal */
+    73→function Reveal({
+    74→  children,
+    75→  className = '',
+    76→  delay = 0,
+    77→  once = true,
+    78→}: {
+    79→  children: React.ReactNode;
+    80→  className?: string;
+    81→  delay?: number;
+    82→  once?: boolean;
+    83→}) {
+    84→  return (
+    85→    <motion.div
+    86→      initial="hidden"
+    87→      whileInView="visible"
+    88→      viewport={{ once, margin: '-80px' }}
+    89→      variants={fadeUp}
+    90→      transition={{ ...smoothSpring, delay }}
+    91→      className={className}
+    92→    >
+    93→      {children}
+    94→    </motion.div>
+    95→  );
+    96→}
+    97→
+    98→/** Staggered children container */
+    99→function StaggerReveal({
+   100→  children,
+   101→  className = '',
+   102→  variant = stagger,
+   103→}: {
+   104→  children: React.ReactNode;
+   105→  className?: string;
+   106→  variant?: typeof stagger;
+   107→}) {
+   108→  return (
+   109→    <motion.div
+   110→      initial="hidden"
+   111→      whileInView="visible"
+   112→      viewport={{ once: true, margin: '-60px' }}
+   113→      variants={variant}
+   114→      className={className}
+   115→    >
+   116→      {children}
+   117→    </motion.div>
+   118→  );
+   119→}
+   120→
+   121→/** Single stagger child item */
+   122→function StaggerItem({
+   123→  children,
+   124→  className = '',
+   125→  variants = fadeUp,
+   126→}: {
+   127→  children: React.ReactNode;
+   128→  className?: string;
+   129→  variants?: typeof fadeUp;
+   130→}) {
+   131→  return (
+   132→    <motion.div variants={variants} transition={smoothSpring} className={className}>
+   133→      {children}
+   134→    </motion.div>
+   135→  );
+   136→}
+   137→
+   138→/** Scroll progress bar at top of viewport */
+   139→function ScrollProgress() {
+   140→  const { scrollYProgress } = useScroll();
+   141→  return (
+   142→    <motion.div
+   143→      className="fixed top-0 left-0 right-0 h-[2px] bg-orange-500 origin-left z-[60]"
+   144→      style={{ scaleX: scrollYProgress }}
+   145→    />
+   146→  );
+   147→}
+   148→
+   149→/* ================================================================== */
+   150→/*  DATA                                                               */
+   151→/* ================================================================== */
+   152→const modules = [
+   153→  {
+   154→    icon: Users,
+   155→    title: 'HR Management',
+   156→    color: 'from-blue-900 to-blue-900',
+   157→    lightBg: 'bg-blue-300',
+   158→    textColor: 'text-blue-900',
+   159→    features: [
+   160→      'Employee records management',
+   161→      'Leave & attendance management',
+   162→      'Performance management',
+   163→      'Recruitment & onboarding',
+   164→      'Employee self-service portal',
+   165→      'Approval workflows',
+   166→      'Payroll Management',
+   167→    ],
+   168→  },
+   169→  {
+   170→    icon: Megaphone,
+   171→    title: 'Marketing & Business Development',
+   172→    color: 'from-amber-500 to-orange-600',
+   173→    lightBg: 'bg-amber-50',
+   174→    textColor: 'text-amber-700',
+   175→    features: [
+   176→      'Lead management',
+   177→      'Opportunity tracking',
+   178→      'Customer relationship management',
+   179→      'Follow-up monitoring',
+   180→      'Sales pipeline visibility',
+   181→      'Fleet management',
+   182→    ],
+   183→  },
+   184→  {
+   185→    icon: Calculator,
+   186→    title: 'Accounting',
+   187→    color: 'from-rose-500 to-pink-600',
+   188→    lightBg: 'bg-rose-50',
+   189→    textColor: 'text-rose-700',
+   190→    features: [
+   191→      'General Ledger',
+   192→      'Accounts Payable & Receivable',
+   193→      'Cash Management',
+   194→      'Bank Reconciliation',
+   195→      'Financial Reporting',
+   196→      'Budget Management & Expense Tracking',
+   197→      'Multi-branch accounting',
+   198→      'Payroll Management',
+   199→    ],
+   200→  },
+   201→  {
+   202→    icon: Settings,
+   203→    title: 'Operations',
+   204→    color: 'from-violet-500 to-purple-600',
+   205→    lightBg: 'bg-violet-50',
+   206→    textColor: 'text-violet-700',
+   207→    features: [
+   208→      'Reinsurance Brokerage Software',
+   209→      'Insurance Brokerage Software',
+   210→      'Hospital Management Software',
+   211→      'School Management Software',
+   212→      'Manufacturing processes',
+   213→      'Industry-specific business processes',
+   214→    ],
+   215→  },
+   216→];
+   217→
+   218→const dashboardFeatures = [
+   219→  'Company-wide performance metrics',
+   220→  'Sales pipeline status',
+   221→  'Revenue tracking',
+   222→  'Staff productivity insights',
+   223→  'Operational performance indicators',
+   224→  'Financial health monitoring',
+   225→  'Departmental performance reports',
+   226→];
+   227→
+   228→const benefits = [
+   229→  { icon: TrendingUp, title: 'Reduce Software Costs', desc: 'Replace multiple standalone applications with a single integrated platform to lower subscription and licensing expenses.' },
+   230→  { icon: Layers, title: 'Eliminate Duplicate Data', desc: 'A single source of truth means no more re-entering data across disconnected systems.' },
+   231→  { icon: Users, title: 'Improve Collaboration', desc: 'Departments share real-time data, breaking down silos and boosting teamwork.' },
+   232→  { icon: BarChart3, title: 'Enhance Reporting', desc: 'Consolidated, accurate reports replace fragmented spreadsheets and guesswork.' },
+   233→  { icon: Zap, title: 'Increase Productivity', desc: 'One login, one platform — employees spend less time switching tools and more time delivering results.' },
+   234→  { icon: ShieldCheck, title: 'Simplify IT Administration', desc: 'Manage one system instead of dozens, reducing IT overhead and complexity.' },
+   235→];
+   236→
+   237→/* ================================================================== */
+   238→/*  MAIN PAGE                                                          */
+   239→/* ================================================================== */
+   240→export default function HomePage() {
+   241→  const [scrolled, setScrolled] = useState(false);
+   242→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   243→  const heroRef = useRef<HTMLElement>(null);
+   244→
+   245→  const { scrollYProgress: heroProgress } = useScroll({
+   246→    target: heroRef,
+   247→    offset: ['start start', 'end start'],
+   248→  });
+   249→  const heroContentY = useTransform(heroProgress, [0, 1], [0, 120]);
+   250→  const heroContentOpacity = useTransform(heroProgress, [0, 0.75], [1, 0]);
+   251→  const heroContentScale = useTransform(heroProgress, [0, 1], [1, 0.97]);
+   252→
+   253→  useMotionValueEvent(useScroll().scrollY, 'change', (latest) => {
+   254→    setScrolled(latest > 60);
+   255→  });
+   256→
+   257→  const scrollTo = (id: string) => {
+   258→    setMobileMenuOpen(false);
+   259→    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+   260→  };
+   261→
+   262→  const navLinks = ['modules', 'dashboard', 'benefits', 'about'];
+   263→
+   264→  return (
+   265→    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
+   266→      <ScrollProgress />
+   267→
+   268→      {/* ===================== FLOATING PILL NAV ===================== */}
+   269→      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none">
+   270→        <motion.nav
+   271→          initial={{ y: -100, opacity: 0 }}
+   272→          animate={{ y: 0, opacity: 1 }}
+   273→          transition={{ ...gentleSpring, delay: 0.2 }}
+   274→          className={`pointer-events-auto flex items-center justify-between rounded-full px-2 pr-3 py-1.5 transition-all duration-500 ${
+   275→            scrolled || mobileMenuOpen
+   276→              ? 'bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40'
+   277→              : 'bg-transparent'
+   278→          }`}
+   279→        >
+   280→          {/* Logo */}
+   281→          <button
+   282→            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+   283→            className="flex items-center gap-2 pl-3 pr-2 cursor-pointer"
+   284→          >
+   285→            <div className="w-8 h-8 rounded-lg bg-blue-900 flex items-center justify-center">
+   286→              <span className="text-white font-bold text-sm">W</span>
+   287→            </div>
+   288→            <span className={`text-lg font-bold tracking-tight transition-colors duration-500 ${scrolled ? 'text-foreground' : 'text-white'}`}>
+   289→              Workphelo
+   290→            </span>
+   291→          </button>
+   292→
+   293→          {/* Desktop links */}
+   294→          <div className="hidden md:flex items-center gap-0.5">
+   295→            {navLinks.map((id) => (
+   296→              <button
+   297→                key={id}
+   298→                onClick={() => scrollTo(id)}
+   299→                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer capitalize ${
+   300→                  scrolled
+   301→                    ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
+   302→                    : 'text-white/70 hover:text-white hover:bg-white/10'
+   303→                }`}
+   304→              >
+   305→                {id === 'about' ? 'Built for Africa' : id}
+   306→              </button>
+   307→            ))}
+   308→          </div>
+   309→
+   310→          {/* CTA */}
+   311→          <div className="hidden md:flex items-center">
+   312→            <Button
+   313→              onClick={() => scrollTo('waitlist-section')}
+   314→              className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-sm px-5 ${
+   315→                scrolled
+   316→                  ? 'bg-blue-900 hover:bg-blue-950 text-white shadow-md shadow-blue-900/20'
+   317→                  : 'bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:bg-white/25'
+   318→              }`}
+   319→            >
+   320→              Join Waitlist
+   321→              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+   322→            </Button>
+   323→          </div>
+   324→
+   325→          {/* Mobile toggle */}
+   326→          <button
+   327→            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   328→            className={`md:hidden p-2 rounded-full cursor-pointer transition-colors ${
+   329→              scrolled ? 'text-foreground hover:bg-black/5' : 'text-white hover:bg-white/10'
+   330→            }`}
+   331→            aria-label="Toggle menu"
+   332→          >
+   333→            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+   334→          </button>
+   335→        </motion.nav>
+   336→      </header>
+   337→
+   338→      {/* Mobile menu — full-screen overlay */}
+   339→      <AnimatePresence>
+   340→        {mobileMenuOpen && (
+   341→          <motion.div
+   342→            initial={{ opacity: 0 }}
+   343→            animate={{ opacity: 1 }}
+   344→            exit={{ opacity: 0 }}
+   345→            transition={{ duration: 0.25 }}
+   346→            className="fixed inset-0 z-40 bg-blue-950/95 backdrop-blur-2xl md:hidden"
+   347→          >
+   348→            <div className="flex flex-col items-center justify-center h-full gap-2">
+   349→              {navLinks.map((id, i) => (
+   350→                <motion.button
+   351→                  key={id}
+   352→                  initial={{ opacity: 0, y: 20 }}
+   353→                  animate={{ opacity: 1, y: 0 }}
+   354→                  exit={{ opacity: 0, y: 10 }}
+   355→                  transition={{ ...gentleSpring, delay: 0.05 + i * 0.06 }}
+   356→                  onClick={() => scrollTo(id)}
+   357→                  className="text-2xl font-semibold text-white/80 hover:text-white transition-colors capitalize cursor-pointer py-3"
+   358→                >
+   359→                  {id === 'about' ? 'Built for Africa' : id}
+   360→                </motion.button>
+   361→              ))}
+   362→              <motion.div
+   363→                initial={{ opacity: 0, y: 20 }}
+   364→                animate={{ opacity: 1, y: 0 }}
+   365→                exit={{ opacity: 0, y: 10 }}
+   366→                transition={{ ...gentleSpring, delay: 0.05 + navLinks.length * 0.06 }}
+   367→                className="mt-4"
+   368→              >
+   369→                <Button
+   370→                  onClick={() => scrollTo('waitlist-section')}
+   371→                  className="rounded-full bg-orange-600 hover:bg-orange-700 text-white font-semibold cursor-pointer shadow-lg shadow-orange-600/30 px-8"
+   372→                >
+   373→                  Join the Waitlist
+   374→                  <ArrowRight className="ml-2 h-4 w-4" />
+   375→                </Button>
+   376→              </motion.div>
+   377→            </div>
+   378→          </motion.div>
+   379→        )}
+   380→      </AnimatePresence>
+   381→
+   382→      <main className="flex-1">
+   383→        {/* ===================== HERO ===================== */}
+   384→        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen">
+   385→          {/* Solid bg */}
+   386→          <div className="absolute inset-0 bg-blue-950" />
+   387→          {/* Subtle radial accents */}
+   388→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_40%,_rgba(59,130,246,0.12)_0%,_transparent_70%)]" />
+   389→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_20%_80%,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
+   390→          {/* Dot grid */}
+   391→          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
+   392→
+   393→          {/* Parallax content wrapper */}
+   394→          <motion.div
+   395→            style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
+   396→            className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pt-0 lg:pb-0"
+   397→          >
+   398→            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+   399→              {/* Left: Text + Form */}
+   400→              <div className="text-center lg:text-left">
+   401→                <Reveal delay={0.3}>
+   402→                  <Badge variant="secondary" className="mb-6 bg-orange-500/15 text-orange-300 border-orange-500/20 px-4 py-1.5 text-sm backdrop-blur-sm">
+   403→                    <Zap className="mr-1.5 h-3.5 w-3.5" />
+   404→                    Powered by Datrix Tech Solutions
+   405→                  </Badge>
+   406→                </Reveal>
+   407→
+   408→                <Reveal delay={0.4}>
+   409→                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem] font-extrabold tracking-tight text-white leading-[1.08]">
+   410→                    One Platform.{' '}
+   411→                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
+   412→                      One Login.
+   413→                    </span>
+   414→                    <br />
+   415→                    <span className="text-white/90">Complete Business</span>
+   416→                    <br />
+   417→                    <span className="text-white/90">Visibility.</span>
+   418→                  </h1>
+   419→                </Reveal>
+   420→
+   421→                <Reveal delay={0.55}>
+   422→                  <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-white/50 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+   423→                    Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   424→                    Fleet Management, and Executive Reporting into one intelligent
+   425→                    platform — giving organizations a single source of truth.
+   426→                  </p>
+   427→                </Reveal>
+   428→
+   429→                <Reveal delay={0.7} className="mt-10 sm:mt-12">
+   430→                  <WaitlistForm variant="hero" />
+   431→                </Reveal>
+   432→
+   433→                <Reveal delay={0.85}>
+   434→                  <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-5 sm:gap-8 text-sm text-white/35">
+   435→                    {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
+   436→                      <div key={t} className="flex items-center gap-2">
+   437→                        <CheckCircle2 className="h-4 w-4 text-orange-400/70" />
+   438→                        <span>{t}</span>
+   439→                      </div>
+   440→                    ))}
+   441→                  </div>
+   442→                </Reveal>
+   443→              </div>
+   444→
+   445→              {/* Right: Hero image */}
+   446→              <Reveal delay={0.5} className="hidden lg:block">
+   447→                <div className="relative">
+   448→                  <div className="absolute -inset-6 bg-blue-900/30 rounded-[2rem] blur-3xl" />
+   449→                  <motion.div
+   450→                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/40 border border-white/[0.08]"
+   451→                    whileHover={{ scale: 1.015, transition: snappySpring }}
+   452→                  >
+   453→                    <Image
+   454→                      src="/images/hero-erp.png"
+   455→                      alt="Workphelo ERP Dashboard"
+   456→                      width={1344}
+   457→                      height={768}
+   458→                      className="w-full h-auto"
+   459→                      priority
+   460→                    />
+   461→                  </motion.div>
+   462→                  {/* Floating badge 1 */}
+   463→                  <motion.div
+   464→                    initial={{ opacity: 0, x: 20, y: 10 }}
+   465→                    animate={{ opacity: 1, x: 0, y: 0 }}
+   466→                    transition={{ ...gentleSpring, delay: 1.2 }}
+   467→                    whileHover={{ scale: 1.06, transition: snappySpring }}
+   468→                    className="absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
+   469→                  >
+   470→                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
+   471→                      <BarChart3 className="h-5 w-5 text-blue-900" />
+   472→                    </div>
+   473→                    <div>
+   474→                      <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
+   475→                      <p className="text-xs text-muted-foreground">Live KPIs & Reports</p>
+   476→                    </div>
+   477→                  </motion.div>
+   478→                  {/* Floating badge 2 */}
+   479→                  <motion.div
+   480→                    initial={{ opacity: 0, x: -20, y: -10 }}
+   481→                    animate={{ opacity: 1, x: 0, y: 0 }}
+   482→                    transition={{ ...gentleSpring, delay: 1.4 }}
+   483→                    whileHover={{ scale: 1.06, transition: snappySpring }}
+   484→                    className="absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
+   485→                  >
+   486→                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
+   487→                      <ShieldCheck className="h-5 w-5 text-blue-900" />
+   488→                    </div>
+   489→                    <div>
+   490→                      <p className="text-sm font-semibold text-foreground">Enterprise Security</p>
+   491→                      <p className="text-xs text-muted-foreground">Role-based Access</p>
+   492→                    </div>
+   493→                  </motion.div>
+   494→                </div>
+   495→              </Reveal>
+   496→            </div>
+   497→          </motion.div>
+   498→
+   499→          {/* Scroll indicator */}
+   500→          <motion.div
+   501→            initial={{ opacity: 0 }}
+   502→            animate={{ opacity: 1 }}
+   503→            transition={{ delay: 2, duration: 1 }}
+   504→            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
+   505→          >
+   506→            <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
+   507→            <motion.div
+   508→              animate={{ y: [0, 6, 0] }}
+   509→              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   510→            >
+   511→              <ChevronDown className="h-5 w-5 text-white/25" />
+   512→            </motion.div>
+   513→          </motion.div>
+   514→
+   515→          {/* Bottom fade to white */}
+   516→          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+   517→        </section>
+   518→
+   519→        {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
+   520→        <section className="py-24 sm:py-32 lg:py-44 bg-white">
+   521→          <div className="max-w-5xl mx-auto px-6 sm:px-8">
+   522→            <Reveal>
+   523→              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">The Problem</p>
+   524→            </Reveal>
+   525→            <Reveal delay={0.1}>
+   526→              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight max-w-4xl">
+   527→                Why Workphelo Is Better
+   528→                <br className="hidden sm:block" />
+   529→                {' '}Than Traditional ERP Systems
+   530→              </h2>
+   531→            </Reveal>
+   532→            <Reveal delay={0.2}>
+   533→              <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+   534→                Most organizations in Ghana and Africa operate with multiple disconnected
+   535→                software solutions for HR, accounting, sales, operations, fleet management,
+   536→                and reporting. This creates inefficiencies, duplicate data entry, poor
+   537→                visibility, and higher operational costs.
+   538→              </p>
+   539→            </Reveal>
+   540→
+   541→            <Reveal delay={0.35} className="mt-14 sm:mt-20">
+   542→              <motion.div
+   543→                whileHover={{ y: -4, transition: snappySpring }}
+   544→                className="relative rounded-3xl bg-blue-200/60 border border-blue-300/60 p-8 sm:p-14"
+   545→              >
+   546→                <div className="absolute top-8 right-8 opacity-[0.07]">
+   547→                  <MonitorSmartphone className="h-36 w-36 text-blue-900" />
+   548→                </div>
+   549→                <div className="relative flex items-start gap-5">
+   550→                  <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20">
+   551→                    <Globe className="h-6 w-6 text-white" />
+   552→                  </div>
+   553→                  <div>
+   554→                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
+   555→                      Workphelo solves this by bringing all critical business
+   556→                      functions into a single integrated platform.
+   557→                    </h3>
+   558→                    <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-lg">
+   559→                      Unlike traditional setups where employees switch between multiple
+   560→                      applications for different tasks, Workphelo enables teams to work
+   561→                      from a single platform with one login, improving productivity and
+   562→                      collaboration across departments.
+   563→                    </p>
+   564→                  </div>
+   565→                </div>
+   566→              </motion.div>
+   567→            </Reveal>
+   568→          </div>
+   569→        </section>
+   570→
+   571→        {/* ===================== MODULES ===================== */}
+   572→        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70">
+   573→          <div className="max-w-6xl mx-auto px-6 sm:px-8">
+   574→            <Reveal className="max-w-3xl mx-auto text-center">
+   575→              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Core Modules</p>
+   576→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+   577→                Everything Your Business Needs,
+   578→                <br className="hidden sm:block" /> In One Place
+   579→              </h2>
+   580→              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
+   581→                Four powerful modules designed to cover every aspect of your business operations.
+   582→              </p>
+   583→            </Reveal>
+   584→
+   585→            <StaggerReveal className="mt-14 sm:mt-20 grid md:grid-cols-2 gap-5 lg:gap-7" variant={stagger}>
+   586→              {modules.map((mod) => {
+   587→                const Icon = mod.icon;
+   588→                return (
+   589→                  <StaggerItem key={mod.title}>
+   590→                    <motion.div
+   591→                      whileHover={{ y: -6, transition: snappySpring }}
+   592→                      className="group relative h-full bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-7 sm:p-9 transition-shadow duration-500"
+   593→                    >
+   594→                      {/* Top accent line */}
+   595→                      <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+   596→                      <div className="flex items-start gap-4 mb-6">
+   597→                        <div className={`shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br ${mod.color} flex items-center justify-center shadow-lg`}>
+   598→                          <Icon className="h-6 w-6 text-white" />
+   599→                        </div>
+   600→                        <h3 className="text-xl font-bold text-foreground pt-2">{mod.title}</h3>
+   601→                      </div>
+   602→                      <ul className="space-y-3">
+   603→                        {mod.features.map((f) => (
+   604→                          <li key={f} className="flex items-start gap-2.5">
+   605→                            <CheckCircle2 className={`shrink-0 h-[18px] w-[18px] mt-0.5 ${mod.textColor}`} />
+   606→                            <span className="text-[15px] text-muted-foreground leading-relaxed">{f}</span>
+   607→                          </li>
+   608→                        ))}
+   609→                      </ul>
+   610→                    </motion.div>
+   611→                  </StaggerItem>
+   612→                );
+   613→              })}
+   614→            </StaggerReveal>
+   615→          </div>
+   616→        </section>
+   617→
+   618→        {/* ===================== EXECUTIVE DASHBOARD ===================== */}
+   619→        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden">
+   620→          <div className="max-w-6xl mx-auto px-6 sm:px-8">
+   621→            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+   622→              {/* Image */}
+   623→              <Reveal className="order-2 lg:order-1">
+   624→                <div className="relative">
+   625→                  <div className="absolute -inset-6 bg-blue-400/20 rounded-[2rem] blur-3xl opacity-50" />
+   626→                  <motion.div
+   627→                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-gray-100"
+   628→                    whileHover={{ scale: 1.01, transition: snappySpring }}
+   629→                  >
+   630→                    <Image
+   631→                      src="/images/dashboard-preview.png"
+   632→                      alt="Executive Dashboard Preview"
+   633→                      width={1344}
+   634→                      height={768}
+   635→                      className="w-full h-auto"
+   636→                    />
+   637→                  </motion.div>
+   638→                </div>
+   639→              </Reveal>
+   640→
+   641→              {/* Content */}
+   642→              <div className="order-1 lg:order-2">
+   643→                <Reveal>
+   644→                  <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Executive Dashboard</p>
+   645→                </Reveal>
+   646→                <Reveal delay={0.1}>
+   647→                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+   648→                    Better Decisions with
+   649→                    <br className="hidden sm:block" /> Real-Time Visibility
+   650→                  </h2>
+   651→                </Reveal>
+   652→                <Reveal delay={0.2}>
+   653→                  <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+   654→                    CEOs, Managing Directors, and Department Heads can access
+   655→                    real-time dashboards that provide:
+   656→                  </p>
+   657→                </Reveal>
+   658→                <StaggerReveal variant={slowStagger} className="mt-8 space-y-3.5">
+   659→                  {dashboardFeatures.map((f) => (
+   660→                    <StaggerItem key={f} className="flex items-center gap-3.5">
+   661→                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+   662→                      <span className="text-foreground font-medium text-[15px]">{f}</span>
+   663→                    </StaggerItem>
+   664→                  ))}
+   665→                </StaggerReveal>
+   666→                <Reveal delay={0.5}>
+   667→                  <p className="mt-8 text-muted-foreground leading-relaxed text-base">
+   668→                    This enables faster, data-driven decision-making and greater
+   669→                    organizational control.
+   670→                  </p>
+   671→                </Reveal>
+   672→              </div>
+   673→            </div>
+   674→          </div>
+   675→        </section>
+   676→
+   677→        {/* ===================== BENEFITS ===================== */}
+   678→        <section id="benefits" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
+   679→          {/* Dot texture */}
+   680→          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+   681→          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
+   682→
+   683→          <div className="relative max-w-6xl mx-auto px-6 sm:px-8">
+   684→            <Reveal className="max-w-3xl mx-auto text-center">
+   685→              <p className="text-sm font-semibold text-orange-400 tracking-widest uppercase mb-4">Key Benefits</p>
+   686→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+   687→                Reduced Costs.
+   688→                <br className="hidden sm:block" />
+   689→                {' '}Improved Efficiency.
+   690→              </h2>
+   691→              <p className="mt-6 text-lg text-white/45 max-w-2xl mx-auto">
+   692→                By replacing multiple standalone applications with a single integrated platform,
+   693→                organizations can transform how they work.
+   694→              </p>
+   695→            </Reveal>
+   696→
+   697→            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6" variant={stagger}>
+   698→              {benefits.map((b) => {
+   699→                const Icon = b.icon;
+   700→                return (
+   701→                  <StaggerItem key={b.title} variants={scaleIn}>
+   702→                    <motion.div
+   703→                      whileHover={{ y: -4, transition: snappySpring }}
+   704→                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-3xl p-7 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500"
+   705→                    >
+   706→                      <div className="w-11 h-11 rounded-2xl bg-orange-500/15 flex items-center justify-center mb-5 group-hover:bg-orange-500/25 transition-colors duration-500">
+   707→                        <Icon className="h-5 w-5 text-orange-400" />
+   708→                      </div>
+   709→                      <h3 className="text-lg font-semibold text-white mb-2.5">{b.title}</h3>
+   710→                      <p className="text-sm text-white/45 leading-relaxed">{b.desc}</p>
+   711→                    </motion.div>
+   712→                  </StaggerItem>
+   713→                );
+   714→              })}
+   715→            </StaggerReveal>
+   716→          </div>
+   717→        </section>
+   718→
+   719→        {/* ===================== BUILT FOR AFRICA ===================== */}
+   720→        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white">
+   721→          <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
+   722→            <Reveal>
+   723→              <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
+   724→                <Globe className="mr-1.5 h-3.5 w-3.5" />
+   725→                Built for African Businesses
+   726→              </Badge>
+   727→            </Reveal>
+   728→            <Reveal delay={0.1}>
+   729→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+   730→                Enterprise-Grade Capabilities,{' '}
+   731→                <span className="text-orange-600">African-First Design</span>
+   732→              </h2>
+   733→            </Reveal>
+   734→            <Reveal delay={0.2}>
+   735→              <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+   736→                Workphelo is designed with the realities of African businesses in mind,
+   737→                providing enterprise-grade capabilities while remaining affordable,
+   738→                flexible, and easy to deploy.
+   739→              </p>
+   740→            </Reveal>
+   741→
+   742→            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-3 gap-6 lg:gap-8">
+   743→              {[
+   744→                { icon: Building2, label: 'Affordable', desc: 'Pricing that works for businesses of every size across Africa' },
+   745→                { icon: Settings, label: 'Flexible', desc: 'Highly customizable to match your specific workflow requirements' },
+   746→                { icon: Zap, label: 'Easy to Deploy', desc: 'Cloud-based with minimal setup time and no complex infrastructure' },
+   747→              ].map((item) => {
+   748→                const Icon = item.icon;
+   749→                return (
+   750→                  <StaggerItem key={item.label} variants={scaleIn}>
+   751→                    <motion.div
+   752→                      whileHover={{ y: -4, transition: snappySpring }}
+   753→                      className="rounded-3xl bg-stone-50 border border-gray-100 p-8 text-center h-full shadow-sm hover:shadow-md transition-shadow duration-500"
+   754→                    >
+   755→                      <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-300 flex items-center justify-center mb-5">
+   756→                        <Icon className="h-7 w-7 text-blue-900" />
+   757→                      </div>
+   758→                      <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
+   759→                      <p className="mt-2.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+   760→                    </motion.div>
+   761→                  </StaggerItem>
+   762→                );
+   763→              })}
+   764→            </StaggerReveal>
+   765→          </div>
+   766→        </section>
+   767→
+   768→        {/* ===================== VALUE PROPOSITION ===================== */}
+   769→        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70">
+   770→          <div className="max-w-4xl mx-auto px-6 sm:px-8">
+   771→            <Reveal>
+   772→              <div className="relative rounded-3xl bg-white border border-gray-100 p-8 sm:p-14 lg:p-16 shadow-sm">
+   773→                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+   774→                  <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/30">
+   775→                    <Lock className="h-6 w-6 text-white" />
+   776→                  </div>
+   777→                </div>
+   778→                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mt-3 text-center">
+   779→                  Workphelo&apos;s Core Value Proposition
+   780→                </h2>
+   781→                <div className="mt-6 sm:mt-8 mx-auto max-w-2xl text-center">
+   782→                  <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed italic">
+   783→                    &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   784→                    Fleet Management, and Executive Reporting into one intelligent platform,
+   785→                    giving organizations a single source of truth, a single login, and a
+   786→                    complete view of their business.&rdquo;
+   787→                  </p>
+   788→                </div>
+   789→              </div>
+   790→            </Reveal>
+   791→          </div>
+   792→        </section>
+   793→
+   794→        {/* ===================== WAITLIST CTA ===================== */}
+   795→        <section id="waitlist-section" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
+   796→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
+   797→          {/* Top fade */}
+   798→          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent" />
+   799→
+   800→          <div className="relative max-w-3xl mx-auto px-6 sm:px-8 text-center">
+   801→            <Reveal>
+   802→              <Badge variant="secondary" className="mb-5 bg-orange-500/15 text-orange-300 border-orange-500/20">
+   803→                Early Access
+   804→              </Badge>
+   805→            </Reveal>
+   806→            <Reveal delay={0.1}>
+   807→              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+   808→                Be Among the First to
+   809→                <br className="hidden sm:block" />
+   810→                {' '}Experience Workphelo
+   811→              </h2>
+   812→            </Reveal>
+   813→            <Reveal delay={0.2}>
+   814→              <p className="mt-6 text-lg text-white/45 max-w-xl mx-auto">
+   815→                Join our waitlist and get priority access when we launch. Help shape the
+   816→                future of business management in Africa.
+   817→              </p>
+   818→            </Reveal>
+   819→            <Reveal delay={0.35} className="mt-10 sm:mt-14">
+   820→              <WaitlistForm variant="section" />
+   821→            </Reveal>
+   822→          </div>
+   823→        </section>
+   824→      </main>
+   825→
+   826→      {/* ===================== FOOTER ===================== */}
+   827→      <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06]">
+   828→        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-16 lg:py-20">
+   829→          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+   830→            {/* Brand */}
+   831→            <div className="sm:col-span-2 lg:col-span-1">
+   832→              <div className="flex items-center gap-2.5 mb-5">
+   833→                <div className="w-8 h-8 rounded-lg bg-blue-900 flex items-center justify-center">
+   834→                  <span className="text-white font-bold text-sm">W</span>
+   835→                </div>
+   836→                <span className="text-lg font-bold text-white tracking-tight">Workphelo</span>
+   837→              </div>
+   838→              <p className="text-sm leading-relaxed max-w-xs text-white/40">
+   839→                The all-in-one ERP platform built for African businesses. Unified,
+   840→                intelligent, and affordable.
+   841→              </p>
+   842→            </div>
+   843→
+   844→            {/* Modules */}
+   845→            <div>
+   846→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Modules</h4>
+   847→              <ul className="space-y-1 text-sm">
+   848→                {['HR Management', 'Marketing & BD', 'Accounting', 'Operations'].map((m) => (
+   849→                  <li key={m}>
+   850→                    <button onClick={() => scrollTo('modules')} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+   851→                      {m}
+   852→                    </button>
+   853→                  </li>
+   854→                ))}
+   855→              </ul>
+   856→            </div>
+   857→
+   858→            {/* Company */}
+   859→            <div>
+   860→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Company</h4>
+   861→              <ul className="space-y-1 text-sm">
+   862→                {[
+   863→                  { label: 'About', id: 'about' },
+   864→                  { label: 'Benefits', id: 'benefits' },
+   865→                  { label: 'Dashboard', id: 'dashboard' },
+   866→                  { label: 'Waitlist', id: 'waitlist-section' },
+   867→                ].map((item) => (
+   868→                  <li key={item.label}>
+   869→                    <button onClick={() => scrollTo(item.id)} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+   870→                      {item.label}
+   871→                    </button>
+   872→                  </li>
+   873→                ))}
+   874→              </ul>
+   875→            </div>
+   876→
+   877→            {/* Contact */}
+   878→            <div>
+   879→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Powered By</h4>
+   880→              <p className="text-sm leading-relaxed text-white/40">
+   881→                <span className="text-white/80 font-semibold">Datrix Tech Solutions</span>
+   882→                <br />
+   883→                Enterprise software for the African market.
+   884→              </p>
+   885→              <div className="mt-5">
+   886→                <Button
+   887→                  variant="outline"
+   888→                  size="sm"
+   889→                  onClick={() => scrollTo('waitlist-section')}
+   890→                  className="rounded-full border-orange-500/30 text-orange-300 hover:bg-orange-500/10 hover:text-orange-200 hover:border-orange-500/50 min-h-[44px] cursor-pointer"
+   891→                >
+   892→                  Join Waitlist
+   893→                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+   894→                </Button>
+   895→              </div>
+   896→            </div>
+   897→          </div>
+   898→
+   899→          <Separator className="my-10 bg-white/[0.06]" />
+   900→
+   901→          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/25">
+   902→            <p>&copy; {new Date().getFullYear()} Datrix Tech Solutions. All rights reserved.</p>
+   903→            <p>Workphelo ERP — Built for Africa, Ready for the World.</p>
+   904→          </div>
+   905→        </div>
+   906→      </footer>
+   907→    </div>
+   908→  );
+   909→}
