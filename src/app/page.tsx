@@ -282,12 +282,13 @@ export default function HomePage() {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="flex items-center gap-2 pl-3 pr-2 cursor-pointer"
           >
-            <div className="w-8 h-8 rounded-lg bg-blue-900 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">W</span>
-            </div>
-            <span className={`text-lg font-bold tracking-tight transition-colors duration-500 ${scrolled ? 'text-foreground' : 'text-white'}`}>
-              Workphelo
-            </span>
+            <Image
+              src="/images/workphelo-logo.png"
+              alt="Workphelo"
+              width={120}
+              height={32}
+              className={`h-8 w-auto transition-opacity duration-500 ${scrolled ? 'opacity-100' : 'brightness-0 invert'}`}
+            />
           </button>
 
           {/* Desktop links */}
@@ -822,11 +823,14 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2.5 mb-5">
-                <div className="w-8 h-8 rounded-lg bg-blue-900 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">W</span>
-                </div>
-                <span className="text-lg font-bold text-white tracking-tight">Workphelo</span>
+              <div className="mb-5">
+                <Image
+                  src="/images/workphelo-logo.png"
+                  alt="Workphelo"
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto brightness-0 invert"
+                />
               </div>
               <p className="text-sm leading-relaxed max-w-xs text-white/40">
                 The all-in-one ERP platform built for African businesses. Unified,
