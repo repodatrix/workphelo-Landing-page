@@ -21,6 +21,8 @@ import {
   Layers,
   Menu,
   X,
+  Sparkles,
+  Bot,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -301,11 +303,12 @@ export default function HomePage() {
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize {
+                className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize ${
                   scrolled
                     ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
-                    : 'text-white hover:bg-white/10'
+                    : 'hover:bg-white/10'
                 }`}
+                style={!scrolled ? { color: 'white' } : undefined}
               >
                 {id === 'about' ? 'Built for Africa' : id}
               </button>
@@ -331,8 +334,9 @@ export default function HomePage() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className={`md:hidden p-1.5 rounded-full cursor-pointer transition-colors ${
-              scrolled ? 'text-foreground hover:bg-black/5' : 'text-white hover:bg-white/10'
+              scrolled ? 'text-foreground hover:bg-black/5' : 'hover:bg-white/10'
             }`}
+            style={!scrolled ? { color: 'white' } : undefined}
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -613,7 +617,7 @@ export default function HomePage() {
                 <br className="hidden sm:block" /> In One Place
               </h2>
               <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
-                Four powerful modules designed to cover every aspect of your business operations.
+                Four powerful modules designed to cover every aspect of your business operations — plus an AI-powered future on the horizon.
               </p>
             </Reveal>
 
@@ -647,6 +651,66 @@ export default function HomePage() {
                 );
               })}
             </StaggerReveal>
+
+            {/* ========== AGENTIC AI MODULE — UPCOMING ========== */}
+            <Reveal delay={0.3} className="mt-8">
+              <motion.div
+                whileHover={{ y: -4, transition: snappySpring }}
+                className="relative rounded-3xl overflow-hidden border border-orange-200/60 bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-7 sm:p-10 lg:p-12"
+              >
+                {/* Animated glow */}
+                <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative">
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-5 mb-8">
+                    <div className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                      <Sparkles className="h-7 w-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-3 mb-2">
+                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground">Agentic AI Module</h3>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold tracking-wide uppercase">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                          </span>
+                          Coming Soon
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-[17px]">
+                        Intelligent AI Agents that work alongside your teams — automating tasks, surfacing insights, and making proactive recommendations across every department.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                    {[
+                      { dept: 'HR Agent', desc: 'Automate onboarding, leave approvals & performance reviews', icon: Users },
+                      { dept: 'Accounting Agent', desc: 'Smart reconciliation, invoice processing & financial insights', icon: Calculator },
+                      { dept: 'Marketing Agent', desc: 'Lead scoring, campaign optimization & follow-up automation', icon: Megaphone },
+                      { dept: 'Operations Agent', desc: 'Process automation, inventory alerts & workflow triggers', icon: Settings },
+                      { dept: 'Executive Agent', desc: 'AI-powered briefings, KPI monitoring & decision support', icon: BarChart3 },
+                    ].map((agent) => {
+                      const AgentIcon = agent.icon;
+                      return (
+                        <motion.div
+                          key={agent.dept}
+                          whileHover={{ y: -3, transition: snappySpring }}
+                          className="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-100/80 p-4 sm:p-5 hover:shadow-lg hover:shadow-orange-500/[0.08] hover:border-orange-200 transition-all duration-300"
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center mb-3 transition-colors duration-300">
+                            <AgentIcon className="h-4.5 w-4.5 text-orange-600 group-hover:text-white transition-colors duration-300" />
+                          </div>
+                          <h4 className="font-semibold text-foreground text-sm sm:text-[15px] mb-1.5">{agent.dept}</h4>
+                          <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed">{agent.desc}</p>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            </Reveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
             <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
