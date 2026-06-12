@@ -396,7 +396,7 @@ export default function HomePage() {
             priority
           />
           {/* Dark overlay — deep shade */}
-          <div className="absolute inset-0 bg-blue-950/80" />
+          <div className="absolute inset-0 bg-black/80" />
           {/* Vignette for depth */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
 
