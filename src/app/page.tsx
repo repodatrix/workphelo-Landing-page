@@ -387,107 +387,53 @@ export default function HomePage() {
       <main className="flex-1">
         {/* ===================== HERO ===================== */}
         <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen">
-          {/* Solid bg */}
-          <div className="absolute inset-0 bg-blue-950" />
-          {/* Subtle radial accents */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_40%,_rgba(59,130,246,0.12)_0%,_transparent_70%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_20%_80%,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
-          {/* Dot grid */}
-          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
+          {/* Background image */}
+          <Image
+            src="/images/hero-bg.png"
+            alt=""
+            fill
+            className="object-cover object-center"
+            priority
+          />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-blue-950/60" />
 
           {/* Parallax content wrapper */}
           <motion.div
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
-            className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pt-0 lg:pb-0"
+            className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pt-0 lg:pb-0 text-center"
           >
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-              {/* Left: Text */}
-              <div className="text-center lg:text-left">
-                <Reveal delay={0.4}>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem] font-extrabold tracking-tight text-white leading-[1.08]">
-                    One Platform.{' '}
-                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
-                      One Login.
-                    </span>
-                    <br />
-                    <span className="text-white/90">Complete Business</span>
-                    <br />
-                    <span className="text-white/90">Visibility.</span>
-                  </h1>
-                </Reveal>
+            <Reveal delay={0.4}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
+                One Platform.{' '}
+                <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
+                  One Login.
+                </span>
+                <br />
+                <span className="text-white/90">Complete Business</span>
+                <br />
+                <span className="text-white/90">Visibility.</span>
+              </h1>
+            </Reveal>
 
-                <Reveal delay={0.55}>
-                  <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-white/50 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
-                    Fleet Management, and Executive Reporting into one intelligent
-                    platform — giving organizations a single source of truth.
-                  </p>
-                </Reveal>
+            <Reveal delay={0.55}>
+              <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
+                Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+                Fleet Management, and Executive Reporting into one intelligent
+                platform — giving organizations a single source of truth.
+              </p>
+            </Reveal>
 
-                <Reveal delay={0.7}>
-                  <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-5 sm:gap-8 text-sm text-white/35">
-                    {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
-                      <div key={t} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-orange-400/70" />
-                        <span>{t}</span>
-                      </div>
-                    ))}
+            <Reveal delay={0.7}>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-sm text-white/35">
+                {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
+                  <div key={t} className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-orange-400/70" />
+                    <span>{t}</span>
                   </div>
-                </Reveal>
+                ))}
               </div>
-
-              {/* Right: Hero image */}
-              <Reveal delay={0.5} className="hidden lg:block">
-                <div className="relative">
-                  <div className="absolute -inset-6 bg-blue-900/30 rounded-[2rem] blur-3xl" />
-                  <motion.div
-                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/40 border border-white/[0.08]"
-                    whileHover={{ scale: 1.015, transition: snappySpring }}
-                  >
-                    <Image
-                      src="/images/hero-erp.png"
-                      alt="Workphelo ERP Dashboard"
-                      width={1344}
-                      height={768}
-                      className="w-full h-auto"
-                      priority
-                    />
-                  </motion.div>
-                  {/* Floating badge 1 */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20, y: 10 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    transition={{ ...gentleSpring, delay: 1.2 }}
-                    whileHover={{ scale: 1.06, transition: snappySpring }}
-                    className="absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-blue-900" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
-                      <p className="text-xs text-muted-foreground">Live KPIs & Reports</p>
-                    </div>
-                  </motion.div>
-                  {/* Floating badge 2 */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20, y: -10 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    transition={{ ...gentleSpring, delay: 1.4 }}
-                    whileHover={{ scale: 1.06, transition: snappySpring }}
-                    className="absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
-                      <ShieldCheck className="h-5 w-5 text-blue-900" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Enterprise Security</p>
-                      <p className="text-xs text-muted-foreground">Role-based Access</p>
-                    </div>
-                  </motion.div>
-                </div>
-              </Reveal>
-            </div>
+            </Reveal>
           </motion.div>
 
           {/* Scroll indicator */}
