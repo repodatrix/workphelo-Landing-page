@@ -246,6 +246,107 @@
   pointer-events: none;
 }
 
+/* Wave divider sway animation */
+@keyframes wave-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-8px); }
+}
+
+.animate-wave-sway {
+  animation: wave-sway 8s ease-in-out infinite;
+}
+
+/* Card shimmer on hover */
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.25) 45%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.25) 55%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: none;
+  pointer-events: none;
+  z-index: 1;
+}
+.card-shimmer:hover::after {
+  animation: shimmer-hover 0.8s ease-out forwards;
+}
+
+@keyframes shimmer-hover {
+  to { transform: translateX(100%); }
+}
+
+/* Floating orb */
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(15px, -20px) scale(1.05); }
+  50% { transform: translate(-10px, -35px) scale(0.95); }
+  75% { transform: translate(20px, -15px) scale(1.02); }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-20px, 15px) scale(0.95); }
+  50% { transform: translate(15px, 25px) scale(1.05); }
+  75% { transform: translate(-15px, 10px) scale(1); }
+}
+
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(25px, -15px); }
+  66% { transform: translate(-15px, -30px); }
+}
+
+.animate-orb-1 {
+  animation: orb-float-1 12s ease-in-out infinite;
+}
+
+.animate-orb-2 {
+  animation: orb-float-2 15s ease-in-out infinite;
+}
+
+.animate-orb-3 {
+  animation: orb-float-3 10s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradient-text {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-text {
+  background-size: 200% 200%;
+  animation: gradient-text 4s ease infinite;
+}
+
+/* Pulse ring */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(0.8); opacity: 0; }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.5s ease-out infinite;
+}
+
+/* Smooth section fade mask for top/bottom */
+.section-fade-top {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 5%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%);
+}
+
 /* Mobile touch-friendly */
 @media (max-width: 767px) {
   .cursor-logo,

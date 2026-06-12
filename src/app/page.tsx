@@ -97,9 +97,120 @@ const aiAgentStagger = {
   visible: { transition: { staggerChildren: 0.07, delayChildren: 0.4 } },
 };
 
+/* -- Variant: clip reveal from bottom -------------------------------- */
+const clipReveal = {
+  hidden: { opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' },
+  visible: { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' },
+};
+
+/* -- Variant: rotate in --------------------------------------------- */
+const rotateIn = {
+  hidden: { opacity: 0, scale: 0.85, rotate: -3 },
+  visible: { opacity: 1, scale: 1, rotate: 0 },
+};
+
+/* -- Variant: fade from below with no blur (lighter variant) -------- */
+const fadeUpLight = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
+
+/* -- Variant for marquee -------------------------------------------- */
+const marqueeTrack = {
+  animate: { x: ['0%', '-50%'] },
+};
+
 /* ================================================================== */
 /*  HELPER COMPONENTS                                                  */
 /* ================================================================== */
+
+/** Decorative floating orb for section backgrounds */
+function FloatingOrb({
+  size = 200,
+  color = 'blue',
+  className = '',
+  delay = 0,
+}: {
+  size?: number;
+  color?: 'blue' | 'orange' | 'purple' | 'amber';
+  className?: string;
+  delay?: number;
+}) {
+  const colorMap = {
+    blue: 'bg-blue-400/15',
+    orange: 'bg-orange-400/12',
+    purple: 'bg-purple-400/10',
+    amber: 'bg-amber-400/12',
+  };
+  const animClass = delay === 0 ? 'animate-orb-1' : delay === 1 ? 'animate-orb-2' : 'animate-orb-3';
+
+  return (
+    <div
+      className={`absolute rounded-full blur-3xl pointer-events-none ${colorMap[color]} ${animClass} ${className}`}
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
+/** Text cycle animation for hero */
+function TextCycle({ words, interval = 3000 }: { words: string[]; interval?: number }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % words.length);
+    }, interval);
+    return () => clearInterval(timer);
+  }, [words.length, interval]);
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.span
+        key={words[index]}
+        initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, y: -20, filter: 'blur(6px)' }}
+        transition={{ ...gentleSpring }}
+        className="inline-block"
+      >
+        {words[index]}
+      </motion.span>
+    </AnimatePresence>
+  );
+}
+
+/** Infinite scrolling marquee */
+function Marquee({
+  children,
+  speed = 30,
+  reverse = false,
+  className = '',
+}: {
+  children: React.ReactNode;
+  speed?: number;
+  reverse?: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={`overflow-hidden ${className}`}>
+      <motion.div
+        className="flex gap-8 w-max"
+        animate={{ x: reverse ? ['0%', '-50%'] : ['-50%', '0%'] }}
+        transition={{
+          x: {
+            repeat: Infinity,
+            repeatType: 'loop',
+            duration: speed,
+            ease: 'linear',
+          },
+        }}
+      >
+        {children}
+        {children}
+      </motion.div>
+    </div>
+  );
+}
 
 /** Apple-style section reveal */
 function Reveal({
@@ -382,7 +493,7 @@ export default function HomePage() {
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize ${
+                className={`px-3 py-2 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize min-h-[44px] flex items-center ${
                   scrolled
                     ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
                     : 'hover:bg-white/10'
@@ -484,6 +595,31 @@ export default function HomePage() {
           {/* Vignette for depth */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
 
+          {/* Decorative floating particles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-white/[0.03] pointer-events-none"
+              style={{
+                width: 4 + (i * 3),
+                height: 4 + (i * 3),
+                top: `${15 + (i * 12)}%`,
+                left: `${10 + (i * 15)}%`,
+              }}
+              animate={{
+                y: [0, -30 - (i * 8), 0],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration: 5 + i * 1.5,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.7,
+              }}
+            />
+          ))}
+
           {/* Content */}
           <motion.div
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
@@ -510,9 +646,9 @@ export default function HomePage() {
                 Complete Business
               </motion.span>
 
-              {/* Line 3: Visibility. — with orange accent */}
+              {/* Line 3: Visibility. — with animated orange accent */}
               <motion.span
-                className="block bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent"
+                className="block bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent animate-gradient-text"
                 variants={{
                   hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
@@ -529,8 +665,12 @@ export default function HomePage() {
               transition={{ ...smoothSpring, delay: 1.1 }}
               className="mt-8 sm:mt-10 text-sm sm:text-base text-white/40 max-w-xl mx-auto leading-relaxed"
             >
-              Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
-              Fleet Management, and Executive Reporting — giving organizations
+              Workphelo unifies{' '}
+              <TextCycle
+                words={['HR', 'Marketing', 'Accounting', 'Operations', 'Fleet Management']}
+                interval={2500}
+              />
+              , and Executive Reporting — giving organizations
               a single source of truth.
             </motion.p>
 
@@ -683,7 +823,7 @@ export default function HomePage() {
 
           {/* Curved bottom edge */}
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
             </svg>
           </div>
@@ -691,6 +831,9 @@ export default function HomePage() {
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
         <section className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+          {/* Floating decorative orbs */}
+          <FloatingOrb size={180} color="blue" className="top-10 -right-20 hidden sm:block" delay={0} />
+          <FloatingOrb size={120} color="orange" className="bottom-20 -left-16 hidden sm:block" delay={1} />
           <div className="max-w-5xl mx-auto px-5 sm:px-8">
             <Reveal>
               <SectionLabel>The Problem</SectionLabel>
@@ -715,15 +858,22 @@ export default function HomePage() {
               <motion.div
                 whileHover={{ y: -4, transition: snappySpring }}
                 whileTap={{ scale: 0.99 }}
-                className="relative rounded-2xl sm:rounded-3xl bg-blue-200/60 border border-blue-300/60 p-6 sm:p-14"
+                className="relative rounded-2xl sm:rounded-3xl bg-blue-200/60 border border-blue-300/60 p-6 sm:p-14 card-shimmer"
               >
                 <div className="absolute top-6 right-6 sm:top-8 sm:right-8 opacity-[0.07]">
                   <MonitorSmartphone className="h-28 w-28 sm:h-36 sm:w-36 text-blue-900" />
                 </div>
                 <div className="relative flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
-                  <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20">
+                  <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={rotateIn}
+                    transition={{ ...smoothSpring, delay: 0.5 }}
+                    className="shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20 flex"
+                  >
                     <Globe className="h-6 w-6 text-white" />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
                       Workphelo solves this by bringing all critical business
@@ -741,14 +891,29 @@ export default function HomePage() {
             </Reveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
             </svg>
           </div>
         </section>
 
+        {/* ===================== MARQUEE STRIP ===================== */}
+        <div className="py-5 sm:py-6 bg-stone-50/70 border-y border-gray-100/80 overflow-hidden cursor-dot">
+          <Marquee speed={40} className="opacity-40">
+            {['HR Management', 'Accounting', 'Marketing & BD', 'Operations', 'Fleet Management', 'Executive Dashboard', 'Agentic AI', 'Cloud-Based', 'Single Login', 'Built for Africa'].map((t) => (
+              <span key={t} className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-foreground/60 whitespace-nowrap flex items-center gap-8">
+                {t}
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400/60" />
+              </span>
+            ))}
+          </Marquee>
+        </div>
+
         {/* ===================== MODULES ===================== */}
         <section id="modules" className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
+          {/* Floating decorative orbs */}
+          <FloatingOrb size={160} color="purple" className="top-32 -right-24 hidden lg:block" delay={2} />
+          <FloatingOrb size={130} color="amber" className="bottom-40 -left-20 hidden lg:block" delay={0} />
           <div className="max-w-6xl mx-auto px-5 sm:px-8">
             <Reveal className="max-w-3xl mx-auto text-center">
               <SectionLabel>Core Modules</SectionLabel>
@@ -769,7 +934,7 @@ export default function HomePage() {
                     <motion.div
                       whileHover={{ y: -6, transition: snappySpring }}
                       whileTap={{ scale: 0.98 }}
-                      className="group relative h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-5 sm:p-9 transition-shadow duration-500"
+                      className="group relative h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-5 sm:p-9 transition-shadow duration-500 card-shimmer"
                     >
                       {/* Top accent line */}
                       <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -858,7 +1023,7 @@ export default function HomePage() {
                               <AgentIcon className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-orange-600 group-hover:text-white transition-colors duration-300" />
                             </div>
                             <h4 className="font-semibold text-foreground text-xs sm:text-sm lg:text-[15px] mb-1 sm:mb-1.5">{agent.dept}</h4>
-                            <p className="text-[11px] sm:text-[13px] text-muted-foreground leading-relaxed hidden sm:block">{agent.desc}</p>
+                            <p className="text-[11px] sm:text-[13px] text-muted-foreground leading-relaxed line-clamp-2">{agent.desc}</p>
                           </motion.div>
                         </StaggerItem>
                       );
@@ -869,12 +1034,14 @@ export default function HomePage() {
             </Reveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#ffffff"/>
             </svg>
           </div>
         </section>
         <section id="dashboard" className="py-20 sm:py-28 lg:py-36 bg-white overflow-hidden relative cursor-logo">
+          <FloatingOrb size={170} color="blue" className="top-24 -left-20 hidden lg:block" delay={1} />
+          <FloatingOrb size={130} color="orange" className="bottom-32 -right-16 hidden lg:block" delay={2} />
           <div className="max-w-6xl mx-auto px-5 sm:px-8">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
               {/* Image */}
@@ -960,7 +1127,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 0L60 8C120 16 240 32 360 42.5C480 53 600 58 720 55C840 52 960 41 1080 35C1200 29 1320 28 1380 27.5L1440 27V100H0Z" fill="#172554"/>
             </svg>
           </div>
@@ -970,6 +1137,9 @@ export default function HomePage() {
         <section id="benefits" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
           {/* Dot texture */}
           <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+          {/* Floating orbs */}
+          <FloatingOrb size={200} color="orange" className="top-20 -right-16 hidden sm:block" delay={1} />
+          <FloatingOrb size={150} color="blue" className="bottom-32 -left-20 hidden sm:block" delay={2} />
           <motion.div
             className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]"
             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -998,7 +1168,7 @@ export default function HomePage() {
                     <motion.div
                       whileHover={{ y: -4, transition: snappySpring }}
                       whileTap={{ scale: 0.98 }}
-                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500"
+                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500 card-shimmer"
                     >
                       <div className="w-11 h-11 rounded-2xl bg-orange-500/15 flex items-center justify-center mb-5 group-hover:bg-orange-500/25 transition-colors duration-500">
                         <Icon className="h-5 w-5 text-orange-400" />
@@ -1012,14 +1182,28 @@ export default function HomePage() {
             </StaggerReveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 100L60 85C120 70 240 40 360 27.5C480 15 600 20 720 27.5C840 35 960 45 1080 52.5C1200 60 1320 65 1380 67.5L1440 70V100H0Z" fill="#ffffff"/>
             </svg>
           </div>
         </section>
 
+        {/* ===================== MARQUEE STRIP 2 ===================== */}
+        <div className="py-4 sm:py-5 bg-white border-b border-gray-100/80 overflow-hidden cursor-logo">
+          <Marquee speed={35} reverse className="opacity-30">
+            {['Unified Platform', 'One Login', 'Real-Time Data', 'African-First', 'Cloud-Based', 'AI-Powered', 'Affordable', 'Scalable', 'Secure', 'Enterprise-Grade'].map((t) => (
+              <span key={t} className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-950/60 whitespace-nowrap flex items-center gap-8">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
+                {t}
+              </span>
+            ))}
+          </Marquee>
+        </div>
+
         {/* ===================== BUILT FOR AFRICA ===================== */}
         <section id="about" className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+          <FloatingOrb size={140} color="blue" className="top-16 left-[10%] hidden sm:block" delay={1} />
+          <FloatingOrb size={100} color="orange" className="bottom-24 right-[8%] hidden sm:block" delay={2} />
           <div className="max-w-5xl mx-auto px-5 sm:px-8 text-center">
             <Reveal>
               <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
@@ -1070,17 +1254,18 @@ export default function HomePage() {
             </StaggerReveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
             </svg>
           </div>
         </section>
 
         {/* ===================== VALUE PROPOSITION ===================== */}
-        <section className="py-16 sm:py-24 lg:py-32 bg-stone-50/70 relative overflow-hidden cursor-dot">
+        <section className="py-14 sm:py-24 lg:py-32 bg-stone-50/70 relative overflow-hidden cursor-dot">
+          <FloatingOrb size={120} color="amber" className="top-8 right-[5%] hidden sm:block" delay={0} />
           <div className="max-w-4xl mx-auto px-5 sm:px-8">
             <Reveal>
-              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-gray-100 p-6 sm:p-14 lg:p-16 shadow-sm overflow-hidden">
+              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-gray-100 p-5 sm:p-14 lg:p-16 shadow-sm overflow-hidden card-shimmer">
                 {/* Subtle glow behind lock icon */}
                 <motion.div
                   className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"
@@ -1113,7 +1298,7 @@ export default function HomePage() {
             </Reveal>
           </div>
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
-            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
               <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#172554"/>
             </svg>
           </div>
@@ -1122,6 +1307,29 @@ export default function HomePage() {
         {/* ===================== WAITLIST CTA ===================== */}
         <section id="waitlist-cta" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
+          {/* Decorative floating dots */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`waitlist-particle-${i}`}
+              className="absolute rounded-full bg-orange-500/[0.06] pointer-events-none"
+              style={{
+                width: 6 + i * 4,
+                height: 6 + i * 4,
+                top: `${20 + i * 18}%`,
+                left: `${15 + i * 20}%`,
+              }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: 4 + i,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 1.2,
+              }}
+            />
+          ))}
           {/* Pulsing glow behind form */}
           <motion.div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-[100px]"
@@ -1175,7 +1383,7 @@ export default function HomePage() {
       {/* ===================== FOOTER ===================== */}
       <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06] cursor-dot">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14 lg:py-20">
-          <StaggerReveal className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10" variant={staggerBottom}>
+          <StaggerReveal className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10" variant={staggerBottom}>
             {/* Brand */}
             <div className="col-span-2 lg:col-span-1">
               <div className="mb-4 sm:mb-5">
@@ -1184,10 +1392,10 @@ export default function HomePage() {
                   alt="Workphelo"
                   width={120}
                   height={32}
-                  className="h-7 sm:h-8 w-auto brightness-0 invert"
+                  className="h-6 sm:h-7 w-auto brightness-0 invert"
                 />
               </div>
-              <p className="text-sm leading-relaxed max-w-xs text-white/40">
+              <p className="text-xs sm:text-sm leading-relaxed max-w-xs text-white/40">
                 The all-in-one ERP platform built for African businesses. Unified,
                 intelligent, and affordable.
               </p>
@@ -1195,8 +1403,8 @@ export default function HomePage() {
 
             {/* Modules */}
             <div>
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Modules</h4>
-              <ul className="space-y-1 text-sm">
+              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Modules</h4>
+              <ul className="space-y-0.5 text-xs sm:text-sm">
                 {['HR Management', 'Marketing & BD', 'Accounting', 'Operations'].map((m) => (
                   <li key={m}>
                     <motion.button
@@ -1213,8 +1421,8 @@ export default function HomePage() {
 
             {/* Company */}
             <div>
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Company</h4>
-              <ul className="space-y-1 text-sm">
+              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Company</h4>
+              <ul className="space-y-0.5 text-xs sm:text-sm">
                 {[
                   { label: 'About', id: 'about' },
                   { label: 'Benefits', id: 'benefits' },
@@ -1236,9 +1444,9 @@ export default function HomePage() {
 
             {/* Contact */}
             <div className="col-span-2 sm:col-span-1">
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Powered By</h4>
-              <p className="text-sm leading-relaxed text-white/40">
-                <span className="text-white/80 font-semibold">Datrix Tech Solutions</span>
+              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Powered By</h4>
+              <p className="text-xs sm:text-sm leading-relaxed text-white/40">
+                <span className="text-white/80 font-semibold text-sm sm:text-base">Datrix Tech Solutions</span>
                 <br />
                 Enterprise software for the African market.
               </p>
