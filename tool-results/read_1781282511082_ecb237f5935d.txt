@@ -1,0 +1,1032 @@
+     1→'use client';
+     2→
+     3→import Image from 'next/image';
+     4→import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
+     5→import {
+     6→  Users,
+     7→  Calculator,
+     8→  Megaphone,
+     9→  Settings,
+    10→  BarChart3,
+    11→  ShieldCheck,
+    12→  Globe,
+    13→  Zap,
+    14→  ArrowRight,
+    15→  CheckCircle2,
+    16→  ChevronDown,
+    17→  TrendingUp,
+    18→  Building2,
+    19→  MonitorSmartphone,
+    20→  Lock,
+    21→  Layers,
+    22→  Menu,
+    23→  X,
+    24→  Sparkles,
+    25→  Bot,
+    26→} from 'lucide-react';
+    27→import { Button } from '@/components/ui/button';
+    28→import { Badge } from '@/components/ui/badge';
+    29→import { Separator } from '@/components/ui/separator';
+    30→import { WaitlistForm } from '@/components/waitlist-form';
+    31→import { useState, useRef } from 'react';
+    32→
+    33→/* ================================================================== */
+    34→/*  ANIMATION CONFIG                                                   */
+    35→/* ================================================================== */
+    36→const smoothSpring = { type: 'spring' as const, stiffness: 80, damping: 20, mass: 1 };
+    37→const snappySpring = { type: 'spring' as const, stiffness: 400, damping: 30, mass: 0.6 };
+    38→const gentleSpring = { type: 'spring' as const, stiffness: 120, damping: 24, mass: 0.8 };
+    39→
+    40→/* -- Variant: fade up with subtle blur (Apple materialisation) -------- */
+    41→const fadeUp = {
+    42→  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
+    43→  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+    44→};
+    45→
+    46→/* -- Variant: fade in ------------------------------------------------ */
+    47→const fadeIn = {
+    48→  hidden: { opacity: 0 },
+    49→  visible: { opacity: 1 },
+    50→};
+    51→
+    52→/* -- Variant: scale in ---------------------------------------------- */
+    53→const scaleIn = {
+    54→  hidden: { opacity: 0, scale: 0.92, y: 20 },
+    55→  visible: { opacity: 1, scale: 1, y: 0 },
+    56→};
+    57→
+    58→/* -- Variant: stagger container -------------------------------------- */
+    59→const stagger = {
+    60→  hidden: {},
+    61→  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+    62→};
+    63→
+    64→/* -- Variant: slow stagger for long lists ---------------------------- */
+    65→const slowStagger = {
+    66→  hidden: {},
+    67→  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+    68→};
+    69→
+    70→/* ================================================================== */
+    71→/*  HELPER COMPONENTS                                                  */
+    72→/* ================================================================== */
+    73→
+    74→/** Apple-style section reveal */
+    75→function Reveal({
+    76→  children,
+    77→  className = '',
+    78→  delay = 0,
+    79→  once = true,
+    80→}: {
+    81→  children: React.ReactNode;
+    82→  className?: string;
+    83→  delay?: number;
+    84→  once?: boolean;
+    85→}) {
+    86→  return (
+    87→    <motion.div
+    88→      initial="hidden"
+    89→      whileInView="visible"
+    90→      viewport={{ once, margin: '-80px' }}
+    91→      variants={fadeUp}
+    92→      transition={{ ...smoothSpring, delay }}
+    93→      className={className}
+    94→    >
+    95→      {children}
+    96→    </motion.div>
+    97→  );
+    98→}
+    99→
+   100→/** Staggered children container */
+   101→function StaggerReveal({
+   102→  children,
+   103→  className = '',
+   104→  variant = stagger,
+   105→}: {
+   106→  children: React.ReactNode;
+   107→  className?: string;
+   108→  variant?: typeof stagger;
+   109→}) {
+   110→  return (
+   111→    <motion.div
+   112→      initial="hidden"
+   113→      whileInView="visible"
+   114→      viewport={{ once: true, margin: '-60px' }}
+   115→      variants={variant}
+   116→      className={className}
+   117→    >
+   118→      {children}
+   119→    </motion.div>
+   120→  );
+   121→}
+   122→
+   123→/** Single stagger child item */
+   124→function StaggerItem({
+   125→  children,
+   126→  className = '',
+   127→  variants = fadeUp,
+   128→}: {
+   129→  children: React.ReactNode;
+   130→  className?: string;
+   131→  variants?: typeof fadeUp;
+   132→}) {
+   133→  return (
+   134→    <motion.div variants={variants} transition={smoothSpring} className={className}>
+   135→      {children}
+   136→    </motion.div>
+   137→  );
+   138→}
+   139→
+   140→/** Scroll progress bar at top of viewport */
+   141→function ScrollProgress() {
+   142→  const { scrollYProgress } = useScroll();
+   143→  return (
+   144→    <motion.div
+   145→      className="fixed top-0 left-0 right-0 h-[2px] bg-orange-500 origin-left z-[60]"
+   146→      style={{ scaleX: scrollYProgress }}
+   147→    />
+   148→  );
+   149→}
+   150→
+   151→/* ================================================================== */
+   152→/*  DATA                                                               */
+   153→/* ================================================================== */
+   154→const modules = [
+   155→  {
+   156→    icon: Users,
+   157→    title: 'HR Management',
+   158→    color: 'from-blue-900 to-blue-900',
+   159→    lightBg: 'bg-blue-300',
+   160→    textColor: 'text-blue-900',
+   161→    features: [
+   162→      'Employee records management',
+   163→      'Leave & attendance management',
+   164→      'Performance management',
+   165→      'Recruitment & onboarding',
+   166→      'Employee self-service portal',
+   167→      'Approval workflows',
+   168→      'Payroll Management',
+   169→    ],
+   170→  },
+   171→  {
+   172→    icon: Megaphone,
+   173→    title: 'Marketing & Business Development',
+   174→    color: 'from-amber-500 to-orange-600',
+   175→    lightBg: 'bg-amber-50',
+   176→    textColor: 'text-amber-700',
+   177→    features: [
+   178→      'Lead management',
+   179→      'Opportunity tracking',
+   180→      'Customer relationship management',
+   181→      'Follow-up monitoring',
+   182→      'Sales pipeline visibility',
+   183→      'Fleet management',
+   184→    ],
+   185→  },
+   186→  {
+   187→    icon: Calculator,
+   188→    title: 'Accounting',
+   189→    color: 'from-rose-500 to-pink-600',
+   190→    lightBg: 'bg-rose-50',
+   191→    textColor: 'text-rose-700',
+   192→    features: [
+   193→      'General Ledger',
+   194→      'Accounts Payable & Receivable',
+   195→      'Cash Management',
+   196→      'Bank Reconciliation',
+   197→      'Financial Reporting',
+   198→      'Budget Management & Expense Tracking',
+   199→      'Multi-branch accounting',
+   200→      'Payroll Management',
+   201→    ],
+   202→  },
+   203→  {
+   204→    icon: Settings,
+   205→    title: 'Operations',
+   206→    color: 'from-violet-500 to-purple-600',
+   207→    lightBg: 'bg-violet-50',
+   208→    textColor: 'text-violet-700',
+   209→    features: [
+   210→      'Reinsurance Brokerage Software',
+   211→      'Insurance Brokerage Software',
+   212→      'Hospital Management Software',
+   213→      'School Management Software',
+   214→      'Manufacturing processes',
+   215→      'Industry-specific business processes',
+   216→    ],
+   217→  },
+   218→];
+   219→
+   220→const dashboardFeatures = [
+   221→  'Company-wide performance metrics',
+   222→  'Sales pipeline status',
+   223→  'Revenue tracking',
+   224→  'Staff productivity insights',
+   225→  'Operational performance indicators',
+   226→  'Financial health monitoring',
+   227→  'Departmental performance reports',
+   228→];
+   229→
+   230→const benefits = [
+   231→  { icon: TrendingUp, title: 'Reduce Software Costs', desc: 'Replace multiple standalone applications with a single integrated platform to lower subscription and licensing expenses.' },
+   232→  { icon: Layers, title: 'Eliminate Duplicate Data', desc: 'A single source of truth means no more re-entering data across disconnected systems.' },
+   233→  { icon: Users, title: 'Improve Collaboration', desc: 'Departments share real-time data, breaking down silos and boosting teamwork.' },
+   234→  { icon: BarChart3, title: 'Enhance Reporting', desc: 'Consolidated, accurate reports replace fragmented spreadsheets and guesswork.' },
+   235→  { icon: Zap, title: 'Increase Productivity', desc: 'One login, one platform — employees spend less time switching tools and more time delivering results.' },
+   236→  { icon: ShieldCheck, title: 'Simplify IT Administration', desc: 'Manage one system instead of dozens, reducing IT overhead and complexity.' },
+   237→];
+   238→
+   239→/* ================================================================== */
+   240→/*  MAIN PAGE                                                          */
+   241→/* ================================================================== */
+   242→export default function HomePage() {
+   243→  const [scrolled, setScrolled] = useState(false);
+   244→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   245→  const heroRef = useRef<HTMLElement>(null);
+   246→
+   247→  const { scrollYProgress: heroProgress } = useScroll({
+   248→    target: heroRef,
+   249→    offset: ['start start', 'end start'],
+   250→  });
+   251→  const heroContentY = useTransform(heroProgress, [0, 1], [0, 120]);
+   252→  const heroContentOpacity = useTransform(heroProgress, [0, 0.75], [1, 0]);
+   253→  const heroContentScale = useTransform(heroProgress, [0, 1], [1, 0.97]);
+   254→
+   255→  useMotionValueEvent(useScroll().scrollY, 'change', (latest) => {
+   256→    setScrolled(latest > 60);
+   257→  });
+   258→
+   259→  const scrollTo = (id: string) => {
+   260→    setMobileMenuOpen(false);
+   261→    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+   262→  };
+   263→
+   264→  const navLinks = ['modules', 'dashboard', 'benefits', 'about'];
+   265→
+   266→  return (
+   267→    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
+   268→      <ScrollProgress />
+   269→
+   270→      {/* ===================== HEADER ===================== */}
+   271→      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+   272→        <motion.nav
+   273→          initial={{ y: -100, opacity: 0 }}
+   274→          animate={{ y: 0, opacity: 1 }}
+   275→          transition={{ ...gentleSpring, delay: 0.2 }}
+   276→          className={`mx-auto transition-all duration-500 ${
+   277→            scrolled || mobileMenuOpen
+   278→              ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between text-foreground'
+   279→              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-3 flex items-center justify-between text-white'
+   280→          }`}
+   281→        >
+   282→          {/* Logo */}
+   283→          <button
+   284→            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+   285→            className="flex items-center gap-2 cursor-pointer shrink-0"
+   286→          >
+   287→            <Image
+   288→              src="/images/workphelo-logo.png"
+   289→              alt="Workphelo"
+   290→              width={120}
+   291→              height={32}
+   292→              className={`h-5 w-auto transition-all duration-500 ${
+   293→                scrolled
+   294→                  ? 'h-5 w-auto opacity-100'
+   295→                  : 'h-[22px] w-auto brightness-0 invert'
+   296→              }`}
+   297→            />
+   298→          </button>
+   299→
+   300→          {/* Desktop links */}
+   301→          <div className="hidden md:flex items-center gap-1">
+   302→            {navLinks.map((id) => (
+   303→              <button
+   304→                key={id}
+   305→                onClick={() => scrollTo(id)}
+   306→                className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize ${
+   307→                  scrolled
+   308→                    ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
+   309→                    : 'hover:bg-white/10'
+   310→                }`}
+   311→                style={!scrolled ? { color: 'white' } : undefined}
+   312→              >
+   313→                {id === 'about' ? 'Built for Africa' : id}
+   314→              </button>
+   315→            ))}
+   316→          </div>
+   317→
+   318→          {/* CTA */}
+   319→          <div className="hidden md:flex items-center shrink-0">
+   320→            <Button
+   321→              onClick={() => scrollTo('waitlist-cta')}
+   322→              className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-[13px] px-4 ${
+   323→                scrolled
+   324→                  ? 'bg-blue-900 hover:bg-blue-950 text-white shadow-md shadow-blue-900/20'
+   325→                  : 'bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:bg-white/25'
+   326→              }`}
+   327→            >
+   328→              Join Waitlist
+   329→              <ArrowRight className="ml-1 h-3 w-3" />
+   330→            </Button>
+   331→          </div>
+   332→
+   333→          {/* Mobile toggle */}
+   334→          <button
+   335→            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   336→            className={`md:hidden p-1.5 rounded-full cursor-pointer transition-colors ${
+   337→              scrolled ? 'text-foreground hover:bg-black/5' : 'hover:bg-white/10'
+   338→            }`}
+   339→            style={!scrolled ? { color: 'white' } : undefined}
+   340→            aria-label="Toggle menu"
+   341→          >
+   342→            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+   343→          </button>
+   344→        </motion.nav>
+   345→      </header>
+   346→
+   347→      {/* Mobile menu — full-screen overlay */}
+   348→      <AnimatePresence>
+   349→        {mobileMenuOpen && (
+   350→          <motion.div
+   351→            initial={{ opacity: 0 }}
+   352→            animate={{ opacity: 1 }}
+   353→            exit={{ opacity: 0 }}
+   354→            transition={{ duration: 0.25 }}
+   355→            className="fixed inset-0 z-40 bg-blue-950/95 backdrop-blur-2xl md:hidden"
+   356→          >
+   357→            <div className="flex flex-col items-center justify-center h-full gap-2">
+   358→              {navLinks.map((id, i) => (
+   359→                <motion.button
+   360→                  key={id}
+   361→                  initial={{ opacity: 0, y: 20 }}
+   362→                  animate={{ opacity: 1, y: 0 }}
+   363→                  exit={{ opacity: 0, y: 10 }}
+   364→                  transition={{ ...gentleSpring, delay: 0.05 + i * 0.06 }}
+   365→                  onClick={() => scrollTo(id)}
+   366→                  className="text-2xl font-semibold text-white/80 hover:text-white transition-colors capitalize cursor-pointer py-3"
+   367→                >
+   368→                  {id === 'about' ? 'Built for Africa' : id}
+   369→                </motion.button>
+   370→              ))}
+   371→              <motion.div
+   372→                initial={{ opacity: 0, y: 20 }}
+   373→                animate={{ opacity: 1, y: 0 }}
+   374→                exit={{ opacity: 0, y: 10 }}
+   375→                transition={{ ...gentleSpring, delay: 0.05 + navLinks.length * 0.06 }}
+   376→                className="mt-4"
+   377→              >
+   378→                <Button
+   379→                  onClick={() => scrollTo('waitlist-section')}
+   380→                  className="rounded-full bg-orange-600 hover:bg-orange-700 text-white font-semibold cursor-pointer shadow-lg shadow-orange-600/30 px-8"
+   381→                >
+   382→                  Join the Waitlist
+   383→                  <ArrowRight className="ml-2 h-4 w-4" />
+   384→                </Button>
+   385→              </motion.div>
+   386→            </div>
+   387→          </motion.div>
+   388→        )}
+   389→      </AnimatePresence>
+   390→
+   391→      <main className="flex-1">
+   392→        {/* ===================== HERO ===================== */}
+   393→        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen cursor-dot">
+   394→          {/* Background image */}
+   395→          <Image
+   396→            src="/images/hero-bg.png"
+   397→            alt=""
+   398→            fill
+   399→            className="object-cover object-center scale-105"
+   400→            priority
+   401→          />
+   402→          {/* Dark overlay — deep shade */}
+   403→          <div className="absolute inset-0 bg-black/80" />
+   404→          {/* Vignette for depth */}
+   405→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
+   406→
+   407→          {/* Content */}
+   408→          <motion.div
+   409→            style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
+   410→            className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
+   411→          >
+   412→            {/* Headline */}
+   413→            <motion.h1
+   414→              className="text-[1.9rem] sm:text-[2.6rem] md:text-[3.15rem] lg:text-[4.2rem] xl:text-[4.9rem] font-extrabold tracking-tight text-white leading-[0.95]"
+   415→              initial="hidden"
+   416→              animate="visible"
+   417→              variants={{
+   418→                hidden: {},
+   419→                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+   420→              }}
+   421→            >
+   422→              {/* Line 1: Complete Business */}
+   423→              <motion.span
+   424→                className="block text-white/80"
+   425→                variants={{
+   426→                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+   427→                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+   428→                }}
+   429→              >
+   430→                Complete Business
+   431→              </motion.span>
+   432→
+   433→              {/* Line 3: Visibility. — with orange accent */}
+   434→              <motion.span
+   435→                className="block bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent"
+   436→                variants={{
+   437→                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+   438→                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+   439→                }}
+   440→              >
+   441→                Visibility.
+   442→              </motion.span>
+   443→            </motion.h1>
+   444→
+   445→            {/* Subtitle */}
+   446→            <motion.p
+   447→              initial={{ opacity: 0, y: 20 }}
+   448→              animate={{ opacity: 1, y: 0 }}
+   449→              transition={{ ...smoothSpring, delay: 1.1 }}
+   450→              className="mt-8 sm:mt-10 text-sm sm:text-base text-white/40 max-w-xl mx-auto leading-relaxed"
+   451→            >
+   452→              Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   453→              Fleet Management, and Executive Reporting — giving organizations
+   454→              a single source of truth.
+   455→            </motion.p>
+   456→
+   457→            {/* Trust badges */}
+   458→            <motion.div
+   459→              className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
+   460→              initial="hidden"
+   461→              animate="visible"
+   462→              variants={{
+   463→                hidden: {},
+   464→                visible: { transition: { staggerChildren: 0.1, delayChildren: 1.3 } },
+   465→              }}
+   466→            >
+   467→              {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
+   468→                <motion.div
+   469→                  key={t}
+   470→                  className="flex items-center gap-1.5 text-[13px] text-white/25"
+   471→                  variants={{
+   472→                    hidden: { opacity: 0 },
+   473→                    visible: { opacity: 1, transition: { duration: 0.6 } },
+   474→                  }}
+   475→                >
+   476→                  <span className="w-1 h-1 rounded-full bg-orange-400/50" />
+   477→                  <span>{t}</span>
+   478→                </motion.div>
+   479→              ))}
+   480→            </motion.div>
+   481→          </motion.div>
+   482→
+   483→          {/* Floating "One Platform." badge — left */}
+   484→          <motion.div
+   485→            initial={{ opacity: 0, scale: 0.7 }}
+   486→            animate={{ opacity: 1, scale: 1 }}
+   487→            transition={{ ...snappySpring, delay: 0.8 }}
+   488→            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+   489→            style={{
+   490→              bottom: '18%',
+   491→              left: '8%',
+   492→            }}
+   493→          >
+   494→            <motion.div
+   495→              animate={{ y: [0, -6, 0] }}
+   496→              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+   497→            >
+   498→              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+   499→                <Layers className="w-4 h-4 text-blue-400" />
+   500→              </div>
+   501→            </motion.div>
+   502→            <span className="text-white text-base font-semibold tracking-tight">One Platform.</span>
+   503→          </motion.div>
+   504→
+   505→          {/* Floating "One Login." badge — right */}
+   506→          <motion.div
+   507→            initial={{ opacity: 0, scale: 0.7 }}
+   508→            animate={{ opacity: 1, scale: 1 }}
+   509→            transition={{ ...snappySpring, delay: 1.0 }}
+   510→            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+   511→            style={{
+   512→              bottom: '18%',
+   513→              right: '8%',
+   514→            }}
+   515→          >
+   516→            <motion.div
+   517→              animate={{ y: [0, -6, 0] }}
+   518→              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+   519→            >
+   520→              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+   521→                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+   522→                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+   523→                </svg>
+   524→              </div>
+   525→            </motion.div>
+   526→            <span className="text-white text-base font-semibold tracking-tight">One Login.</span>
+   527→          </motion.div>
+   528→
+   529→          {/* Scroll indicator */}
+   530→          <motion.div
+   531→            initial={{ opacity: 0 }}
+   532→            animate={{ opacity: 1 }}
+   533→            transition={{ delay: 2, duration: 1 }}
+   534→            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
+   535→          >
+   536→            <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
+   537→            <motion.div
+   538→              animate={{ y: [0, 6, 0] }}
+   539→              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   540→            >
+   541→              <ChevronDown className="h-5 w-5 text-white/25" />
+   542→            </motion.div>
+   543→          </motion.div>
+   544→
+   545→          {/* Curved bottom edge */}
+   546→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   547→            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   548→              <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+   549→            </svg>
+   550→          </div>
+   551→        </section>
+   552→
+   553→        {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
+   554→        <section className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
+   555→          <div className="max-w-5xl mx-auto px-6 sm:px-8">
+   556→            <Reveal>
+   557→              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">The Problem</p>
+   558→            </Reveal>
+   559→            <Reveal delay={0.1}>
+   560→              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight max-w-4xl">
+   561→                Why Workphelo Is Better
+   562→                <br className="hidden sm:block" />
+   563→                {' '}Than Traditional ERP Systems
+   564→              </h2>
+   565→            </Reveal>
+   566→            <Reveal delay={0.2}>
+   567→              <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+   568→                Most organizations in Ghana and Africa operate with multiple disconnected
+   569→                software solutions for HR, accounting, sales, operations, fleet management,
+   570→                and reporting. This creates inefficiencies, duplicate data entry, poor
+   571→                visibility, and higher operational costs.
+   572→              </p>
+   573→            </Reveal>
+   574→
+   575→            <Reveal delay={0.35} className="mt-14 sm:mt-20">
+   576→              <motion.div
+   577→                whileHover={{ y: -4, transition: snappySpring }}
+   578→                className="relative rounded-3xl bg-blue-200/60 border border-blue-300/60 p-8 sm:p-14"
+   579→              >
+   580→                <div className="absolute top-8 right-8 opacity-[0.07]">
+   581→                  <MonitorSmartphone className="h-36 w-36 text-blue-900" />
+   582→                </div>
+   583→                <div className="relative flex items-start gap-5">
+   584→                  <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20">
+   585→                    <Globe className="h-6 w-6 text-white" />
+   586→                  </div>
+   587→                  <div>
+   588→                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
+   589→                      Workphelo solves this by bringing all critical business
+   590→                      functions into a single integrated platform.
+   591→                    </h3>
+   592→                    <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-lg">
+   593→                      Unlike traditional setups where employees switch between multiple
+   594→                      applications for different tasks, Workphelo enables teams to work
+   595→                      from a single platform with one login, improving productivity and
+   596→                      collaboration across departments.
+   597→                    </p>
+   598→                  </div>
+   599→                </div>
+   600→              </motion.div>
+   601→            </Reveal>
+   602→          </div>
+   603→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   604→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   605→              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+   606→            </svg>
+   607→          </div>
+   608→        </section>
+   609→
+   610→        {/* ===================== MODULES ===================== */}
+   611→        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70 relative overflow-hidden cursor-dot">
+   612→          <div className="max-w-6xl mx-auto px-6 sm:px-8">
+   613→            <Reveal className="max-w-3xl mx-auto text-center">
+   614→              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Core Modules</p>
+   615→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+   616→                Everything Your Business Needs,
+   617→                <br className="hidden sm:block" /> In One Place
+   618→              </h2>
+   619→              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
+   620→                Four powerful modules designed to cover every aspect of your business operations — plus an AI-powered future on the horizon.
+   621→              </p>
+   622→            </Reveal>
+   623→
+   624→            <StaggerReveal className="mt-14 sm:mt-20 grid md:grid-cols-2 gap-5 lg:gap-7" variant={stagger}>
+   625→              {modules.map((mod) => {
+   626→                const Icon = mod.icon;
+   627→                return (
+   628→                  <StaggerItem key={mod.title}>
+   629→                    <motion.div
+   630→                      whileHover={{ y: -6, transition: snappySpring }}
+   631→                      className="group relative h-full bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-7 sm:p-9 transition-shadow duration-500"
+   632→                    >
+   633→                      {/* Top accent line */}
+   634→                      <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+   635→                      <div className="flex items-start gap-4 mb-6">
+   636→                        <div className={`shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br ${mod.color} flex items-center justify-center shadow-lg`}>
+   637→                          <Icon className="h-6 w-6 text-white" />
+   638→                        </div>
+   639→                        <h3 className="text-xl font-bold text-foreground pt-2">{mod.title}</h3>
+   640→                      </div>
+   641→                      <ul className="space-y-3">
+   642→                        {mod.features.map((f) => (
+   643→                          <li key={f} className="flex items-start gap-2.5">
+   644→                            <CheckCircle2 className={`shrink-0 h-[18px] w-[18px] mt-0.5 ${mod.textColor}`} />
+   645→                            <span className="text-[15px] text-muted-foreground leading-relaxed">{f}</span>
+   646→                          </li>
+   647→                        ))}
+   648→                      </ul>
+   649→                    </motion.div>
+   650→                  </StaggerItem>
+   651→                );
+   652→              })}
+   653→            </StaggerReveal>
+   654→
+   655→            {/* ========== AGENTIC AI MODULE — UPCOMING ========== */}
+   656→            <Reveal delay={0.3} className="mt-8">
+   657→              <motion.div
+   658→                whileHover={{ y: -4, transition: snappySpring }}
+   659→                className="relative rounded-3xl overflow-hidden border border-orange-200/60 bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-7 sm:p-10 lg:p-12"
+   660→              >
+   661→                {/* Animated glow */}
+   662→                <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
+   663→                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+   664→
+   665→                <div className="relative">
+   666→                  <div className="flex flex-col sm:flex-row sm:items-start gap-5 mb-8">
+   667→                    <div className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+   668→                      <Sparkles className="h-7 w-7 text-white" />
+   669→                    </div>
+   670→                    <div className="flex-1">
+   671→                      <div className="flex flex-wrap items-center gap-3 mb-2">
+   672→                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground">Agentic AI Module</h3>
+   673→                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold tracking-wide uppercase">
+   674→                          <span className="relative flex h-2 w-2">
+   675→                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+   676→                            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+   677→                          </span>
+   678→                          Coming Soon
+   679→                        </span>
+   680→                      </div>
+   681→                      <p className="text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-[17px]">
+   682→                        Intelligent AI Agents that work alongside your teams — automating tasks, surfacing insights, and making proactive recommendations across every department.
+   683→                      </p>
+   684→                    </div>
+   685→                  </div>
+   686→
+   687→                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+   688→                    {[
+   689→                      { dept: 'HR Agent', desc: 'Automate onboarding, leave approvals & performance reviews', icon: Users },
+   690→                      { dept: 'Accounting Agent', desc: 'Smart reconciliation, invoice processing & financial insights', icon: Calculator },
+   691→                      { dept: 'Marketing Agent', desc: 'Lead scoring, campaign optimization & follow-up automation', icon: Megaphone },
+   692→                      { dept: 'Operations Agent', desc: 'Process automation, inventory alerts & workflow triggers', icon: Settings },
+   693→                      { dept: 'Executive Agent', desc: 'AI-powered briefings, KPI monitoring & decision support', icon: BarChart3 },
+   694→                    ].map((agent) => {
+   695→                      const AgentIcon = agent.icon;
+   696→                      return (
+   697→                        <motion.div
+   698→                          key={agent.dept}
+   699→                          whileHover={{ y: -3, transition: snappySpring }}
+   700→                          className="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-100/80 p-4 sm:p-5 hover:shadow-lg hover:shadow-orange-500/[0.08] hover:border-orange-200 transition-all duration-300"
+   701→                        >
+   702→                          <div className="w-9 h-9 rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center mb-3 transition-colors duration-300">
+   703→                            <AgentIcon className="h-4.5 w-4.5 text-orange-600 group-hover:text-white transition-colors duration-300" />
+   704→                          </div>
+   705→                          <h4 className="font-semibold text-foreground text-sm sm:text-[15px] mb-1.5">{agent.dept}</h4>
+   706→                          <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed">{agent.desc}</p>
+   707→                        </motion.div>
+   708→                      );
+   709→                    })}
+   710→                  </div>
+   711→                </div>
+   712→              </motion.div>
+   713→            </Reveal>
+   714→          </div>
+   715→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   716→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   717→              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#ffffff"/>
+   718→            </svg>
+   719→          </div>
+   720→        </section>
+   721→        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden relative cursor-logo">
+   722→          <div className="max-w-6xl mx-auto px-6 sm:px-8">
+   723→            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+   724→              {/* Image */}
+   725→              <Reveal className="order-2 lg:order-1">
+   726→                <div className="relative">
+   727→                  <div className="absolute -inset-6 bg-blue-400/20 rounded-[2rem] blur-3xl opacity-50" />
+   728→                  <motion.div
+   729→                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-gray-100"
+   730→                    whileHover={{ scale: 1.01, transition: snappySpring }}
+   731→                  >
+   732→                    <Image
+   733→                      src="/images/dashboard-preview.png"
+   734→                      alt="Executive Dashboard Preview"
+   735→                      width={1344}
+   736→                      height={768}
+   737→                      className="w-full h-auto"
+   738→                    />
+   739→                  </motion.div>
+   740→                </div>
+   741→              </Reveal>
+   742→
+   743→              {/* Content */}
+   744→              <div className="order-1 lg:order-2">
+   745→                <Reveal>
+   746→                  <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Executive Dashboard</p>
+   747→                </Reveal>
+   748→                <Reveal delay={0.1}>
+   749→                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+   750→                    Better Decisions with
+   751→                    <br className="hidden sm:block" /> Real-Time Visibility
+   752→                  </h2>
+   753→                </Reveal>
+   754→                <Reveal delay={0.2}>
+   755→                  <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+   756→                    CEOs, Managing Directors, and Department Heads can access
+   757→                    real-time dashboards that provide:
+   758→                  </p>
+   759→                </Reveal>
+   760→                <StaggerReveal variant={slowStagger} className="mt-8 space-y-3.5">
+   761→                  {dashboardFeatures.map((f) => (
+   762→                    <StaggerItem key={f} className="flex items-center gap-3.5">
+   763→                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+   764→                      <span className="text-foreground font-medium text-[15px]">{f}</span>
+   765→                    </StaggerItem>
+   766→                  ))}
+   767→                </StaggerReveal>
+   768→                <Reveal delay={0.5}>
+   769→                  <p className="mt-8 text-muted-foreground leading-relaxed text-base">
+   770→                    This enables faster, data-driven decision-making and greater
+   771→                    organizational control.
+   772→                  </p>
+   773→                </Reveal>
+   774→              </div>
+   775→            </div>
+   776→          </div>
+   777→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   778→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   779→              <path d="M0 0L60 8C120 16 240 32 360 42.5C480 53 600 58 720 55C840 52 960 41 1080 35C1200 29 1320 28 1380 27.5L1440 27V100H0Z" fill="#172554"/>
+   780→            </svg>
+   781→          </div>
+   782→        </section>
+   783→
+   784→        {/* ===================== BENEFITS ===================== */}
+   785→        <section id="benefits" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
+   786→          {/* Dot texture */}
+   787→          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+   788→          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
+   789→
+   790→          <div className="relative max-w-6xl mx-auto px-6 sm:px-8">
+   791→            <Reveal className="max-w-3xl mx-auto text-center">
+   792→              <p className="text-sm font-semibold text-orange-400 tracking-widest uppercase mb-4">Key Benefits</p>
+   793→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+   794→                Reduced Costs.
+   795→                <br className="hidden sm:block" />
+   796→                {' '}Improved Efficiency.
+   797→              </h2>
+   798→              <p className="mt-6 text-lg text-white/45 max-w-2xl mx-auto">
+   799→                By replacing multiple standalone applications with a single integrated platform,
+   800→                organizations can transform how they work.
+   801→              </p>
+   802→            </Reveal>
+   803→
+   804→            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6" variant={stagger}>
+   805→              {benefits.map((b) => {
+   806→                const Icon = b.icon;
+   807→                return (
+   808→                  <StaggerItem key={b.title} variants={scaleIn}>
+   809→                    <motion.div
+   810→                      whileHover={{ y: -4, transition: snappySpring }}
+   811→                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-3xl p-7 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500"
+   812→                    >
+   813→                      <div className="w-11 h-11 rounded-2xl bg-orange-500/15 flex items-center justify-center mb-5 group-hover:bg-orange-500/25 transition-colors duration-500">
+   814→                        <Icon className="h-5 w-5 text-orange-400" />
+   815→                      </div>
+   816→                      <h3 className="text-lg font-semibold text-white mb-2.5">{b.title}</h3>
+   817→                      <p className="text-sm text-white/45 leading-relaxed">{b.desc}</p>
+   818→                    </motion.div>
+   819→                  </StaggerItem>
+   820→                );
+   821→              })}
+   822→            </StaggerReveal>
+   823→          </div>
+   824→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   825→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   826→              <path d="M0 100L60 85C120 70 240 40 360 27.5C480 15 600 20 720 27.5C840 35 960 45 1080 52.5C1200 60 1320 65 1380 67.5L1440 70V100H0Z" fill="#ffffff"/>
+   827→            </svg>
+   828→          </div>
+   829→        </section>
+   830→
+   831→        {/* ===================== BUILT FOR AFRICA ===================== */}
+   832→        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
+   833→          <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
+   834→            <Reveal>
+   835→              <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
+   836→                <Globe className="mr-1.5 h-3.5 w-3.5" />
+   837→                Built for African Businesses
+   838→              </Badge>
+   839→            </Reveal>
+   840→            <Reveal delay={0.1}>
+   841→              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+   842→                Enterprise-Grade Capabilities,{' '}
+   843→                <span className="text-orange-600">African-First Design</span>
+   844→              </h2>
+   845→            </Reveal>
+   846→            <Reveal delay={0.2}>
+   847→              <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+   848→                Workphelo is designed with the realities of African businesses in mind,
+   849→                providing enterprise-grade capabilities while remaining affordable,
+   850→                flexible, and easy to deploy.
+   851→              </p>
+   852→            </Reveal>
+   853→
+   854→            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-3 gap-6 lg:gap-8">
+   855→              {[
+   856→                { icon: Building2, label: 'Affordable', desc: 'Pricing that works for businesses of every size across Africa' },
+   857→                { icon: Settings, label: 'Flexible', desc: 'Highly customizable to match your specific workflow requirements' },
+   858→                { icon: Zap, label: 'Easy to Deploy', desc: 'Cloud-based with minimal setup time and no complex infrastructure' },
+   859→              ].map((item) => {
+   860→                const Icon = item.icon;
+   861→                return (
+   862→                  <StaggerItem key={item.label} variants={scaleIn}>
+   863→                    <motion.div
+   864→                      whileHover={{ y: -4, transition: snappySpring }}
+   865→                      className="rounded-3xl bg-stone-50 border border-gray-100 p-8 text-center h-full shadow-sm hover:shadow-md transition-shadow duration-500"
+   866→                    >
+   867→                      <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-300 flex items-center justify-center mb-5">
+   868→                        <Icon className="h-7 w-7 text-blue-900" />
+   869→                      </div>
+   870→                      <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
+   871→                      <p className="mt-2.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+   872→                    </motion.div>
+   873→                  </StaggerItem>
+   874→                );
+   875→              })}
+   876→            </StaggerReveal>
+   877→          </div>
+   878→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   879→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   880→              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+   881→            </svg>
+   882→          </div>
+   883→        </section>
+   884→
+   885→        {/* ===================== VALUE PROPOSITION ===================== */}
+   886→        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
+   887→          <div className="max-w-4xl mx-auto px-6 sm:px-8">
+   888→            <Reveal>
+   889→              <div className="relative rounded-3xl bg-white border border-gray-100 p-8 sm:p-14 lg:p-16 shadow-sm">
+   890→                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+   891→                  <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/30">
+   892→                    <Lock className="h-6 w-6 text-white" />
+   893→                  </div>
+   894→                </div>
+   895→                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mt-3 text-center">
+   896→                  Workphelo&apos;s Core Value Proposition
+   897→                </h2>
+   898→                <div className="mt-6 sm:mt-8 mx-auto max-w-2xl text-center">
+   899→                  <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed italic">
+   900→                    &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   901→                    Fleet Management, and Executive Reporting into one intelligent platform,
+   902→                    giving organizations a single source of truth, a single login, and a
+   903→                    complete view of their business.&rdquo;
+   904→                  </p>
+   905→                </div>
+   906→              </div>
+   907→            </Reveal>
+   908→          </div>
+   909→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   910→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+   911→              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#172554"/>
+   912→            </svg>
+   913→          </div>
+   914→        </section>
+   915→
+   916→        {/* ===================== WAITLIST CTA ===================== */}
+   917→        <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
+   918→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
+   919→
+   920→          <div className="relative max-w-3xl mx-auto px-6 sm:px-8 text-center">
+   921→            <Reveal>
+   922→              <Badge variant="secondary" className="mb-5 bg-orange-500/15 text-orange-300 border-orange-500/20">
+   923→                Early Access
+   924→              </Badge>
+   925→            </Reveal>
+   926→            <Reveal delay={0.1}>
+   927→              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+   928→                Be Among the First to
+   929→                <br className="hidden sm:block" />
+   930→                {' '}Experience Workphelo
+   931→              </h2>
+   932→            </Reveal>
+   933→            <Reveal delay={0.2}>
+   934→              <p className="mt-6 text-lg text-white/45 max-w-xl mx-auto">
+   935→                Join our waitlist and get priority access when we launch. Help shape the
+   936→                future of business management in Africa.
+   937→              </p>
+   938→            </Reveal>
+   939→            <Reveal delay={0.35} className="mt-10 sm:mt-14">
+   940→              <WaitlistForm variant="section" />
+   941→            </Reveal>
+   942→          </div>
+   943→        </section>
+   944→      </main>
+   945→
+   946→      {/* ===================== FOOTER ===================== */}
+   947→      <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06] cursor-dot">
+   948→        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-16 lg:py-20">
+   949→          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+   950→            {/* Brand */}
+   951→            <div className="sm:col-span-2 lg:col-span-1">
+   952→              <div className="mb-5">
+   953→                <Image
+   954→                  src="/images/workphelo-logo.png"
+   955→                  alt="Workphelo"
+   956→                  width={120}
+   957→                  height={32}
+   958→                  className="h-8 w-auto brightness-0 invert"
+   959→                />
+   960→              </div>
+   961→              <p className="text-sm leading-relaxed max-w-xs text-white/40">
+   962→                The all-in-one ERP platform built for African businesses. Unified,
+   963→                intelligent, and affordable.
+   964→              </p>
+   965→            </div>
+   966→
+   967→            {/* Modules */}
+   968→            <div>
+   969→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Modules</h4>
+   970→              <ul className="space-y-1 text-sm">
+   971→                {['HR Management', 'Marketing & BD', 'Accounting', 'Operations'].map((m) => (
+   972→                  <li key={m}>
+   973→                    <button onClick={() => scrollTo('modules')} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+   974→                      {m}
+   975→                    </button>
+   976→                  </li>
+   977→                ))}
+   978→              </ul>
+   979→            </div>
+   980→
+   981→            {/* Company */}
+   982→            <div>
+   983→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Company</h4>
+   984→              <ul className="space-y-1 text-sm">
+   985→                {[
+   986→                  { label: 'About', id: 'about' },
+   987→                  { label: 'Benefits', id: 'benefits' },
+   988→                  { label: 'Dashboard', id: 'dashboard' },
+   989→                  { label: 'Waitlist', id: 'waitlist-section' },
+   990→                ].map((item) => (
+   991→                  <li key={item.label}>
+   992→                    <button onClick={() => scrollTo(item.id)} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+   993→                      {item.label}
+   994→                    </button>
+   995→                  </li>
+   996→                ))}
+   997→              </ul>
+   998→            </div>
+   999→
+  1000→            {/* Contact */}
+  1001→            <div>
+  1002→              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Powered By</h4>
+  1003→              <p className="text-sm leading-relaxed text-white/40">
+  1004→                <span className="text-white/80 font-semibold">Datrix Tech Solutions</span>
+  1005→                <br />
+  1006→                Enterprise software for the African market.
+  1007→              </p>
+  1008→              <div className="mt-5">
+  1009→                <Button
+  1010→                  variant="outline"
+  1011→                  size="sm"
+  1012→                  onClick={() => scrollTo('waitlist-section')}
+  1013→                  className="rounded-full border-orange-500/30 text-orange-300 hover:bg-orange-500/10 hover:text-orange-200 hover:border-orange-500/50 min-h-[44px] cursor-pointer"
+  1014→                >
+  1015→                  Join Waitlist
+  1016→                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+  1017→                </Button>
+  1018→              </div>
+  1019→            </div>
+  1020→          </div>
+  1021→
+  1022→          <Separator className="my-10 bg-white/[0.06]" />
+  1023→
+  1024→          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/25">
+  1025→            <p>&copy; {new Date().getFullYear()} Datrix Tech Solutions. All rights reserved.</p>
+  1026→            <p>Workphelo ERP — Built for Africa, Ready for the World.</p>
+  1027→          </div>
+  1028→        </div>
+  1029→      </footer>
+  1030→    </div>
+  1031→  );
+  1032→}

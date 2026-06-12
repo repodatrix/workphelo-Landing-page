@@ -156,3 +156,112 @@
   ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
 }
+
+/* ================================================================== */
+/*  ANIMATION KEYFRAMES                                                 */
+/* ================================================================== */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes border-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+
+@keyframes line-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 6s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+.animate-line-grow {
+  animation: line-grow 0.8s ease-out forwards;
+  transform-origin: left;
+}
+
+/* Gradient border animation for AI module */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-gradient-border {
+  position: relative;
+  border: none !important;
+}
+
+.animated-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--angle), #f97316, #f59e0b, #3b82f6, #f97316);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-rotate 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Mobile touch-friendly */
+@media (max-width: 767px) {
+  .cursor-logo,
+  .cursor-dot,
+  .cursor-logo a,
+  .cursor-logo button,
+  .cursor-logo [role="button"],
+  .cursor-logo input,
+  .cursor-logo select,
+  .cursor-logo textarea,
+  .cursor-dot a,
+  .cursor-dot button,
+  .cursor-dot [role="button"],
+  .cursor-dot input,
+  .cursor-dot select,
+  .cursor-dot textarea {
+    cursor: auto !important;
+  }
+}

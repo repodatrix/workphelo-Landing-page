@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { WaitlistForm } from '@/components/waitlist-form';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 /* ================================================================== */
 /*  ANIMATION CONFIG                                                   */
@@ -65,6 +65,36 @@ const stagger = {
 const slowStagger = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+};
+
+/* -- Variant: slide in from left ------------------------------------ */
+const slideInLeft = {
+  hidden: { opacity: 0, x: -40, filter: 'blur(4px)' },
+  visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+};
+
+/* -- Variant: slide in from right ----------------------------------- */
+const slideInRight = {
+  hidden: { opacity: 0, x: 40, filter: 'blur(4px)' },
+  visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+};
+
+/* -- Variant: fade in scale ------------------------------------------ */
+const fadeInScale = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1 },
+};
+
+/* -- Variant: stagger from bottom ------------------------------------ */
+const staggerBottom = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+
+/* -- Stagger config for AI agent cards ------------------------------ */
+const aiAgentStagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.4 } },
 };
 
 /* ================================================================== */
@@ -146,6 +176,55 @@ function ScrollProgress() {
       style={{ scaleX: scrollYProgress }}
     />
   );
+}
+
+/** Animated section label with growing underline */
+function SectionLabel({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return (
+    <Reveal className="inline-flex flex-col items-start">
+      <p className={`text-sm font-semibold tracking-widest uppercase mb-1 ${light ? 'text-orange-400' : 'text-orange-600'}`}>
+        {children}
+      </p>
+      <motion.div
+        className="h-[2px] rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+        initial={{ scaleX: 0, originX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ ...smoothSpring, delay: 0.15 }}
+        style={{ width: '3rem' }}
+      />
+    </Reveal>
+  );
+}
+
+/** Animated count-up number */
+function CountUp({ target, duration = 2, suffix = '' }: { target: number; duration?: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const start = performance.now();
+          const step = (now: number) => {
+            const progress = Math.min((now - start) / (duration * 1000), 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
 }
 
 /* ================================================================== */
@@ -390,7 +469,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* ===================== HERO ===================== */}
-        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen cursor-dot">
+        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen min-h-[100svh] cursor-dot">
           {/* Background image */}
           <Image
             src="/images/hero-bg.png"
@@ -399,8 +478,9 @@ export default function HomePage() {
             className="object-cover object-center scale-105"
             priority
           />
-          {/* Dark overlay — deep shade */}
+          {/* Dark overlay — deep shade with subtle animated gradient */}
           <div className="absolute inset-0 bg-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-950/30 via-transparent to-orange-950/20 animate-gradient-shift" />
           {/* Vignette for depth */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
 
@@ -480,7 +560,7 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
 
-          {/* Floating "One Platform." badge — left */}
+          {/* Floating "One Platform." badge — left (desktop) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -502,7 +582,7 @@ export default function HomePage() {
             <span className="text-white text-base font-semibold tracking-tight">One Platform.</span>
           </motion.div>
 
-          {/* Floating "One Login." badge — right */}
+          {/* Floating "One Login." badge — right (desktop) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -526,7 +606,45 @@ export default function HomePage() {
             <span className="text-white text-base font-semibold tracking-tight">One Login.</span>
           </motion.div>
 
-          {/* Scroll indicator */}
+          {/* Mobile floating badges — stacked at bottom */}
+          <div className="absolute z-20 bottom-28 left-0 right-0 flex flex-col items-center gap-3 lg:hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...gentleSpring, delay: 1.2 }}
+              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
+            >
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Layers className="w-3 h-3 text-blue-400" />
+                </div>
+              </motion.div>
+              <span className="text-white text-sm font-semibold">One Platform.</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...gentleSpring, delay: 1.4 }}
+              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
+            >
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              >
+                <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                  </svg>
+                </div>
+              </motion.div>
+              <span className="text-white text-sm font-semibold">One Login.</span>
+            </motion.div>
+          </div>
+
+          {/* Scroll indicator — desktop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -542,6 +660,27 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
 
+          {/* Scroll indicator — mobile */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2, duration: 1 }}
+            className="absolute bottom-14 left-1/2 -translate-x-1/2 z-10 lg:hidden"
+          >
+            <motion.div
+              animate={{ y: [0, 5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <div className="w-8 h-12 rounded-full border-2 border-white/20 flex items-start justify-center pt-2">
+                <motion.div
+                  className="w-1 h-2.5 rounded-full bg-white/50"
+                  animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+
           {/* Curved bottom edge */}
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
             <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
@@ -551,20 +690,20 @@ export default function HomePage() {
         </section>
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
-        <section className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
-          <div className="max-w-5xl mx-auto px-6 sm:px-8">
+        <section className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+          <div className="max-w-5xl mx-auto px-5 sm:px-8">
             <Reveal>
-              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">The Problem</p>
+              <SectionLabel>The Problem</SectionLabel>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight max-w-4xl">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight max-w-4xl">
                 Why Workphelo Is Better
                 <br className="hidden sm:block" />
                 {' '}Than Traditional ERP Systems
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+              <p className="mt-5 sm:mt-8 text-base sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
                 Most organizations in Ghana and Africa operate with multiple disconnected
                 software solutions for HR, accounting, sales, operations, fleet management,
                 and reporting. This creates inefficiencies, duplicate data entry, poor
@@ -572,24 +711,25 @@ export default function HomePage() {
               </p>
             </Reveal>
 
-            <Reveal delay={0.35} className="mt-14 sm:mt-20">
+            <Reveal delay={0.35} className="mt-10 sm:mt-16">
               <motion.div
                 whileHover={{ y: -4, transition: snappySpring }}
-                className="relative rounded-3xl bg-blue-200/60 border border-blue-300/60 p-8 sm:p-14"
+                whileTap={{ scale: 0.99 }}
+                className="relative rounded-2xl sm:rounded-3xl bg-blue-200/60 border border-blue-300/60 p-6 sm:p-14"
               >
-                <div className="absolute top-8 right-8 opacity-[0.07]">
-                  <MonitorSmartphone className="h-36 w-36 text-blue-900" />
+                <div className="absolute top-6 right-6 sm:top-8 sm:right-8 opacity-[0.07]">
+                  <MonitorSmartphone className="h-28 w-28 sm:h-36 sm:w-36 text-blue-900" />
                 </div>
-                <div className="relative flex items-start gap-5">
+                <div className="relative flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
                   <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20">
                     <Globe className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
+                    <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
                       Workphelo solves this by bringing all critical business
                       functions into a single integrated platform.
                     </h3>
-                    <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-lg">
+                    <p className="mt-3 sm:mt-4 text-muted-foreground leading-relaxed max-w-2xl text-sm sm:text-lg">
                       Unlike traditional setups where employees switch between multiple
                       applications for different tasks, Workphelo enables teams to work
                       from a single platform with one login, improving productivity and
@@ -608,27 +748,28 @@ export default function HomePage() {
         </section>
 
         {/* ===================== MODULES ===================== */}
-        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70 relative overflow-hidden cursor-dot">
-          <div className="max-w-6xl mx-auto px-6 sm:px-8">
+        <section id="modules" className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8">
             <Reveal className="max-w-3xl mx-auto text-center">
-              <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Core Modules</p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+              <SectionLabel>Core Modules</SectionLabel>
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mt-3">
                 Everything Your Business Needs,
                 <br className="hidden sm:block" /> In One Place
               </h2>
-              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto">
+              <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
                 Four powerful modules designed to cover every aspect of your business operations — plus an AI-powered future on the horizon.
               </p>
             </Reveal>
 
-            <StaggerReveal className="mt-14 sm:mt-20 grid md:grid-cols-2 gap-5 lg:gap-7" variant={stagger}>
+            <StaggerReveal className="mt-10 sm:mt-16 grid md:grid-cols-2 gap-4 sm:gap-5 lg:gap-7" variant={stagger}>
               {modules.map((mod) => {
                 const Icon = mod.icon;
                 return (
                   <StaggerItem key={mod.title}>
                     <motion.div
                       whileHover={{ y: -6, transition: snappySpring }}
-                      className="group relative h-full bg-white rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-7 sm:p-9 transition-shadow duration-500"
+                      whileTap={{ scale: 0.98 }}
+                      className="group relative h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-5 sm:p-9 transition-shadow duration-500"
                     >
                       {/* Top accent line */}
                       <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -653,24 +794,37 @@ export default function HomePage() {
             </StaggerReveal>
 
             {/* ========== AGENTIC AI MODULE — UPCOMING ========== */}
-            <Reveal delay={0.3} className="mt-8">
+            <Reveal delay={0.3} className="mt-6 sm:mt-8">
               <motion.div
                 whileHover={{ y: -4, transition: snappySpring }}
-                className="relative rounded-3xl overflow-hidden border border-orange-200/60 bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-7 sm:p-10 lg:p-12"
+                whileTap={{ scale: 0.995 }}
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-5 sm:p-10 lg:p-12 animated-gradient-border"
               >
                 {/* Animated glow */}
-                <div className="absolute -top-20 -right-20 w-64 h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+                <motion.div
+                  className="absolute -top-20 -right-20 w-48 h-48 sm:w-64 sm:h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none"
+                  animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                <motion.div
+                  className="absolute -bottom-20 -left-20 w-48 h-48 sm:w-64 sm:h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"
+                  animate={{ scale: [1.1, 0.95, 1.1], opacity: [0.4, 0.7, 0.4] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+                />
 
                 <div className="relative">
-                  <div className="flex flex-col sm:flex-row sm:items-start gap-5 mb-8">
-                    <div className="shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                      <Sparkles className="h-7 w-7 text-white" />
-                    </div>
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 mb-6 sm:mb-8">
+                    <motion.div
+                      className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20"
+                      animate={{ rotate: [0, 3, -3, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                    </motion.div>
                     <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3 mb-2">
-                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground">Agentic AI Module</h3>
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold tracking-wide uppercase">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Agentic AI Module</h3>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 text-[11px] sm:text-xs font-semibold tracking-wide uppercase">
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
@@ -678,13 +832,13 @@ export default function HomePage() {
                           Coming Soon
                         </span>
                       </div>
-                      <p className="text-muted-foreground leading-relaxed max-w-2xl text-base sm:text-[17px]">
+                      <p className="text-muted-foreground leading-relaxed max-w-2xl text-sm sm:text-[17px]">
                         Intelligent AI Agents that work alongside your teams — automating tasks, surfacing insights, and making proactive recommendations across every department.
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                  <StaggerReveal className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4" variant={aiAgentStagger}>
                     {[
                       { dept: 'HR Agent', desc: 'Automate onboarding, leave approvals & performance reviews', icon: Users },
                       { dept: 'Accounting Agent', desc: 'Smart reconciliation, invoice processing & financial insights', icon: Calculator },
@@ -694,20 +848,22 @@ export default function HomePage() {
                     ].map((agent) => {
                       const AgentIcon = agent.icon;
                       return (
-                        <motion.div
-                          key={agent.dept}
-                          whileHover={{ y: -3, transition: snappySpring }}
-                          className="group relative bg-white/80 backdrop-blur-sm rounded-2xl border border-orange-100/80 p-4 sm:p-5 hover:shadow-lg hover:shadow-orange-500/[0.08] hover:border-orange-200 transition-all duration-300"
-                        >
-                          <div className="w-9 h-9 rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center mb-3 transition-colors duration-300">
-                            <AgentIcon className="h-4.5 w-4.5 text-orange-600 group-hover:text-white transition-colors duration-300" />
-                          </div>
-                          <h4 className="font-semibold text-foreground text-sm sm:text-[15px] mb-1.5">{agent.dept}</h4>
-                          <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed">{agent.desc}</p>
-                        </motion.div>
+                        <StaggerItem key={agent.dept} variants={fadeInScale}>
+                          <motion.div
+                            whileHover={{ y: -3, transition: snappySpring }}
+                            whileTap={{ scale: 0.97 }}
+                            className="group relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-orange-100/80 p-3.5 sm:p-5 hover:shadow-lg hover:shadow-orange-500/[0.08] hover:border-orange-200 transition-all duration-300 h-full"
+                          >
+                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center mb-2.5 sm:mb-3 transition-colors duration-300">
+                              <AgentIcon className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-orange-600 group-hover:text-white transition-colors duration-300" />
+                            </div>
+                            <h4 className="font-semibold text-foreground text-xs sm:text-sm lg:text-[15px] mb-1 sm:mb-1.5">{agent.dept}</h4>
+                            <p className="text-[11px] sm:text-[13px] text-muted-foreground leading-relaxed hidden sm:block">{agent.desc}</p>
+                          </motion.div>
+                        </StaggerItem>
                       );
                     })}
-                  </div>
+                  </StaggerReveal>
                 </div>
               </motion.div>
             </Reveal>
@@ -718,15 +874,26 @@ export default function HomePage() {
             </svg>
           </div>
         </section>
-        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden relative cursor-logo">
-          <div className="max-w-6xl mx-auto px-6 sm:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <section id="dashboard" className="py-20 sm:py-28 lg:py-36 bg-white overflow-hidden relative cursor-logo">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8">
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
               {/* Image */}
-              <Reveal className="order-2 lg:order-1">
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-60px' }}
+                variants={slideInLeft}
+                transition={{ ...smoothSpring, delay: 0.1 }}
+                className="order-2 lg:order-1"
+              >
                 <div className="relative">
-                  <div className="absolute -inset-6 bg-blue-400/20 rounded-[2rem] blur-3xl opacity-50" />
                   <motion.div
-                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-gray-100"
+                    className="absolute -inset-4 sm:-inset-6 bg-blue-400/20 rounded-[1.5rem] sm:rounded-[2rem] blur-3xl"
+                    animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.98, 1.02, 0.98] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                  <motion.div
+                    className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-gray-100"
                     whileHover={{ scale: 1.01, transition: snappySpring }}
                   >
                     <Image
@@ -738,30 +905,48 @@ export default function HomePage() {
                     />
                   </motion.div>
                 </div>
-              </Reveal>
+              </motion.div>
 
               {/* Content */}
               <div className="order-1 lg:order-2">
-                <Reveal>
-                  <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Executive Dashboard</p>
-                </Reveal>
-                <Reveal delay={0.1}>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '-60px' }}
+                  variants={slideInRight}
+                  transition={{ ...smoothSpring }}
+                >
+                  <SectionLabel>Executive Dashboard</SectionLabel>
+                </motion.div>
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '-60px' }}
+                  variants={slideInRight}
+                  transition={{ ...smoothSpring, delay: 0.1 }}
+                >
+                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
                     Better Decisions with
                     <br className="hidden sm:block" /> Real-Time Visibility
                   </h2>
-                </Reveal>
-                <Reveal delay={0.2}>
-                  <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
+                </motion.div>
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: '-60px' }}
+                  variants={slideInRight}
+                  transition={{ ...smoothSpring, delay: 0.2 }}
+                >
+                  <p className="mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed">
                     CEOs, Managing Directors, and Department Heads can access
                     real-time dashboards that provide:
                   </p>
-                </Reveal>
-                <StaggerReveal variant={slowStagger} className="mt-8 space-y-3.5">
+                </motion.div>
+                <StaggerReveal variant={slowStagger} className="mt-6 sm:mt-8 space-y-3 sm:space-y-3.5">
                   {dashboardFeatures.map((f) => (
-                    <StaggerItem key={f} className="flex items-center gap-3.5">
+                    <StaggerItem key={f} className="flex items-center gap-3 sm:gap-3.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-                      <span className="text-foreground font-medium text-[15px]">{f}</span>
+                      <span className="text-foreground font-medium text-sm sm:text-[15px]">{f}</span>
                     </StaggerItem>
                   ))}
                 </StaggerReveal>
@@ -782,33 +967,38 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BENEFITS ===================== */}
-        <section id="benefits" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
+        <section id="benefits" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
           {/* Dot texture */}
           <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
+          <motion.div
+            className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
-          <div className="relative max-w-6xl mx-auto px-6 sm:px-8">
+          <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
             <Reveal className="max-w-3xl mx-auto text-center">
-              <p className="text-sm font-semibold text-orange-400 tracking-widest uppercase mb-4">Key Benefits</p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+              <SectionLabel light>Key Benefits</SectionLabel>
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mt-3">
                 Reduced Costs.
                 <br className="hidden sm:block" />
                 {' '}Improved Efficiency.
               </h2>
-              <p className="mt-6 text-lg text-white/45 max-w-2xl mx-auto">
+              <p className="mt-4 sm:mt-6 text-base sm:text-lg text-white/45 max-w-2xl mx-auto">
                 By replacing multiple standalone applications with a single integrated platform,
                 organizations can transform how they work.
               </p>
             </Reveal>
 
-            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6" variant={stagger}>
+            <StaggerReveal className="mt-10 sm:mt-16 grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6" variant={stagger}>
               {benefits.map((b) => {
                 const Icon = b.icon;
                 return (
                   <StaggerItem key={b.title} variants={scaleIn}>
                     <motion.div
                       whileHover={{ y: -4, transition: snappySpring }}
-                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-3xl p-7 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500"
+                      whileTap={{ scale: 0.98 }}
+                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500"
                     >
                       <div className="w-11 h-11 rounded-2xl bg-orange-500/15 flex items-center justify-center mb-5 group-hover:bg-orange-500/25 transition-colors duration-500">
                         <Icon className="h-5 w-5 text-orange-400" />
@@ -829,8 +1019,8 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BUILT FOR AFRICA ===================== */}
-        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
-          <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
+        <section id="about" className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+          <div className="max-w-5xl mx-auto px-5 sm:px-8 text-center">
             <Reveal>
               <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
                 <Globe className="mr-1.5 h-3.5 w-3.5" />
@@ -838,20 +1028,20 @@ export default function HomePage() {
               </Badge>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
                 Enterprise-Grade Capabilities,{' '}
                 <span className="text-orange-600">African-First Design</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+              <p className="mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                 Workphelo is designed with the realities of African businesses in mind,
                 providing enterprise-grade capabilities while remaining affordable,
                 flexible, and easy to deploy.
               </p>
             </Reveal>
 
-            <StaggerReveal className="mt-14 sm:mt-20 grid sm:grid-cols-3 gap-6 lg:gap-8">
+            <StaggerReveal className="mt-10 sm:mt-16 grid sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {[
                 { icon: Building2, label: 'Affordable', desc: 'Pricing that works for businesses of every size across Africa' },
                 { icon: Settings, label: 'Flexible', desc: 'Highly customizable to match your specific workflow requirements' },
@@ -862,13 +1052,17 @@ export default function HomePage() {
                   <StaggerItem key={item.label} variants={scaleIn}>
                     <motion.div
                       whileHover={{ y: -4, transition: snappySpring }}
-                      className="rounded-3xl bg-stone-50 border border-gray-100 p-8 text-center h-full shadow-sm hover:shadow-md transition-shadow duration-500"
+                      whileTap={{ scale: 0.98 }}
+                      className="rounded-2xl sm:rounded-3xl bg-stone-50 border border-gray-100 p-6 sm:p-8 text-center h-full shadow-sm hover:shadow-md transition-shadow duration-500"
                     >
-                      <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-300 flex items-center justify-center mb-5">
-                        <Icon className="h-7 w-7 text-blue-900" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
-                      <p className="mt-2.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <motion.div
+                        className="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-300 flex items-center justify-center mb-4 sm:mb-5"
+                        whileHover={{ rotate: [0, -8, 8, 0], transition: { duration: 0.5 } }}
+                      >
+                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-blue-900" />
+                      </motion.div>
+                      <h3 className="text-base sm:text-lg font-semibold text-foreground">{item.label}</h3>
+                      <p className="mt-2 sm:mt-2.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
                     </motion.div>
                   </StaggerItem>
                 );
@@ -883,25 +1077,37 @@ export default function HomePage() {
         </section>
 
         {/* ===================== VALUE PROPOSITION ===================== */}
-        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
-          <div className="max-w-4xl mx-auto px-6 sm:px-8">
+        <section className="py-16 sm:py-24 lg:py-32 bg-stone-50/70 relative overflow-hidden cursor-dot">
+          <div className="max-w-4xl mx-auto px-5 sm:px-8">
             <Reveal>
-              <div className="relative rounded-3xl bg-white border border-gray-100 p-8 sm:p-14 lg:p-16 shadow-sm">
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
-                  <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/30">
-                    <Lock className="h-6 w-6 text-white" />
+              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-gray-100 p-6 sm:p-14 lg:p-16 shadow-sm overflow-hidden">
+                {/* Subtle glow behind lock icon */}
+                <motion.div
+                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"
+                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                />
+                <div className="relative">
+                  <div className="absolute -top-5 sm:-top-6 left-1/2 -translate-x-1/2">
+                    <motion.div
+                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/30"
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Lock className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    </motion.div>
                   </div>
-                </div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mt-3 text-center">
-                  Workphelo&apos;s Core Value Proposition
-                </h2>
-                <div className="mt-6 sm:mt-8 mx-auto max-w-2xl text-center">
-                  <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed italic">
-                    &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
-                    Fleet Management, and Executive Reporting into one intelligent platform,
-                    giving organizations a single source of truth, a single login, and a
-                    complete view of their business.&rdquo;
-                  </p>
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground mt-3 text-center">
+                    Workphelo&apos;s Core Value Proposition
+                  </h2>
+                  <div className="mt-5 sm:mt-8 mx-auto max-w-2xl text-center">
+                    <p className="text-base sm:text-xl text-muted-foreground leading-relaxed italic">
+                      &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+                      Fleet Management, and Executive Reporting into one intelligent platform,
+                      giving organizations a single source of truth, a single login, and a
+                      complete view of their business.&rdquo;
+                    </p>
+                  </div>
                 </div>
               </div>
             </Reveal>
@@ -914,29 +1120,52 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
+        <section id="waitlist-cta" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
+          {/* Pulsing glow behind form */}
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-[100px]"
+            animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
-          <div className="relative max-w-3xl mx-auto px-6 sm:px-8 text-center">
+          <div className="relative max-w-3xl mx-auto px-5 sm:px-8 text-center">
             <Reveal>
               <Badge variant="secondary" className="mb-5 bg-orange-500/15 text-orange-300 border-orange-500/20">
                 Early Access
               </Badge>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                 Be Among the First to
                 <br className="hidden sm:block" />
                 {' '}Experience Workphelo
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="mt-6 text-lg text-white/45 max-w-xl mx-auto">
+              <p className="mt-5 sm:mt-6 text-base sm:text-lg text-white/45 max-w-xl mx-auto">
                 Join our waitlist and get priority access when we launch. Help shape the
                 future of business management in Africa.
               </p>
             </Reveal>
-            <Reveal delay={0.35} className="mt-10 sm:mt-14">
+
+            {/* Stats row */}
+            <Reveal delay={0.3} className="mt-8 sm:mt-10 flex justify-center gap-8 sm:gap-12">
+              {[
+                { value: 5, suffix: '+', label: 'Core Modules' },
+                { value: 1, suffix: '', label: 'Unified Platform' },
+                { value: 24, suffix: '/7', label: 'Cloud Access' },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <div className="text-2xl sm:text-3xl font-bold text-white">
+                    <CountUp target={stat.value} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-xs sm:text-sm text-white/30 mt-1">{stat.label}</div>
+                </div>
+              ))}
+            </Reveal>
+
+            <Reveal delay={0.4} className="mt-8 sm:mt-12">
               <WaitlistForm variant="section" />
             </Reveal>
           </div>
@@ -945,17 +1174,17 @@ export default function HomePage() {
 
       {/* ===================== FOOTER ===================== */}
       <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06] cursor-dot">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-16 lg:py-20">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14 lg:py-20">
+          <StaggerReveal className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10" variant={staggerBottom}>
             {/* Brand */}
-            <div className="sm:col-span-2 lg:col-span-1">
-              <div className="mb-5">
+            <div className="col-span-2 lg:col-span-1">
+              <div className="mb-4 sm:mb-5">
                 <Image
                   src="/images/workphelo-logo.png"
                   alt="Workphelo"
                   width={120}
                   height={32}
-                  className="h-8 w-auto brightness-0 invert"
+                  className="h-7 sm:h-8 w-auto brightness-0 invert"
                 />
               </div>
               <p className="text-sm leading-relaxed max-w-xs text-white/40">
@@ -966,13 +1195,17 @@ export default function HomePage() {
 
             {/* Modules */}
             <div>
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Modules</h4>
+              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Modules</h4>
               <ul className="space-y-1 text-sm">
                 {['HR Management', 'Marketing & BD', 'Accounting', 'Operations'].map((m) => (
                   <li key={m}>
-                    <button onClick={() => scrollTo('modules')} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+                    <motion.button
+                      onClick={() => scrollTo('modules')}
+                      whileTap={{ scale: 0.97 }}
+                      className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer min-h-[44px] flex items-center"
+                    >
                       {m}
-                    </button>
+                    </motion.button>
                   </li>
                 ))}
               </ul>
@@ -980,7 +1213,7 @@ export default function HomePage() {
 
             {/* Company */}
             <div>
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Company</h4>
+              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Company</h4>
               <ul className="space-y-1 text-sm">
                 {[
                   { label: 'About', id: 'about' },
@@ -989,23 +1222,27 @@ export default function HomePage() {
                   { label: 'Waitlist', id: 'waitlist-section' },
                 ].map((item) => (
                   <li key={item.label}>
-                    <button onClick={() => scrollTo(item.id)} className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer">
+                    <motion.button
+                      onClick={() => scrollTo(item.id)}
+                      whileTap={{ scale: 0.97 }}
+                      className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer min-h-[44px] flex items-center"
+                    >
                       {item.label}
-                    </button>
+                    </motion.button>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Contact */}
-            <div>
-              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-5">Powered By</h4>
+            <div className="col-span-2 sm:col-span-1">
+              <h4 className="text-xs font-semibold text-white/80 uppercase tracking-widest mb-4 sm:mb-5">Powered By</h4>
               <p className="text-sm leading-relaxed text-white/40">
                 <span className="text-white/80 font-semibold">Datrix Tech Solutions</span>
                 <br />
                 Enterprise software for the African market.
               </p>
-              <div className="mt-5">
+              <div className="mt-4 sm:mt-5">
                 <Button
                   variant="outline"
                   size="sm"
@@ -1017,11 +1254,11 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
-          </div>
+          </StaggerReveal>
 
-          <Separator className="my-10 bg-white/[0.06]" />
+          <Separator className="my-8 sm:my-10 bg-white/[0.06]" />
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/25">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-white/25">
             <p>&copy; {new Date().getFullYear()} Datrix Tech Solutions. All rights reserved.</p>
             <p>Workphelo ERP — Built for Africa, Ready for the World.</p>
           </div>
