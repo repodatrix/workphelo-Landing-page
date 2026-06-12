@@ -79,6 +79,7 @@ const modules = [
       'Recruitment & onboarding',
       'Employee self-service portal',
       'Approval workflows',
+      'Payroll Management',
     ],
   },
   {
@@ -110,6 +111,7 @@ const modules = [
       'Financial Reporting',
       'Budget Management & Expense Tracking',
       'Multi-branch accounting',
+      'Payroll Management',
     ],
   },
   {
@@ -196,7 +198,7 @@ export default function HomePage() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-border'
+            ? 'bg-white/60 backdrop-blur-xl shadow-sm border-b border-white/20'
             : 'bg-transparent'
         }`}
       >
@@ -244,7 +246,7 @@ export default function HomePage() {
                 className={`font-semibold cursor-pointer ${
                   !scrolled
                     ? 'border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent'
-                    : 'bg-blue-700 hover:bg-blue-800 text-white'
+                    : 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white shadow-lg shadow-orange-700/25'
                 }`}
               >
                 Join Waitlist
@@ -286,7 +288,7 @@ export default function HomePage() {
               <Separator className="my-2" />
               <Button
                 onClick={() => scrollTo('waitlist-section')}
-                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold cursor-pointer"
+                className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold cursor-pointer shadow-lg shadow-orange-700/25"
               >
                 Join the Waitlist
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -302,7 +304,7 @@ export default function HomePage() {
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15)_0%,_transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(234,88,12,0.08)_0%,_transparent_60%)]" />
           {/* Grid pattern */}
           <div
             className="absolute inset-0 opacity-[0.03]"
@@ -320,7 +322,7 @@ export default function HomePage() {
                 <FadeIn delay={0.1}>
                   <Badge
                     variant="secondary"
-                    className="mb-6 bg-blue-500/20 text-blue-300 border-blue-500/30 px-4 py-1.5 text-sm"
+                    className="mb-6 bg-orange-500/20 text-orange-300 border-orange-500/30 px-4 py-1.5 text-sm"
                   >
                     <Zap className="mr-1.5 h-3.5 w-3.5" />
                     Powered by Datrix Tech Solutions
@@ -330,7 +332,7 @@ export default function HomePage() {
                 <FadeIn delay={0.2}>
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
                     One Platform.{' '}
-                    <span className="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
                       One Login.
                     </span>
                     <br />
@@ -357,15 +359,15 @@ export default function HomePage() {
                 <FadeIn delay={0.6}>
                   <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-white/50">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>No credit card required</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>Free early access</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>Built for Africa</span>
                     </div>
                   </div>
@@ -596,11 +598,11 @@ export default function HomePage() {
         <section id="benefits" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
           {/* Decorative */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.08)_0%,_transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-3xl mx-auto text-center">
-              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
+              <Badge variant="secondary" className="mb-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
                 Key Benefits
               </Badge>
               <h2 className="text-2xl sm:text-4xl font-bold text-white">
@@ -618,8 +620,8 @@ export default function HomePage() {
                 return (
                   <FadeIn key={b.title} delay={i * 0.08}>
                     <div className="group h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-                      <div className="w-11 h-11 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
-                        <Icon className="h-5 w-5 text-blue-400" />
+                      <div className="w-11 h-11 rounded-xl bg-orange-500/20 flex items-center justify-center mb-4 group-hover:bg-orange-500/30 transition-colors">
+                        <Icon className="h-5 w-5 text-orange-400" />
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">{b.title}</h3>
                       <p className="text-sm text-white/60 leading-relaxed">{b.desc}</p>
@@ -644,7 +646,7 @@ export default function HomePage() {
               <FadeIn delay={0.1}>
                 <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
                   Enterprise-Grade Capabilities,{' '}
-                  <span className="text-blue-700">African-First Design</span>
+                  <span className="text-orange-600">African-First Design</span>
                 </h2>
               </FadeIn>
               <FadeIn delay={0.2}>
@@ -688,7 +690,7 @@ export default function HomePage() {
             <FadeIn>
               <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-border p-5 sm:p-12 shadow-lg">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2">
-                  <div className="w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-800 flex items-center justify-center shadow-lg shadow-blue-700/30">
+                  <div className="w-10 h-10 rounded-full bg-orange-600 hover:bg-orange-700 flex items-center justify-center shadow-lg shadow-orange-600/30">
                     <Lock className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -710,11 +712,11 @@ export default function HomePage() {
 
         {/* ===================== WAITLIST CTA ===================== */}
         <section id="waitlist-section" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.12)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <FadeIn>
-              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
+              <Badge variant="secondary" className="mb-4 bg-orange-500/20 text-orange-300 border-orange-500/30">
                 Early Access
               </Badge>
             </FadeIn>
@@ -795,7 +797,7 @@ export default function HomePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => scrollTo('waitlist-section')}
-                  className="border-white/20 text-white hover:bg-white/10 hover:text-white min-h-[44px] cursor-pointer"
+                  className="border-orange-500/40 text-orange-300 hover:bg-orange-500/15 hover:text-orange-200 hover:border-orange-500/60 min-h-[44px] cursor-pointer"
                 >
                   Join Waitlist
                   <ArrowRight className="ml-1.5 h-3.5 w-3.5" />

@@ -1,0 +1,817 @@
+     1→     1→'use client';
+     2→     2→
+     3→     3→import Image from 'next/image';
+     4→     4→import { motion } from 'framer-motion';
+     5→     5→import {
+     6→     6→  Users,
+     7→     7→  Calculator,
+     8→     8→  Megaphone,
+     9→     9→  Settings,
+    10→    10→  BarChart3,
+    11→    11→  ShieldCheck,
+    12→    12→  Globe,
+    13→    13→  Zap,
+    14→    14→  ArrowRight,
+    15→    15→  CheckCircle2,
+    16→    16→  ChevronRight,
+    17→    17→  TrendingUp,
+    18→    18→  Building2,
+    19→    19→  MonitorSmartphone,
+    20→    20→  Lock,
+    21→    21→  Layers,
+    22→    22→  Menu,
+    23→    23→  X,
+    24→    24→} from 'lucide-react';
+    25→    25→import { Button } from '@/components/ui/button';
+    26→    26→import { Badge } from '@/components/ui/badge';
+    27→    27→import { Separator } from '@/components/ui/separator';
+    28→    28→import { WaitlistForm } from '@/components/waitlist-form';
+    29→    29→import { useState, useEffect } from 'react';
+    30→    30→
+    31→    31→/* ------------------------------------------------------------------ */
+    32→    32→/*  Animated section wrapper                                          */
+    33→    33→/* ------------------------------------------------------------------ */
+    34→    34→function FadeIn({
+    35→    35→  children,
+    36→    36→  className = '',
+    37→    37→  delay = 0,
+    38→    38→  direction = 'up',
+    39→    39→}: {
+    40→    40→  children: React.ReactNode;
+    41→    41→  className?: string;
+    42→    42→  delay?: number;
+    43→    43→  direction?: 'up' | 'down' | 'left' | 'right';
+    44→    44→}) {
+    45→    45→  const dirMap = {
+    46→    46→    up: { y: 40, x: 0 },
+    47→    47→    down: { y: -40, x: 0 },
+    48→    48→    left: { x: 60, y: 0 },
+    49→    49→    right: { x: -60, y: 0 },
+    50→    50→  };
+    51→    51→  const d = dirMap[direction];
+    52→    52→  return (
+    53→    53→    <motion.div
+    54→    54→      initial={{ opacity: 0, ...d }}
+    55→    55→      whileInView={{ opacity: 1, x: 0, y: 0 }}
+    56→    56→      viewport={{ once: true, margin: '-60px' }}
+    57→    57→      transition={{ duration: 0.6, delay, ease: 'easeOut' }}
+    58→    58→      className={className}
+    59→    59→    >
+    60→    60→      {children}
+    61→    61→    </motion.div>
+    62→    62→  );
+    63→    63→}
+    64→    64→
+    65→    65→/* ------------------------------------------------------------------ */
+    66→    66→/*  Module data                                                        */
+    67→    67→/* ------------------------------------------------------------------ */
+    68→    68→const modules = [
+    69→    69→  {
+    70→    70→    icon: Users,
+    71→    71→    title: 'HR Management',
+    72→    72→    color: 'from-blue-600 to-blue-800',
+    73→    73→    lightBg: 'bg-blue-50',
+    74→    74→    textColor: 'text-blue-700',
+    75→    75→    features: [
+    76→    76→      'Employee records management',
+    77→    77→      'Leave & attendance management',
+    78→    78→      'Performance management',
+    79→    79→      'Recruitment & onboarding',
+    80→    80→      'Employee self-service portal',
+    81→    81→      'Approval workflows',
+    82→    82→    ],
+    83→    83→  },
+    84→    84→  {
+    85→    85→    icon: Megaphone,
+    86→    86→    title: 'Marketing & Business Development',
+    87→    87→    color: 'from-amber-500 to-orange-600',
+    88→    88→    lightBg: 'bg-amber-50',
+    89→    89→    textColor: 'text-amber-700',
+    90→    90→    features: [
+    91→    91→      'Lead management',
+    92→    92→      'Opportunity tracking',
+    93→    93→      'Customer relationship management',
+    94→    94→      'Follow-up monitoring',
+    95→    95→      'Sales pipeline visibility',
+    96→    96→      'Fleet management',
+    97→    97→    ],
+    98→    98→  },
+    99→    99→  {
+   100→   100→    icon: Calculator,
+   101→   101→    title: 'Accounting',
+   102→   102→    color: 'from-rose-500 to-pink-600',
+   103→   103→    lightBg: 'bg-rose-50',
+   104→   104→    textColor: 'text-rose-700',
+   105→   105→    features: [
+   106→   106→      'General Ledger',
+   107→   107→      'Accounts Payable & Receivable',
+   108→   108→      'Cash Management',
+   109→   109→      'Bank Reconciliation',
+   110→   110→      'Financial Reporting',
+   111→   111→      'Budget Management & Expense Tracking',
+   112→   112→      'Multi-branch accounting',
+   113→   113→    ],
+   114→   114→  },
+   115→   115→  {
+   116→   116→    icon: Settings,
+   117→   117→    title: 'Operations',
+   118→   118→    color: 'from-violet-500 to-purple-600',
+   119→   119→    lightBg: 'bg-violet-50',
+   120→   120→    textColor: 'text-violet-700',
+   121→   121→    features: [
+   122→   122→      'Reinsurance Brokerage Software',
+   123→   123→      'Insurance Brokerage Software',
+   124→   124→      'Hospital Management Software',
+   125→   125→      'School Management Software',
+   126→   126→      'Manufacturing processes',
+   127→   127→      'Industry-specific business processes',
+   128→   128→    ],
+   129→   129→  },
+   130→   130→];
+   131→   131→
+   132→   132→const dashboardFeatures = [
+   133→   133→  'Company-wide performance metrics',
+   134→   134→  'Sales pipeline status',
+   135→   135→  'Revenue tracking',
+   136→   136→  'Staff productivity insights',
+   137→   137→  'Operational performance indicators',
+   138→   138→  'Financial health monitoring',
+   139→   139→  'Departmental performance reports',
+   140→   140→];
+   141→   141→
+   142→   142→const benefits = [
+   143→   143→  {
+   144→   144→    icon: TrendingUp,
+   145→   145→    title: 'Reduce Software Costs',
+   146→   146→    desc: 'Replace multiple standalone applications with a single integrated platform to lower subscription and licensing expenses.',
+   147→   147→  },
+   148→   148→  {
+   149→   149→    icon: Layers,
+   150→   150→    title: 'Eliminate Duplicate Data',
+   151→   151→    desc: 'A single source of truth means no more re-entering data across disconnected systems.',
+   152→   152→  },
+   153→   153→  {
+   154→   154→    icon: Users,
+   155→   155→    title: 'Improve Collaboration',
+   156→   156→    desc: 'Departments share real-time data, breaking down silos and boosting teamwork.',
+   157→   157→  },
+   158→   158→  {
+   159→   159→    icon: BarChart3,
+   160→   160→    title: 'Enhance Reporting',
+   161→   161→    desc: 'Consolidated, accurate reports replace fragmented spreadsheets and guesswork.',
+   162→   162→  },
+   163→   163→  {
+   164→   164→    icon: Zap,
+   165→   165→    title: 'Increase Productivity',
+   166→   166→    desc: 'One login, one platform — employees spend less time switching tools and more time delivering results.',
+   167→   167→  },
+   168→   168→  {
+   169→   169→    icon: ShieldCheck,
+   170→   170→    title: 'Simplify IT Administration',
+   171→   171→    desc: 'Manage one system instead of dozens, reducing IT overhead and complexity.',
+   172→   172→  },
+   173→   173→];
+   174→   174→
+   175→   175→/* ------------------------------------------------------------------ */
+   176→   176→/*  Main Page                                                          */
+   177→   177→/* ------------------------------------------------------------------ */
+   178→   178→export default function HomePage() {
+   179→   179→  const [scrolled, setScrolled] = useState(false);
+   180→   180→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   181→   181→
+   182→   182→  useEffect(() => {
+   183→   183→    const onScroll = () => setScrolled(window.scrollY > 40);
+   184→   184→    window.addEventListener('scroll', onScroll, { passive: true });
+   185→   185→    return () => window.removeEventListener('scroll', onScroll);
+   186→   186→  }, []);
+   187→   187→
+   188→   188→  const scrollTo = (id: string) => {
+   189→   189→    setMobileMenuOpen(false);
+   190→   190→    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+   191→   191→  };
+   192→   192→
+   193→   193→  return (
+   194→   194→    <div className="min-h-screen flex flex-col bg-white">
+   195→   195→      {/* ===================== NAVIGATION ===================== */}
+   196→   196→      <header
+   197→   197→        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+   198→   198→          scrolled
+   199→   199→            ? 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-border'
+   200→   200→            : 'bg-transparent'
+   201→   201→        }`}
+   202→   202→      >
+   203→   203→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   204→   204→          <div className="flex items-center justify-between h-14 lg:h-20">
+   205→   205→            {/* Logo */}
+   206→   206→            <button
+   207→   207→              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+   208→   208→              className="flex items-center gap-2.5 cursor-pointer"
+   209→   209→            >
+   210→   210→              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+   211→   211→                <span className="text-white font-bold text-lg">W</span>
+   212→   212→              </div>
+   213→   213→              <span
+   214→   214→                className={`text-xl font-bold tracking-tight transition-colors ${
+   215→   215→                  scrolled ? 'text-foreground' : 'text-white'
+   216→   216→                }`}
+   217→   217→              >
+   218→   218→                Workphelo
+   219→   219→              </span>
+   220→   220→            </button>
+   221→   221→
+   222→   222→            {/* Desktop nav */}
+   223→   223→            <nav className="hidden lg:flex items-center gap-1">
+   224→   224→              {['modules', 'dashboard', 'benefits', 'about'].map((id) => (
+   225→   225→                <button
+   226→   226→                  key={id}
+   227→   227→                  onClick={() => scrollTo(id)}
+   228→   228→                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer capitalize ${
+   229→   229→                    scrolled
+   230→   230→                      ? 'text-muted-foreground hover:text-foreground hover:bg-accent'
+   231→   231→                      : 'text-white/80 hover:text-white hover:bg-white/10'
+   232→   232→                  }`}
+   233→   233→                >
+   234→   234→                  {id === 'about' ? 'Built for Africa' : id}
+   235→   235→                </button>
+   236→   236→              ))}
+   237→   237→            </nav>
+   238→   238→
+   239→   239→            {/* CTA */}
+   240→   240→            <div className="hidden lg:flex items-center gap-3">
+   241→   241→              <Button
+   242→   242→                variant={scrolled ? 'default' : 'outline'}
+   243→   243→                onClick={() => scrollTo('waitlist-section')}
+   244→   244→                className={`font-semibold cursor-pointer ${
+   245→   245→                  !scrolled
+   246→   246→                    ? 'border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent'
+   247→   247→                    : 'bg-blue-700 hover:bg-blue-800 text-white'
+   248→   248→                }`}
+   249→   249→              >
+   250→   250→                Join Waitlist
+   251→   251→                <ArrowRight className="ml-2 h-4 w-4" />
+   252→   252→              </Button>
+   253→   253→            </div>
+   254→   254→
+   255→   255→            {/* Mobile menu toggle */}
+   256→   256→            <button
+   257→   257→              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   258→   258→              className={`lg:hidden p-2 rounded-md cursor-pointer ${
+   259→   259→                scrolled ? 'text-foreground' : 'text-white'
+   260→   260→              }`}
+   261→   261→              aria-label="Toggle menu"
+   262→   262→            >
+   263→   263→              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+   264→   264→            </button>
+   265→   265→          </div>
+   266→   266→        </div>
+   267→   267→
+   268→   268→        {/* Mobile menu */}
+   269→   269→        {mobileMenuOpen && (
+   270→   270→          <motion.div
+   271→   271→            initial={{ opacity: 0, height: 0 }}
+   272→   272→            animate={{ opacity: 1, height: 'auto' }}
+   273→   273→            exit={{ opacity: 0, height: 0 }}
+   274→   274→            className="lg:hidden bg-white border-b border-border shadow-lg"
+   275→   275→          >
+   276→   276→            <div className="px-4 py-4 space-y-2">
+   277→   277→              {['modules', 'dashboard', 'benefits', 'about'].map((id) => (
+   278→   278→                <button
+   279→   279→                  key={id}
+   280→   280→                  onClick={() => scrollTo(id)}
+   281→   281→                  className="block w-full text-left px-4 py-2.5 rounded-md text-sm font-medium text-foreground hover:bg-accent capitalize cursor-pointer"
+   282→   282→                >
+   283→   283→                  {id === 'about' ? 'Built for Africa' : id}
+   284→   284→                </button>
+   285→   285→              ))}
+   286→   286→              <Separator className="my-2" />
+   287→   287→              <Button
+   288→   288→                onClick={() => scrollTo('waitlist-section')}
+   289→   289→                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold cursor-pointer"
+   290→   290→              >
+   291→   291→                Join the Waitlist
+   292→   292→                <ArrowRight className="ml-2 h-4 w-4" />
+   293→   293→              </Button>
+   294→   294→            </div>
+   295→   295→          </motion.div>
+   296→   296→        )}
+   297→   297→      </header>
+   298→   298→
+   299→   299→      <main className="flex-1">
+   300→   300→        {/* ===================== HERO ===================== */}
+   301→   301→        <section className="relative flex items-center justify-center overflow-hidden py-20 lg:min-h-screen lg:py-0">
+   302→   302→          {/* Background */}
+   303→   303→          <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900" />
+   304→   304→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15)_0%,_transparent_60%)]" />
+   305→   305→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_60%)]" />
+   306→   306→          {/* Grid pattern */}
+   307→   307→          <div
+   308→   308→            className="absolute inset-0 opacity-[0.03]"
+   309→   309→            style={{
+   310→   310→              backgroundImage:
+   311→   311→                'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+   312→   312→              backgroundSize: '60px 60px',
+   313→   313→            }}
+   314→   314→          />
+   315→   315→
+   316→   316→          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-32 lg:pb-24">
+   317→   317→            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+   318→   318→              {/* Left: Content */}
+   319→   319→              <div className="text-center lg:text-left">
+   320→   320→                <FadeIn delay={0.1}>
+   321→   321→                  <Badge
+   322→   322→                    variant="secondary"
+   323→   323→                    className="mb-6 bg-blue-500/20 text-blue-300 border-blue-500/30 px-4 py-1.5 text-sm"
+   324→   324→                  >
+   325→   325→                    <Zap className="mr-1.5 h-3.5 w-3.5" />
+   326→   326→                    Powered by Datrix Tech Solutions
+   327→   327→                  </Badge>
+   328→   328→                </FadeIn>
+   329→   329→
+   330→   330→                <FadeIn delay={0.2}>
+   331→   331→                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+   332→   332→                    One Platform.{' '}
+   333→   333→                    <span className="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
+   334→   334→                      One Login.
+   335→   335→                    </span>
+   336→   336→                    <br />
+   337→   337→                    Complete Business
+   338→   338→                    <br />
+   339→   339→                    Visibility.
+   340→   340→                  </h1>
+   341→   341→                </FadeIn>
+   342→   342→
+   343→   343→                <FadeIn delay={0.35}>
+   344→   344→                  <p className="mt-4 sm:mt-6 text-base sm:text-xl text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+   345→   345→                    Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   346→   346→                    Fleet Management, and Executive Reporting into one intelligent
+   347→   347→                    platform — giving organizations a single source of truth.
+   348→   348→                  </p>
+   349→   349→                </FadeIn>
+   350→   350→
+   351→   351→                <FadeIn delay={0.5}>
+   352→   352→                  <div className="mt-6 sm:mt-8">
+   353→   353→                    <WaitlistForm variant="hero" />
+   354→   354→                  </div>
+   355→   355→                </FadeIn>
+   356→   356→
+   357→   357→                <FadeIn delay={0.6}>
+   358→   358→                  <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-white/50">
+   359→   359→                    <div className="flex items-center gap-2">
+   360→   360→                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+   361→   361→                      <span>No credit card required</span>
+   362→   362→                    </div>
+   363→   363→                    <div className="flex items-center gap-2">
+   364→   364→                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+   365→   365→                      <span>Free early access</span>
+   366→   366→                    </div>
+   367→   367→                    <div className="flex items-center gap-2">
+   368→   368→                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
+   369→   369→                      <span>Built for Africa</span>
+   370→   370→                    </div>
+   371→   371→                  </div>
+   372→   372→                </FadeIn>
+   373→   373→              </div>
+   374→   374→
+   375→   375→              {/* Right: Hero image */}
+   376→   376→              <FadeIn delay={0.4} direction="right" className="hidden lg:block">
+   377→   377→                <div className="relative">
+   378→   378→                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-blue-500/20 rounded-3xl blur-2xl" />
+   379→   379→                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/10">
+   380→   380→                    <Image
+   381→   381→                      src="/images/hero-erp.png"
+   382→   382→                      alt="Workphelo ERP Dashboard"
+   383→   383→                      width={1344}
+   384→   384→                      height={768}
+   385→   385→                      className="w-full h-auto"
+   386→   386→                      priority
+   387→   387→                    />
+   388→   388→                  </div>
+   389→   389→                  {/* Floating badge */}
+   390→   390→                  <motion.div
+   391→   391→                    animate={{ y: [0, -8, 0] }}
+   392→   392→                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+   393→   393→                    className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-xl p-3 flex items-center gap-3"
+   394→   394→                  >
+   395→   395→                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+   396→   396→                      <BarChart3 className="h-5 w-5 text-blue-700" />
+   397→   397→                    </div>
+   398→   398→                    <div>
+   399→   399→                      <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
+   400→   400→                      <p className="text-xs text-muted-foreground">Live KPIs & Reports</p>
+   401→   401→                    </div>
+   402→   402→                  </motion.div>
+   403→   403→                  {/* Floating badge 2 */}
+   404→   404→                  <motion.div
+   405→   405→                    animate={{ y: [0, 8, 0] }}
+   406→   406→                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+   407→   407→                    className="absolute -top-4 -right-4 bg-white rounded-xl shadow-xl p-3 flex items-center gap-3"
+   408→   408→                  >
+   409→   409→                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+   410→   410→                      <ShieldCheck className="h-5 w-5 text-blue-600" />
+   411→   411→                    </div>
+   412→   412→                    <div>
+   413→   413→                      <p className="text-sm font-semibold text-foreground">Enterprise Security</p>
+   414→   414→                      <p className="text-xs text-muted-foreground">Role-based Access</p>
+   415→   415→                    </div>
+   416→   416→                  </motion.div>
+   417→   417→                </div>
+   418→   418→              </FadeIn>
+   419→   419→            </div>
+   420→   420→          </div>
+   421→   421→
+   422→   422→          {/* Bottom wave */}
+   423→   423→          <div className="absolute bottom-0 left-0 right-0">
+   424→   424→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+   425→   425→              <path d="M0 60L60 55C120 50 240 40 360 35C480 30 600 30 720 35C840 40 960 50 1080 55C1200 60 1320 60 1380 60L1440 60V100H1380C1320 100 1200 100 1080 100C960 100 840 100 720 100C600 100 480 100 360 100C240 100 120 100 60 100H0V60Z" fill="white" />
+   426→   426→            </svg>
+   427→   427→          </div>
+   428→   428→        </section>
+   429→   429→
+   430→   430→        {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
+   431→   431→        <section className="py-12 sm:py-20 lg:py-28 bg-white">
+   432→   432→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   433→   433→            <FadeIn className="max-w-3xl mx-auto text-center">
+   434→   434→              <Badge variant="secondary" className="mb-4">
+   435→   435→                The Problem
+   436→   436→              </Badge>
+   437→   437→              <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
+   438→   438→                Why Workphelo Is Better Than Traditional ERP Systems
+   439→   439→              </h2>
+   440→   440→              <p className="mt-3 sm:mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
+   441→   441→                Most organizations in Ghana and Africa operate with multiple disconnected
+   442→   442→                software solutions for HR, accounting, sales, operations, fleet management,
+   443→   443→                and reporting. This creates inefficiencies, duplicate data entry, poor
+   444→   444→                visibility, and higher operational costs.
+   445→   445→              </p>
+   446→   446→            </FadeIn>
+   447→   447→
+   448→   448→            <FadeIn delay={0.2} className="mt-8 sm:mt-14">
+   449→   449→              <div className="relative rounded-2xl bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-100 p-5 sm:p-12">
+   450→   450→                <div className="absolute top-6 right-6 opacity-10">
+   451→   451→                  <MonitorSmartphone className="h-32 w-32 text-blue-700" />
+   452→   452→                </div>
+   453→   453→                <div className="relative">
+   454→   454→                  <div className="flex items-start gap-4">
+   455→   455→                    <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-xl bg-blue-700 hover:bg-blue-800 items-center justify-center">
+   456→   456→                      <Globe className="h-6 w-6 text-white" />
+   457→   457→                    </div>
+   458→   458→                    <div>
+   459→   459→                      <h3 className="text-lg sm:text-2xl font-bold text-foreground">
+   460→   460→                        Workphelo solves this challenge by bringing all critical business
+   461→   461→                        functions into a single integrated platform.
+   462→   462→                      </h3>
+   463→   463→                      <p className="mt-4 text-muted-foreground leading-relaxed max-w-2xl">
+   464→   464→                        Unlike traditional setups where employees switch between multiple
+   465→   465→                        applications for different tasks, Workphelo enables teams to work
+   466→   466→                        from a single platform with one login, improving productivity and
+   467→   467→                        collaboration across departments.
+   468→   468→                      </p>
+   469→   469→                    </div>
+   470→   470→                  </div>
+   471→   471→                </div>
+   472→   472→              </div>
+   473→   473→            </FadeIn>
+   474→   474→          </div>
+   475→   475→        </section>
+   476→   476→
+   477→   477→        {/* ===================== MODULES ===================== */}
+   478→   478→        <section id="modules" className="py-12 sm:py-20 lg:py-28 bg-muted/30">
+   479→   479→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   480→   480→            <FadeIn className="max-w-3xl mx-auto text-center">
+   481→   481→              <Badge variant="secondary" className="mb-4">
+   482→   482→                Core Modules
+   483→   483→              </Badge>
+   484→   484→              <h2 className="text-2xl sm:text-4xl font-bold text-foreground">
+   485→   485→                Everything Your Business Needs, In One Place
+   486→   486→              </h2>
+   487→   487→              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground">
+   488→   488→                Four powerful modules designed to cover every aspect of your business operations.
+   489→   489→              </p>
+   490→   490→            </FadeIn>
+   491→   491→
+   492→   492→            <div className="mt-10 sm:mt-16 grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+   493→   493→              {modules.map((mod, i) => {
+   494→   494→                const Icon = mod.icon;
+   495→   495→                return (
+   496→   496→                  <FadeIn key={mod.title} delay={i * 0.1} direction={i % 2 === 0 ? 'left' : 'right'}>
+   497→   497→                    <div className="group relative h-full bg-white rounded-2xl border border-border p-5 sm:p-6 lg:p-8 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1">
+   498→   498→                      {/* Gradient bar */}
+   499→   499→                      <div
+   500→   500→                        className={`absolute top-0 left-6 right-6 h-1 rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+   501→   501→                      />
+   502→   502→                      <div className="flex items-start gap-4 mb-5">
+   503→   503→                        <div
+   504→   504→                          className={`shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br ${mod.color} flex items-center justify-center shadow-lg`}
+   505→   505→                        >
+   506→   506→                          <Icon className="h-6 w-6 text-white" />
+   507→   507→                        </div>
+   508→   508→                        <h3 className="text-xl font-bold text-foreground pt-1.5">
+   509→   509→                          {mod.title}
+   510→   510→                        </h3>
+   511→   511→                      </div>
+   512→   512→                      <ul className="space-y-2.5">
+   513→   513→                        {mod.features.map((f) => (
+   514→   514→                          <li key={f} className="flex items-start gap-2.5">
+   515→   515→                            <CheckCircle2
+   516→   516→                              className={`shrink-0 h-4 w-4 mt-0.5 ${mod.textColor}`}
+   517→   517→                            />
+   518→   518→                            <span className="text-sm text-muted-foreground">{f}</span>
+   519→   519→                          </li>
+   520→   520→                        ))}
+   521→   521→                      </ul>
+   522→   522→                    </div>
+   523→   523→                  </FadeIn>
+   524→   524→                );
+   525→   525→              })}
+   526→   526→            </div>
+   527→   527→          </div>
+   528→   528→        </section>
+   529→   529→
+   530→   530→        {/* ===================== EXECUTIVE DASHBOARD ===================== */}
+   531→   531→        <section id="dashboard" className="py-12 sm:py-20 lg:py-28 bg-white overflow-hidden">
+   532→   532→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   533→   533→            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+   534→   534→              {/* Image */}
+   535→   535→              <FadeIn direction="left" className="order-2 lg:order-1">
+   536→   536→                <div className="relative">
+   537→   537→                  <div className="absolute -inset-4 bg-gradient-to-br from-blue-100 to-blue-100 rounded-3xl blur-2xl opacity-60" />
+   538→   538→                  <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
+   539→   539→                    <Image
+   540→   540→                      src="/images/dashboard-preview.png"
+   541→   541→                      alt="Executive Dashboard Preview"
+   542→   542→                      width={1344}
+   543→   543→                      height={768}
+   544→   544→                      className="w-full h-auto"
+   545→   545→                    />
+   546→   546→                  </div>
+   547→   547→                </div>
+   548→   548→              </FadeIn>
+   549→   549→
+   550→   550→              {/* Content */}
+   551→   551→              <div className="order-1 lg:order-2">
+   552→   552→                <FadeIn>
+   553→   553→                  <Badge variant="secondary" className="mb-4">
+   554→   554→                    Executive Dashboard
+   555→   555→                  </Badge>
+   556→   556→                </FadeIn>
+   557→   557→                <FadeIn delay={0.1}>
+   558→   558→                  <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
+   559→   559→                    Better Decision-Making with Real-Time Visibility
+   560→   560→                  </h2>
+   561→   561→                  <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
+   562→   562→                    One of Workphelo&apos;s biggest advantages is the visibility it provides
+   563→   563→                    to management. CEOs, Managing Directors, and Department Heads can access
+   564→   564→                    real-time dashboards that provide:
+   565→   565→                  </p>
+   566→   566→                </FadeIn>
+   567→   567→                <FadeIn delay={0.2}>
+   568→   568→                  <ul className="mt-8 space-y-3">
+   569→   569→                    {dashboardFeatures.map((f, i) => (
+   570→   570→                      <motion.li
+   571→   571→                        key={f}
+   572→   572→                        initial={{ opacity: 0, x: 20 }}
+   573→   573→                        whileInView={{ opacity: 1, x: 0 }}
+   574→   574→                        viewport={{ once: true }}
+   575→   575→                        transition={{ delay: 0.3 + i * 0.06 }}
+   576→   576→                        className="flex items-center gap-3"
+   577→   577→                      >
+   578→   578→                        <ChevronRight className="shrink-0 h-4 w-4 text-blue-700" />
+   579→   579→                        <span className="text-foreground font-medium">{f}</span>
+   580→   580→                      </motion.li>
+   581→   581→                    ))}
+   582→   582→                  </ul>
+   583→   583→                </FadeIn>
+   584→   584→                <FadeIn delay={0.5}>
+   585→   585→                  <p className="mt-6 text-muted-foreground leading-relaxed">
+   586→   586→                    This enables faster, data-driven decision-making and greater
+   587→   587→                    organizational control.
+   588→   588→                  </p>
+   589→   589→                </FadeIn>
+   590→   590→              </div>
+   591→   591→            </div>
+   592→   592→          </div>
+   593→   593→        </section>
+   594→   594→
+   595→   595→        {/* ===================== BENEFITS ===================== */}
+   596→   596→        <section id="benefits" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
+   597→   597→          {/* Decorative */}
+   598→   598→          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+   599→   599→          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.08)_0%,_transparent_70%)]" />
+   600→   600→
+   601→   601→          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   602→   602→            <FadeIn className="max-w-3xl mx-auto text-center">
+   603→   603→              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
+   604→   604→                Key Benefits
+   605→   605→              </Badge>
+   606→   606→              <h2 className="text-2xl sm:text-4xl font-bold text-white">
+   607→   607→                Reduced Costs. Improved Efficiency.
+   608→   608→              </h2>
+   609→   609→              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-white/60">
+   610→   610→                By replacing multiple standalone applications with a single integrated platform,
+   611→   611→                organizations can transform how they work.
+   612→   612→              </p>
+   613→   613→            </FadeIn>
+   614→   614→
+   615→   615→            <div className="mt-10 sm:mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+   616→   616→              {benefits.map((b, i) => {
+   617→   617→                const Icon = b.icon;
+   618→   618→                return (
+   619→   619→                  <FadeIn key={b.title} delay={i * 0.08}>
+   620→   620→                    <div className="group h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
+   621→   621→                      <div className="w-11 h-11 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+   622→   622→                        <Icon className="h-5 w-5 text-blue-400" />
+   623→   623→                      </div>
+   624→   624→                      <h3 className="text-lg font-semibold text-white mb-2">{b.title}</h3>
+   625→   625→                      <p className="text-sm text-white/60 leading-relaxed">{b.desc}</p>
+   626→   626→                    </div>
+   627→   627→                  </FadeIn>
+   628→   628→                );
+   629→   629→              })}
+   630→   630→            </div>
+   631→   631→          </div>
+   632→   632→        </section>
+   633→   633→
+   634→   634→        {/* ===================== BUILT FOR AFRICA ===================== */}
+   635→   635→        <section id="about" className="py-12 sm:py-20 lg:py-28 bg-white">
+   636→   636→          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+   637→   637→            <div className="max-w-4xl mx-auto text-center">
+   638→   638→              <FadeIn>
+   639→   639→                <Badge variant="secondary" className="mb-4">
+   640→   640→                  <Globe className="mr-1.5 h-3.5 w-3.5" />
+   641→   641→                  Built for African Businesses
+   642→   642→                </Badge>
+   643→   643→              </FadeIn>
+   644→   644→              <FadeIn delay={0.1}>
+   645→   645→                <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
+   646→   646→                  Enterprise-Grade Capabilities,{' '}
+   647→   647→                  <span className="text-blue-700">African-First Design</span>
+   648→   648→                </h2>
+   649→   649→              </FadeIn>
+   650→   650→              <FadeIn delay={0.2}>
+   651→   651→                <p className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+   652→   652→                  Workphelo is designed with the realities of African businesses in mind,
+   653→   653→                  providing enterprise-grade capabilities while remaining affordable,
+   654→   654→                  flexible, and easy to deploy.
+   655→   655→                </p>
+   656→   656→              </FadeIn>
+   657→   657→
+   658→   658→              <FadeIn delay={0.3} className="mt-12">
+   659→   659→                <div className="grid sm:grid-cols-3 gap-6">
+   660→   660→                  {[
+   661→   661→                    { icon: Building2, label: 'Affordable', desc: 'Pricing that works for businesses of every size across Africa' },
+   662→   662→                    { icon: Settings, label: 'Flexible', desc: 'Highly customizable to match your specific workflow requirements' },
+   663→   663→                    { icon: Zap, label: 'Easy to Deploy', desc: 'Cloud-based with minimal setup time and no complex infrastructure' },
+   664→   664→                  ].map((item) => {
+   665→   665→                    const Icon = item.icon;
+   666→   666→                    return (
+   667→   667→                      <div
+   668→   668→                        key={item.label}
+   669→   669→                        className="rounded-2xl bg-muted/50 border border-border p-6 text-center"
+   670→   670→                      >
+   671→   671→                        <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
+   672→   672→                          <Icon className="h-7 w-7 text-blue-700" />
+   673→   673→                        </div>
+   674→   674→                        <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
+   675→   675→                        <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+   676→   676→                      </div>
+   677→   677→                    );
+   678→   678→                  })}
+   679→   679→                </div>
+   680→   680→              </FadeIn>
+   681→   681→            </div>
+   682→   682→          </div>
+   683→   683→        </section>
+   684→   684→
+   685→   685→        {/* ===================== VALUE PROPOSITION ===================== */}
+   686→   686→        <section className="py-10 sm:py-16 lg:py-20 bg-muted/30">
+   687→   687→          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   688→   688→            <FadeIn>
+   689→   689→              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-border p-5 sm:p-12 shadow-lg">
+   690→   690→                <div className="absolute -top-5 left-1/2 -translate-x-1/2">
+   691→   691→                  <div className="w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-800 flex items-center justify-center shadow-lg shadow-blue-700/30">
+   692→   692→                    <Lock className="h-5 w-5 text-white" />
+   693→   693→                  </div>
+   694→   694→                </div>
+   695→   695→                <h2 className="text-xl sm:text-3xl font-bold text-foreground mt-2">
+   696→   696→                  Workphelo&apos;s Core Value Proposition
+   697→   697→                </h2>
+   698→   698→                <div className="mt-4 sm:mt-6 mx-auto max-w-2xl">
+   699→   699→                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic">
+   700→   700→                    &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+   701→   701→                    Fleet Management, and Executive Reporting into one intelligent platform,
+   702→   702→                    giving organizations a single source of truth, a single login, and a
+   703→   703→                    complete view of their business.&rdquo;
+   704→   704→                  </p>
+   705→   705→                </div>
+   706→   706→              </div>
+   707→   707→            </FadeIn>
+   708→   708→          </div>
+   709→   709→        </section>
+   710→   710→
+   711→   711→        {/* ===================== WAITLIST CTA ===================== */}
+   712→   712→        <section id="waitlist-section" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
+   713→   713→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.12)_0%,_transparent_60%)]" />
+   714→   714→
+   715→   715→          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+   716→   716→            <FadeIn>
+   717→   717→              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
+   718→   718→                Early Access
+   719→   719→              </Badge>
+   720→   720→            </FadeIn>
+   721→   721→            <FadeIn delay={0.1}>
+   722→   722→              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+   723→   723→                Be Among the First to Experience Workphelo
+   724→   724→              </h2>
+   725→   725→            </FadeIn>
+   726→   726→            <FadeIn delay={0.2}>
+   727→   727→              <p className="mt-3 sm:mt-5 text-base sm:text-lg text-white/60 max-w-2xl mx-auto">
+   728→   728→                Join our waitlist and get priority access when we launch. Help shape the
+   729→   729→                future of business management in Africa.
+   730→   730→              </p>
+   731→   731→            </FadeIn>
+   732→   732→            <FadeIn delay={0.3} className="mt-8 sm:mt-10">
+   733→   733→              <WaitlistForm variant="section" />
+   734→   734→            </FadeIn>
+   735→   735→          </div>
+   736→   736→        </section>
+   737→   737→      </main>
+   738→   738→
+   739→   739→      {/* ===================== FOOTER ===================== */}
+   740→   740→      <footer className="bg-blue-950 text-white/70 border-t border-white/10">
+   741→   741→        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
+   742→   742→          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+   743→   743→            {/* Brand */}
+   744→   744→            <div className="sm:col-span-2 lg:col-span-1">
+   745→   745→              <div className="flex items-center gap-2.5 mb-4">
+   746→   746→                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+   747→   747→                  <span className="text-white font-bold text-lg">W</span>
+   748→   748→                </div>
+   749→   749→                <span className="text-xl font-bold text-white tracking-tight">Workphelo</span>
+   750→   750→              </div>
+   751→   751→              <p className="text-sm leading-relaxed max-w-xs">
+   752→   752→                The all-in-one ERP platform built for African businesses. Unified,
+   753→   753→                intelligent, and affordable.
+   754→   754→              </p>
+   755→   755→            </div>
+   756→   756→
+   757→   757→            {/* Modules */}
+   758→   758→            <div>
+   759→   759→              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+   760→   760→                Modules
+   761→   761→              </h4>
+   762→   762→              <ul className="space-y-1 text-sm">
+   763→   763→                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">HR Management</button></li>
+   764→   764→                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Marketing & BD</button></li>
+   765→   765→                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Accounting</button></li>
+   766→   766→                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Operations</button></li>
+   767→   767→              </ul>
+   768→   768→            </div>
+   769→   769→
+   770→   770→            {/* Company */}
+   771→   771→            <div>
+   772→   772→              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+   773→   773→                Company
+   774→   774→              </h4>
+   775→   775→              <ul className="space-y-1 text-sm">
+   776→   776→                <li><button onClick={() => scrollTo('about')} className="block py-3 hover:text-white transition-colors cursor-pointer">About</button></li>
+   777→   777→                <li><button onClick={() => scrollTo('benefits')} className="block py-3 hover:text-white transition-colors cursor-pointer">Benefits</button></li>
+   778→   778→                <li><button onClick={() => scrollTo('dashboard')} className="block py-3 hover:text-white transition-colors cursor-pointer">Dashboard</button></li>
+   779→   779→                <li><button onClick={() => scrollTo('waitlist-section')} className="block py-3 hover:text-white transition-colors cursor-pointer">Waitlist</button></li>
+   780→   780→              </ul>
+   781→   781→            </div>
+   782→   782→
+   783→   783→            {/* Contact */}
+   784→   784→            <div>
+   785→   785→              <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+   786→   786→                Powered By
+   787→   787→              </h4>
+   788→   788→              <p className="text-sm leading-relaxed">
+   789→   789→                <span className="text-white font-semibold">Datrix Tech Solutions</span>
+   790→   790→                <br />
+   791→   791→                Enterprise software for the African market.
+   792→   792→              </p>
+   793→   793→              <div className="mt-4">
+   794→   794→                <Button
+   795→   795→                  variant="outline"
+   796→   796→                  size="sm"
+   797→   797→                  onClick={() => scrollTo('waitlist-section')}
+   798→   798→                  className="border-white/20 text-white hover:bg-white/10 hover:text-white min-h-[44px] cursor-pointer"
+   799→   799→                >
+   800→   800→                  Join Waitlist
+   801→   801→                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+   802→   802→                </Button>
+   803→   803→              </div>
+   804→   804→            </div>
+   805→   805→          </div>
+   806→   806→
+   807→   807→          <Separator className="my-8 bg-white/10" />
+   808→   808→
+   809→   809→          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
+   810→   810→            <p>&copy; {new Date().getFullYear()} Datrix Tech Solutions. All rights reserved.</p>
+   811→   811→            <p>Workphelo ERP — Built for Africa, Ready for the World.</p>
+   812→   812→          </div>
+   813→   813→        </div>
+   814→   814→      </footer>
+   815→   815→    </div>
+   816→   816→  );
+   817→   817→}
