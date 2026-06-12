@@ -418,7 +418,7 @@ export default function HomePage() {
 
             {/* Headline */}
             <motion.h1
-              className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] font-extrabold tracking-tight text-white leading-[0.95]"
+              className="text-[1.9rem] sm:text-[2.6rem] md:text-[3.15rem] lg:text-[4.2rem] xl:text-[4.9rem] font-extrabold tracking-tight text-white leading-[0.95]"
               initial="hidden"
               animate="visible"
               variants={{
