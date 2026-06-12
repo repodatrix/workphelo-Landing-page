@@ -487,7 +487,29 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
 
-          {/* Floating "One Login." badge */}
+          {/* Floating "One Platform." badge — left */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ ...snappySpring, delay: 0.8 }}
+            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+            style={{
+              bottom: '18%',
+              left: '8%',
+            }}
+          >
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            >
+              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <Layers className="w-4 h-4 text-blue-400" />
+              </div>
+            </motion.div>
+            <span className="text-white text-base font-semibold tracking-tight">One Platform.</span>
+          </motion.div>
+
+          {/* Floating "One Login." badge — right */}
           <motion.div
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
