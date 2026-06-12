@@ -69,7 +69,7 @@ const modules = [
   {
     icon: Users,
     title: 'HR Management',
-    color: 'from-blue-800 to-blue-950',
+    color: 'from-blue-900 to-blue-900',
     lightBg: 'bg-blue-300',
     textColor: 'text-blue-900',
     features: [
@@ -209,7 +209,7 @@ export default function HomePage() {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-2.5 cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-800 to-blue-950 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-blue-900 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">W</span>
               </div>
               <span
@@ -302,7 +302,7 @@ export default function HomePage() {
         {/* ===================== HERO ===================== */}
         <section className="relative flex items-center justify-center overflow-hidden py-20 lg:min-h-screen lg:py-0">
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-slate-950 to-slate-950" />
+          <div className="absolute inset-0 bg-blue-950" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15)_0%,_transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(234,88,12,0.08)_0%,_transparent_60%)]" />
           {/* Grid pattern */}
@@ -377,7 +377,7 @@ export default function HomePage() {
               {/* Right: Hero image */}
               <FadeIn delay={0.4} direction="right" className="hidden lg:block">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-800/20 to-blue-800/20 rounded-3xl blur-2xl" />
+                  <div className="absolute -inset-4 bg-blue-900/20 rounded-3xl blur-2xl" />
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/10">
                     <Image
                       src="/images/hero-erp.png"
@@ -448,7 +448,7 @@ export default function HomePage() {
             </FadeIn>
 
             <FadeIn delay={0.2} className="mt-8 sm:mt-14">
-              <div className="relative rounded-2xl bg-gradient-to-br from-blue-200 to-blue-200 border border-blue-300 p-5 sm:p-12">
+              <div className="relative rounded-2xl bg-blue-200 border border-blue-300 p-5 sm:p-12">
                 <div className="absolute top-6 right-6 opacity-10">
                   <MonitorSmartphone className="h-32 w-32 text-blue-900" />
                 </div>
@@ -536,7 +536,7 @@ export default function HomePage() {
               {/* Image */}
               <FadeIn direction="left" className="order-2 lg:order-1">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-blue-400 to-blue-400 rounded-3xl blur-2xl opacity-60" />
+                  <div className="absolute -inset-4 bg-blue-400 rounded-3xl blur-2xl opacity-60" />
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
                     <Image
                       src="/images/dashboard-preview.png"
@@ -595,7 +595,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BENEFITS ===================== */}
-        <section id="benefits" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-slate-950 to-slate-950 relative overflow-hidden">
+        <section id="benefits" className="py-12 sm:py-20 lg:py-28 bg-blue-950 relative overflow-hidden">
           {/* Decorative */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
@@ -711,7 +711,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-section" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-slate-950 to-slate-950 relative overflow-hidden">
+        <section id="waitlist-section" className="py-12 sm:py-20 lg:py-28 bg-blue-950 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -745,7 +745,7 @@ export default function HomePage() {
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-800 to-blue-950 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-lg bg-blue-900 flex items-center justify-center">
                   <span className="text-white font-bold text-lg">W</span>
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">Workphelo</span>
