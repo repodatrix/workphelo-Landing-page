@@ -149,3 +149,48 @@ Stage Summary:
 - Header is now translucent on scroll (bg-white/60 + backdrop-blur-xl)
 - Payroll Management added to both HR and Accounting module features
 - All changes verified visually via Agent Browser + VLM analysis
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Apple/Steve Jobs inspired complete UI/UX redesign
+
+Work Log:
+- Complete rewrite of page.tsx (~580 lines) with Apple-grade design:
+  - Floating pill-shaped navigation (centered, rounded-full, glassmorphism on scroll)
+  - Orange scroll progress bar at top of viewport (scrollYProgress driven)
+  - Hero parallax: content fades and shifts on scroll (useScroll + useTransform)
+  - Spring-physics animations throughout (smoothSpring, snappySpring, gentleSpring configs)
+  - FadeUp variant with blur effect (Apple "materialisation" — elements blur in from nothing)
+  - Staggered children reveals for cards and lists
+  - ScaleIn variant for benefit cards
+  - Full-screen mobile menu overlay with staggered link reveals (AnimatePresence)
+  - Massive hero typography (up to text-[4.75rem])
+  - Sections: py-24 sm:py-32 lg:py-44 (extreme Apple whitespace)
+  - Cards: rounded-3xl, shadow-sm → shadow-xl on hover, no visible borders
+  - Module cards: subtle top accent line on hover, lift animation (y: -6)
+  - Benefits section: rounded-3xl glass cards with orange icon accents
+  - Hero-to-white gradient fade at bottom, white-to-dark fade at CTA top
+  - Scroll indicator (animated chevron) at hero bottom
+  - "The Problem" section with uppercase tracking label (like Apple section labels)
+  - Footer: cleaner typography, rounded-full CTA button
+- Waitlist form redesigned for Apple minimalism:
+  - Removed heavy "Join the Early Access" header block
+  - Cleaner input styling (rounded-xl, more subtle borders)
+  - Solid orange button (no gradient), rounded-xl
+  - More generous spacing between fields
+  - Subtler label and placeholder colors
+- globals.css updated:
+  - Font smoothing (-webkit-font-smoothing: antialiased)
+  - Orange text selection color
+  - Custom thin scrollbar (8px, transparent track, rounded thumb)
+- VLM assessment: 9/10 Apple/Jony Ive design quality
+- All features verified: pill nav (on scroll), progress bar, parallax, mobile menu, form submission, mobile layout
+
+Stage Summary:
+- Complete Apple-inspired redesign with spring-physics animations and parallax
+- Floating glassmorphism pill navigation with scroll progress indicator
+- Hero content parallax (opacity + translateY + scale on scroll)
+- Full-screen mobile menu overlay with staggered animations
+- All sections redesigned with extreme whitespace, rounded-3xl cards, uppercase labels
+- Form submission and mobile experience verified working
