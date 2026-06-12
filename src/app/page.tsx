@@ -419,11 +419,7 @@ export default function HomePage() {
                   </p>
                 </Reveal>
 
-                <Reveal delay={0.7} className="mt-10 sm:mt-12">
-                  <WaitlistForm variant="hero" />
-                </Reveal>
-
-                <Reveal delay={0.85}>
+                <Reveal delay={0.7}>
                   <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-5 sm:gap-8 text-sm text-white/35">
                     {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
                       <div key={t} className="flex items-center gap-2">
