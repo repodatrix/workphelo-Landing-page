@@ -403,104 +403,110 @@ export default function HomePage() {
           {/* Content */}
           <motion.div
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
-            className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
+            className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
           >
-            {/* Animated accent line */}
+            {/* Eyebrow pill */}
             <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ ...smoothSpring, delay: 0.2 }}
-              className="w-16 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent mx-auto mb-10"
-            />
+              initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ ...gentleSpring, delay: 0.2 }}
+              className="inline-flex items-center gap-2.5 border border-white/10 rounded-full px-4 py-1.5 mb-8 sm:mb-10 backdrop-blur-sm bg-white/[0.04]"
+            >
+              <Lock className="h-3.5 w-3.5 text-orange-400" />
+              <span className="text-[13px] text-white/60 font-medium tracking-wide">ERP for African Businesses</span>
+            </motion.div>
 
-            {/* Headline — word-by-word stagger */}
+            {/* Headline */}
             <motion.h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]"
+              className="text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl xl:text-[7rem] font-extrabold tracking-tight text-white leading-[0.95]"
               initial="hidden"
               animate="visible"
               variants={{
                 hidden: {},
-                visible: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
+                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
               }}
             >
-              {['One', 'Platform.', 'One', 'Login.'].map((word, i) => (
-                <motion.span
-                  key={i}
-                  className="inline-block mr-[0.3em]"
-                  variants={{
-                    hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
-                    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
-                  }}
-                >
-                  {i === 2 ? (
-                    <span className="bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent">{word}</span>
-                  ) : (
-                    word
-                  )}
-                </motion.span>
-              ))}
-              <br className="hidden sm:block" />
+              {/* Line 1: One Platform. */}
               <motion.span
-                className="inline-block"
+                className="block"
                 variants={{
-                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
                 }}
               >
-                <span className="text-white/85">Complete Business</span>
+                One Platform.
               </motion.span>
-              <br className="hidden sm:block" />
+
+              {/* Line 2: Complete Business */}
               <motion.span
-                className="inline-block"
+                className="block text-white/80"
                 variants={{
-                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
                   visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
                 }}
               >
-                <span className="text-white/85">Visibility.</span>
+                Complete Business
+              </motion.span>
+
+              {/* Line 3: Visibility. — with orange accent */}
+              <motion.span
+                className="block bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent"
+                variants={{
+                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+                }}
+              >
+                Visibility.
               </motion.span>
             </motion.h1>
 
-            {/* Subtitle — clip reveal */}
+            {/* "One Login." — floating badge accent */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ ...snappySpring, delay: 0.9 }}
+              className="mt-8 sm:mt-10 inline-flex items-center gap-3 bg-white/[0.08] border border-white/[0.12] rounded-full px-6 py-3 backdrop-blur-sm"
+            >
+              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                </svg>
+              </div>
+              <span className="text-white text-base sm:text-lg font-semibold tracking-tight">One Login.</span>
+            </motion.div>
+
+            {/* Subtitle */}
             <motion.p
-              initial={{ opacity: 0, y: 25, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ ...smoothSpring, delay: 0.8 }}
-              className="mt-8 sm:mt-10 text-base sm:text-lg lg:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...smoothSpring, delay: 1.1 }}
+              className="mt-8 sm:mt-10 text-sm sm:text-base text-white/40 max-w-xl mx-auto leading-relaxed"
             >
               Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
               Fleet Management, and Executive Reporting — giving organizations
               a single source of truth.
             </motion.p>
 
-            {/* Divider */}
+            {/* Trust badges */}
             <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
-              className="w-12 h-px bg-white/10 mx-auto mt-8 mb-8"
-            />
-
-            {/* Trust badges — staggered */}
-            <motion.div
-              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[13px]"
+              className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
               initial="hidden"
               animate="visible"
               variants={{
                 hidden: {},
-                visible: { transition: { staggerChildren: 0.12, delayChildren: 1.2 } },
+                visible: { transition: { staggerChildren: 0.1, delayChildren: 1.3 } },
               }}
             >
               {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
                 <motion.div
                   key={t}
-                  className="flex items-center gap-2 text-white/30"
+                  className="flex items-center gap-1.5 text-[13px] text-white/25"
                   variants={{
-                    hidden: { opacity: 0, x: -15, filter: 'blur(4px)' },
-                    visible: { opacity: 1, x: 0, filter: 'blur(0px)', transition: gentleSpring },
+                    hidden: { opacity: 0 },
+                    visible: { opacity: 1, transition: { duration: 0.6 } },
                   }}
                 >
-                  <CheckCircle2 className="h-3.5 w-3.5 text-orange-400/60" />
+                  <span className="w-1 h-1 rounded-full bg-orange-400/50" />
                   <span>{t}</span>
                 </motion.div>
               ))}
