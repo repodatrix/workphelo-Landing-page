@@ -274,7 +274,7 @@ export default function HomePage() {
           className={`mx-auto transition-all duration-500 ${
             scrolled || mobileMenuOpen
               ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between'
-              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-4 flex items-center justify-between'
+              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-3 flex items-center justify-between'
           }`}
         >
           {/* Logo */}
@@ -287,10 +287,10 @@ export default function HomePage() {
               alt="Workphelo"
               width={120}
               height={32}
-              className={`h-8 w-auto transition-all duration-500 ${
+              className={`h-6 w-auto transition-all duration-500 ${
                 scrolled
-                  ? 'h-8 w-auto opacity-100'
-                  : 'h-9 w-auto brightness-0 invert'
+                  ? 'h-6 w-auto opacity-100'
+                  : 'h-7 w-auto brightness-0 invert'
               }`}
             />
           </button>
@@ -301,7 +301,7 @@ export default function HomePage() {
               <button
                 key={id}
                 onClick={() => scrollTo(id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer capitalize ${
+                className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize {
                   scrolled
                     ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
                     : 'text-white/70 hover:text-white hover:bg-white/10'
@@ -316,26 +316,26 @@ export default function HomePage() {
           <div className="hidden md:flex items-center shrink-0">
             <Button
               onClick={() => scrollTo('waitlist-cta')}
-              className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-sm px-5 ${
+              className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-[13px] px-4 ${
                 scrolled
                   ? 'bg-blue-900 hover:bg-blue-950 text-white shadow-md shadow-blue-900/20'
                   : 'bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:bg-white/25'
               }`}
             >
               Join Waitlist
-              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              <ArrowRight className="ml-1 h-3 w-3" />
             </Button>
           </div>
 
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-2 rounded-full cursor-pointer transition-colors ${
+            className={`md:hidden p-1.5 rounded-full cursor-pointer transition-colors ${
               scrolled ? 'text-foreground hover:bg-black/5' : 'text-white hover:bg-white/10'
             }`}
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </motion.nav>
       </header>
