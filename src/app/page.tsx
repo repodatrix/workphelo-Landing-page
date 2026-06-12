@@ -265,34 +265,38 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
       <ScrollProgress />
 
-      {/* ===================== FLOATING PILL NAV ===================== */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-4 pointer-events-none">
+      {/* ===================== HEADER ===================== */}
+      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ ...gentleSpring, delay: 0.2 }}
-          className={`pointer-events-auto flex items-center justify-between rounded-full px-2 pr-3 py-1.5 transition-all duration-500 ${
+          className={`mx-auto transition-all duration-500 ${
             scrolled || mobileMenuOpen
-              ? 'bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40'
-              : 'bg-transparent'
+              ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between'
+              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-4 flex items-center justify-between'
           }`}
         >
           {/* Logo */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="flex items-center gap-2 pl-3 pr-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer shrink-0"
           >
             <Image
               src="/images/workphelo-logo.png"
               alt="Workphelo"
               width={120}
               height={32}
-              className={`h-8 w-auto transition-opacity duration-500 ${scrolled ? 'opacity-100' : 'brightness-0 invert'}`}
+              className={`h-8 w-auto transition-all duration-500 ${
+                scrolled
+                  ? 'h-8 w-auto opacity-100'
+                  : 'h-9 w-auto brightness-0 invert'
+              }`}
             />
           </button>
 
           {/* Desktop links */}
-          <div className="hidden md:flex items-center gap-0.5">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((id) => (
               <button
                 key={id}
@@ -309,9 +313,9 @@ export default function HomePage() {
           </div>
 
           {/* CTA */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center shrink-0">
             <Button
-              onClick={() => scrollTo('waitlist-section')}
+              onClick={() => scrollTo('waitlist-cta')}
               className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-sm px-5 ${
                 scrolled
                   ? 'bg-blue-900 hover:bg-blue-950 text-white shadow-md shadow-blue-900/20'
