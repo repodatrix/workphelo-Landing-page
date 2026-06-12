@@ -69,9 +69,9 @@ const modules = [
   {
     icon: Users,
     title: 'HR Management',
-    color: 'from-emerald-500 to-teal-600',
-    lightBg: 'bg-emerald-50',
-    textColor: 'text-emerald-700',
+    color: 'from-orange-500 to-amber-600',
+    lightBg: 'bg-orange-50',
+    textColor: 'text-orange-700',
     features: [
       'Employee records management',
       'Leave & attendance management',
@@ -300,9 +300,9 @@ export default function HomePage() {
         {/* ===================== HERO ===================== */}
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(16,185,129,0.15)_0%,_transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(20,184,166,0.1)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(249,115,22,0.15)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_60%)]" />
           {/* Grid pattern */}
           <div
             className="absolute inset-0 opacity-[0.03]"
@@ -320,7 +320,7 @@ export default function HomePage() {
                 <FadeIn delay={0.1}>
                   <Badge
                     variant="secondary"
-                    className="mb-6 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 px-4 py-1.5 text-sm"
+                    className="mb-6 bg-orange-500/20 text-orange-300 border-orange-500/30 px-4 py-1.5 text-sm"
                   >
                     <Zap className="mr-1.5 h-3.5 w-3.5" />
                     Powered by Datrix Tech Solutions
@@ -330,7 +330,7 @@ export default function HomePage() {
                 <FadeIn delay={0.2}>
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
                     One Platform.{' '}
-                    <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
                       One Login.
                     </span>
                     <br />
@@ -357,15 +357,15 @@ export default function HomePage() {
                 <FadeIn delay={0.6}>
                   <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-white/50">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>No credit card required</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>Free early access</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
                       <span>Built for Africa</span>
                     </div>
                   </div>
@@ -375,8 +375,8 @@ export default function HomePage() {
               {/* Right: Hero image */}
               <FadeIn delay={0.4} direction="right" className="hidden lg:block">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-3xl blur-2xl" />
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-emerald-950/50 border border-white/10">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-orange-500/20 to-blue-500/20 rounded-3xl blur-2xl" />
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/10">
                     <Image
                       src="/images/hero-erp.png"
                       alt="Workphelo ERP Dashboard"
@@ -392,8 +392,8 @@ export default function HomePage() {
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-xl p-3 flex items-center gap-3"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-emerald-600" />
+                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-orange-600" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
@@ -406,8 +406,8 @@ export default function HomePage() {
                     transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
                     className="absolute -top-4 -right-4 bg-white rounded-xl shadow-xl p-3 flex items-center gap-3"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                      <ShieldCheck className="h-5 w-5 text-amber-600" />
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                      <ShieldCheck className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">Enterprise Security</p>
