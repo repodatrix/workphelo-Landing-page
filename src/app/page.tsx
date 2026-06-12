@@ -415,18 +415,7 @@ export default function HomePage() {
                 visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
               }}
             >
-              {/* Line 1: One Platform. */}
-              <motion.span
-                className="block"
-                variants={{
-                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
-                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
-                }}
-              >
-                One Platform.
-              </motion.span>
-
-              {/* Line 2: Complete Business */}
+              {/* Line 1: Complete Business */}
               <motion.span
                 className="block text-white/80"
                 variants={{
