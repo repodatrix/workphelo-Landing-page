@@ -494,7 +494,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2, duration: 1 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
+            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
           >
             <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
             <motion.div
@@ -505,8 +505,12 @@ export default function HomePage() {
             </motion.div>
           </motion.div>
 
-          {/* Bottom fade to white */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
+          {/* Curved bottom edge */}
+          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto block" preserveAspectRatio="none">
+              <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+            </svg>
+          </div>
         </section>
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
