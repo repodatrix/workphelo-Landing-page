@@ -392,48 +392,119 @@ export default function HomePage() {
             src="/images/hero-bg.png"
             alt=""
             fill
-            className="object-cover object-center"
+            className="object-cover object-center scale-105"
             priority
           />
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-blue-950/60" />
+          {/* Dark overlay — deep shade */}
+          <div className="absolute inset-0 bg-blue-950/80" />
+          {/* Vignette for depth */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
 
-          {/* Parallax content wrapper */}
+          {/* Content */}
           <motion.div
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
-            className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pt-0 lg:pb-0 text-center"
+            className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
           >
-            <Reveal delay={0.4}>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08]">
-                One Platform.{' '}
-                <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
-                  One Login.
-                </span>
-                <br />
-                <span className="text-white/90">Complete Business</span>
-                <br />
-                <span className="text-white/90">Visibility.</span>
-              </h1>
-            </Reveal>
+            {/* Animated accent line */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ ...smoothSpring, delay: 0.2 }}
+              className="w-16 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent mx-auto mb-10"
+            />
 
-            <Reveal delay={0.55}>
-              <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-white/55 max-w-2xl mx-auto leading-relaxed">
-                Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
-                Fleet Management, and Executive Reporting into one intelligent
-                platform — giving organizations a single source of truth.
-              </p>
-            </Reveal>
+            {/* Headline — word-by-word stagger */}
+            <motion.h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
+              }}
+            >
+              {['One', 'Platform.', 'One', 'Login.'].map((word, i) => (
+                <motion.span
+                  key={i}
+                  className="inline-block mr-[0.3em]"
+                  variants={{
+                    hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                    visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+                  }}
+                >
+                  {i === 2 ? (
+                    <span className="bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent">{word}</span>
+                  ) : (
+                    word
+                  )}
+                </motion.span>
+              ))}
+              <br className="hidden sm:block" />
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+                }}
+              >
+                <span className="text-white/85">Complete Business</span>
+              </motion.span>
+              <br className="hidden sm:block" />
+              <motion.span
+                className="inline-block"
+                variants={{
+                  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
+                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+                }}
+              >
+                <span className="text-white/85">Visibility.</span>
+              </motion.span>
+            </motion.h1>
 
-            <Reveal delay={0.7}>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8 text-sm text-white/35">
-                {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
-                  <div key={t} className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-orange-400/70" />
-                    <span>{t}</span>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
+            {/* Subtitle — clip reveal */}
+            <motion.p
+              initial={{ opacity: 0, y: 25, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              transition={{ ...smoothSpring, delay: 0.8 }}
+              className="mt-8 sm:mt-10 text-base sm:text-lg lg:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light"
+            >
+              Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+              Fleet Management, and Executive Reporting — giving organizations
+              a single source of truth.
+            </motion.p>
+
+            {/* Divider */}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.8, delay: 1.1, ease: [0.25, 0.1, 0.25, 1] }}
+              className="w-12 h-px bg-white/10 mx-auto mt-8 mb-8"
+            />
+
+            {/* Trust badges — staggered */}
+            <motion.div
+              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-[13px]"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.12, delayChildren: 1.2 } },
+              }}
+            >
+              {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
+                <motion.div
+                  key={t}
+                  className="flex items-center gap-2 text-white/30"
+                  variants={{
+                    hidden: { opacity: 0, x: -15, filter: 'blur(4px)' },
+                    visible: { opacity: 1, x: 0, filter: 'blur(0px)', transition: gentleSpring },
+                  }}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5 text-orange-400/60" />
+                  <span>{t}</span>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
 
           {/* Scroll indicator */}
