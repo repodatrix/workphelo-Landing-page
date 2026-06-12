@@ -273,8 +273,8 @@ export default function HomePage() {
           transition={{ ...gentleSpring, delay: 0.2 }}
           className={`mx-auto transition-all duration-500 ${
             scrolled || mobileMenuOpen
-              ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between'
-              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-3 flex items-center justify-between'
+              ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between text-foreground'
+              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-3 flex items-center justify-between text-white'
           }`}
         >
           {/* Logo */}
