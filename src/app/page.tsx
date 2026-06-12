@@ -287,10 +287,10 @@ export default function HomePage() {
               alt="Workphelo"
               width={120}
               height={32}
-              className={`h-6 w-auto transition-all duration-500 ${
+              className={`h-5 w-auto transition-all duration-500 ${
                 scrolled
-                  ? 'h-6 w-auto opacity-100'
-                  : 'h-7 w-auto brightness-0 invert'
+                  ? 'h-5 w-auto opacity-100'
+                  : 'h-[22px] w-auto brightness-0 invert'
               }`}
             />
           </button>
