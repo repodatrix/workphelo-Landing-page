@@ -69,9 +69,9 @@ const modules = [
   {
     icon: Users,
     title: 'HR Management',
-    color: 'from-orange-500 to-amber-600',
-    lightBg: 'bg-orange-50',
-    textColor: 'text-orange-700',
+    color: 'from-blue-600 to-blue-800',
+    lightBg: 'bg-blue-50',
+    textColor: 'text-blue-700',
     features: [
       'Employee records management',
       'Leave & attendance management',
@@ -207,7 +207,7 @@ export default function HomePage() {
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-2.5 cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">W</span>
               </div>
               <span
@@ -244,7 +244,7 @@ export default function HomePage() {
                 className={`font-semibold cursor-pointer ${
                   !scrolled
                     ? 'border-white/30 text-white hover:bg-white/10 hover:text-white bg-transparent'
-                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    : 'bg-blue-700 hover:bg-blue-800 text-white'
                 }`}
               >
                 Join Waitlist
@@ -286,7 +286,7 @@ export default function HomePage() {
               <Separator className="my-2" />
               <Button
                 onClick={() => scrollTo('waitlist-section')}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer"
+                className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold cursor-pointer"
               >
                 Join the Waitlist
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -301,7 +301,7 @@ export default function HomePage() {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(249,115,22,0.15)_0%,_transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15)_0%,_transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(59,130,246,0.1)_0%,_transparent_60%)]" />
           {/* Grid pattern */}
           <div
@@ -320,7 +320,7 @@ export default function HomePage() {
                 <FadeIn delay={0.1}>
                   <Badge
                     variant="secondary"
-                    className="mb-6 bg-orange-500/20 text-orange-300 border-orange-500/30 px-4 py-1.5 text-sm"
+                    className="mb-6 bg-blue-500/20 text-blue-300 border-blue-500/30 px-4 py-1.5 text-sm"
                   >
                     <Zap className="mr-1.5 h-3.5 w-3.5" />
                     Powered by Datrix Tech Solutions
@@ -330,7 +330,7 @@ export default function HomePage() {
                 <FadeIn delay={0.2}>
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
                     One Platform.{' '}
-                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
+                    <span className="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
                       One Login.
                     </span>
                     <br />
@@ -357,15 +357,15 @@ export default function HomePage() {
                 <FadeIn delay={0.6}>
                   <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-white/50">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
+                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
                       <span>No credit card required</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
+                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
                       <span>Free early access</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-orange-400" />
+                      <CheckCircle2 className="h-4 w-4 text-blue-400" />
                       <span>Built for Africa</span>
                     </div>
                   </div>
@@ -375,7 +375,7 @@ export default function HomePage() {
               {/* Right: Hero image */}
               <FadeIn delay={0.4} direction="right" className="hidden lg:block">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-orange-500/20 to-blue-500/20 rounded-3xl blur-2xl" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-blue-500/20 rounded-3xl blur-2xl" />
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-950/50 border border-white/10">
                     <Image
                       src="/images/hero-erp.png"
@@ -392,8 +392,8 @@ export default function HomePage() {
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-xl p-3 flex items-center gap-3"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-orange-600" />
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-blue-700" />
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
@@ -446,13 +446,13 @@ export default function HomePage() {
             </FadeIn>
 
             <FadeIn delay={0.2} className="mt-14">
-              <div className="relative rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 p-8 sm:p-12">
+              <div className="relative rounded-2xl bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-100 p-8 sm:p-12">
                 <div className="absolute top-6 right-6 opacity-10">
-                  <MonitorSmartphone className="h-32 w-32 text-emerald-600" />
+                  <MonitorSmartphone className="h-32 w-32 text-blue-700" />
                 </div>
                 <div className="relative">
                   <div className="flex items-start gap-4">
-                    <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-xl bg-emerald-600 items-center justify-center">
+                    <div className="hidden sm:flex shrink-0 w-12 h-12 rounded-xl bg-blue-700 hover:bg-blue-800 items-center justify-center">
                       <Globe className="h-6 w-6 text-white" />
                     </div>
                     <div>
@@ -494,7 +494,7 @@ export default function HomePage() {
                 const Icon = mod.icon;
                 return (
                   <FadeIn key={mod.title} delay={i * 0.1} direction={i % 2 === 0 ? 'left' : 'right'}>
-                    <div className="group relative h-full bg-white rounded-2xl border border-border p-6 lg:p-8 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 hover:-translate-y-1">
+                    <div className="group relative h-full bg-white rounded-2xl border border-border p-6 lg:p-8 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1">
                       {/* Gradient bar */}
                       <div
                         className={`absolute top-0 left-6 right-6 h-1 rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
@@ -534,7 +534,7 @@ export default function HomePage() {
               {/* Image */}
               <FadeIn direction="left" className="order-2 lg:order-1">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-3xl blur-2xl opacity-60" />
+                  <div className="absolute -inset-4 bg-gradient-to-br from-blue-100 to-blue-100 rounded-3xl blur-2xl opacity-60" />
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-border">
                     <Image
                       src="/images/dashboard-preview.png"
@@ -575,7 +575,7 @@ export default function HomePage() {
                         transition={{ delay: 0.3 + i * 0.06 }}
                         className="flex items-center gap-3"
                       >
-                        <ChevronRight className="shrink-0 h-4 w-4 text-emerald-600" />
+                        <ChevronRight className="shrink-0 h-4 w-4 text-blue-700" />
                         <span className="text-foreground font-medium">{f}</span>
                       </motion.li>
                     ))}
@@ -593,14 +593,14 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BENEFITS ===================== */}
-        <section id="benefits" className="py-20 lg:py-28 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 relative overflow-hidden">
+        <section id="benefits" className="py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
           {/* Decorative */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.08)_0%,_transparent_70%)]" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.08)_0%,_transparent_70%)]" />
 
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-3xl mx-auto text-center">
-              <Badge variant="secondary" className="mb-4 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
                 Key Benefits
               </Badge>
               <h2 className="text-3xl sm:text-4xl font-bold text-white">
@@ -618,8 +618,8 @@ export default function HomePage() {
                 return (
                   <FadeIn key={b.title} delay={i * 0.08}>
                     <div className="group h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
-                      <div className="w-11 h-11 rounded-xl bg-emerald-500/20 flex items-center justify-center mb-4 group-hover:bg-emerald-500/30 transition-colors">
-                        <Icon className="h-5 w-5 text-emerald-400" />
+                      <div className="w-11 h-11 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4 group-hover:bg-blue-500/30 transition-colors">
+                        <Icon className="h-5 w-5 text-blue-400" />
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">{b.title}</h3>
                       <p className="text-sm text-white/60 leading-relaxed">{b.desc}</p>
@@ -644,7 +644,7 @@ export default function HomePage() {
               <FadeIn delay={0.1}>
                 <h2 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">
                   Enterprise-Grade Capabilities,{' '}
-                  <span className="text-emerald-600">African-First Design</span>
+                  <span className="text-blue-700">African-First Design</span>
                 </h2>
               </FadeIn>
               <FadeIn delay={0.2}>
@@ -668,8 +668,8 @@ export default function HomePage() {
                         key={item.label}
                         className="rounded-2xl bg-muted/50 border border-border p-6 text-center"
                       >
-                        <div className="mx-auto w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mb-4">
-                          <Icon className="h-7 w-7 text-emerald-600" />
+                        <div className="mx-auto w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mb-4">
+                          <Icon className="h-7 w-7 text-blue-700" />
                         </div>
                         <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
                         <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
@@ -688,7 +688,7 @@ export default function HomePage() {
             <FadeIn>
               <div className="relative rounded-3xl bg-white border border-border p-8 sm:p-12 shadow-lg">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2">
-                  <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/30">
+                  <div className="w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-800 flex items-center justify-center shadow-lg shadow-blue-700/30">
                     <Lock className="h-5 w-5 text-white" />
                   </div>
                 </div>
@@ -709,12 +709,12 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-section" className="py-20 lg:py-28 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.12)_0%,_transparent_60%)]" />
+        <section id="waitlist-section" className="py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.12)_0%,_transparent_60%)]" />
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <FadeIn>
-              <Badge variant="secondary" className="mb-4 bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+              <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
                 Early Access
               </Badge>
             </FadeIn>
@@ -737,13 +737,13 @@ export default function HomePage() {
       </main>
 
       {/* ===================== FOOTER ===================== */}
-      <footer className="bg-emerald-950 text-white/70 border-t border-white/10">
+      <footer className="bg-blue-950 text-white/70 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
                   <span className="text-white font-bold text-lg">W</span>
                 </div>
                 <span className="text-xl font-bold text-white tracking-tight">Workphelo</span>

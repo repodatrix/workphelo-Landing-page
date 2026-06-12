@@ -81,8 +81,8 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
   if (isSuccess) {
     return (
       <div className={`flex flex-col items-center gap-3 text-center ${className}`}>
-        <div className="rounded-full bg-emerald-100 p-3">
-          <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+        <div className="rounded-full bg-blue-100 p-3">
+          <CheckCircle2 className="h-8 w-8 text-blue-700" />
         </div>
         <h4 className="text-lg font-semibold text-foreground">You are on the list!</h4>
         <p className="text-sm text-muted-foreground max-w-sm">
@@ -115,7 +115,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-name"
               placeholder="Kwame Asante"
               {...register('fullName')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400 focus:ring-emerald-400/30"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
             {errors.fullName && (
               <p className="text-xs text-red-300">{errors.fullName.message}</p>
@@ -130,7 +130,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               type="email"
               placeholder="kwame@company.com"
               {...register('email')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400 focus:ring-emerald-400/30"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
             {errors.email && (
               <p className="text-xs text-red-300">{errors.email.message}</p>
@@ -146,7 +146,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-company"
               placeholder="Your company"
               {...register('company')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400 focus:ring-emerald-400/30"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
           </div>
           <div className="space-y-1.5">
@@ -157,7 +157,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-role"
               placeholder="CEO, Manager..."
               {...register('role')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-emerald-400 focus:ring-emerald-400/30"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
           </div>
           <div className="space-y-1.5">
@@ -181,7 +181,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold h-11 text-base cursor-pointer"
+          className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold h-11 text-base cursor-pointer"
         >
           {isSubmitting ? (
             <>
@@ -267,7 +267,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
         type="submit"
         disabled={isSubmitting}
         size="lg"
-        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold cursor-pointer"
+        className="w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white font-semibold cursor-pointer"
       >
         {isSubmitting ? (
           <>
