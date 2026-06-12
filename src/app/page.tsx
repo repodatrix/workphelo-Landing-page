@@ -304,7 +304,7 @@ export default function HomePage() {
                 className={`px-3 py-1.5 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize {
                   scrolled
                     ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                    : 'text-white hover:bg-white/10'
                 }`}
               >
                 {id === 'about' ? 'Built for Africa' : id}
