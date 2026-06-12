@@ -115,7 +115,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-name"
               placeholder="Kwame Asante"
               {...register('fullName')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
+              className="h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
             {errors.fullName && (
               <p className="text-xs text-red-300">{errors.fullName.message}</p>
@@ -130,7 +130,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               type="email"
               placeholder="kwame@company.com"
               {...register('email')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
+              className="h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
             {errors.email && (
               <p className="text-xs text-red-300">{errors.email.message}</p>
@@ -146,7 +146,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-company"
               placeholder="Your company"
               {...register('company')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
+              className="h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
           </div>
           <div className="space-y-1.5">
@@ -157,7 +157,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               id="hero-role"
               placeholder="CEO, Manager..."
               {...register('role')}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
+              className="h-11 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-blue-400 focus:ring-blue-400/30"
             />
           </div>
           <div className="space-y-1.5">
@@ -165,7 +165,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
               Interested in
             </Label>
             <Select onValueChange={(v) => setValue('module', v)}>
-              <SelectTrigger className="bg-white/10 border-white/20 text-white">
+              <SelectTrigger className="bg-white/10 border-white/20 text-white" style={{ minHeight: 44 }}>
                 <SelectValue placeholder="Select module" />
               </SelectTrigger>
               <SelectContent>
@@ -212,6 +212,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             id="sec-name"
             placeholder="Kwame Asante"
             {...register('fullName')}
+            className="h-11"
           />
           {errors.fullName && (
             <p className="text-xs text-destructive">{errors.fullName.message}</p>
@@ -224,6 +225,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             type="email"
             placeholder="kwame@company.com"
             {...register('email')}
+            className="h-11"
           />
           {errors.email && (
             <p className="text-xs text-destructive">{errors.email.message}</p>
@@ -237,6 +239,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             id="sec-company"
             placeholder="Your company"
             {...register('company')}
+            className="h-11"
           />
         </div>
         <div className="space-y-2">
@@ -245,12 +248,13 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             id="sec-role"
             placeholder="CEO, Manager..."
             {...register('role')}
+            className="h-11"
           />
         </div>
         <div className="space-y-2">
           <Label>Interested in</Label>
           <Select onValueChange={(v) => setValue('module', v)}>
-            <SelectTrigger>
+            <SelectTrigger className="h-11" style={{ minHeight: 44 }}>
               <SelectValue placeholder="Select module" />
             </SelectTrigger>
             <SelectContent>

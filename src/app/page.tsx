@@ -201,7 +201,7 @@ export default function HomePage() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center justify-between h-14 lg:h-20">
             {/* Logo */}
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -298,7 +298,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* ===================== HERO ===================== */}
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section className="relative flex items-center justify-center overflow-hidden py-20 lg:min-h-screen lg:py-0">
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15)_0%,_transparent_60%)]" />
@@ -313,8 +313,8 @@ export default function HomePage() {
             }}
           />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-24">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-32 lg:pb-24">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* Left: Content */}
               <div className="text-center lg:text-left">
                 <FadeIn delay={0.1}>
@@ -328,7 +328,7 @@ export default function HomePage() {
                 </FadeIn>
 
                 <FadeIn delay={0.2}>
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
                     One Platform.{' '}
                     <span className="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">
                       One Login.
@@ -341,7 +341,7 @@ export default function HomePage() {
                 </FadeIn>
 
                 <FadeIn delay={0.35}>
-                  <p className="mt-6 text-lg sm:text-xl text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  <p className="mt-4 sm:mt-6 text-base sm:text-xl text-white/70 max-w-xl mx-auto lg:mx-0 leading-relaxed">
                     Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
                     Fleet Management, and Executive Reporting into one intelligent
                     platform — giving organizations a single source of truth.
@@ -349,13 +349,13 @@ export default function HomePage() {
                 </FadeIn>
 
                 <FadeIn delay={0.5}>
-                  <div className="mt-8">
+                  <div className="mt-6 sm:mt-8">
                     <WaitlistForm variant="hero" />
                   </div>
                 </FadeIn>
 
                 <FadeIn delay={0.6}>
-                  <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-white/50">
+                  <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm text-white/50">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-blue-400" />
                       <span>No credit card required</span>
@@ -428,16 +428,16 @@ export default function HomePage() {
         </section>
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
-        <section className="py-20 lg:py-28 bg-white">
+        <section className="py-12 sm:py-20 lg:py-28 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-3xl mx-auto text-center">
               <Badge variant="secondary" className="mb-4">
                 The Problem
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">
+              <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
                 Why Workphelo Is Better Than Traditional ERP Systems
               </h2>
-              <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
+              <p className="mt-3 sm:mt-5 text-base sm:text-lg text-muted-foreground leading-relaxed">
                 Most organizations in Ghana and Africa operate with multiple disconnected
                 software solutions for HR, accounting, sales, operations, fleet management,
                 and reporting. This creates inefficiencies, duplicate data entry, poor
@@ -445,8 +445,8 @@ export default function HomePage() {
               </p>
             </FadeIn>
 
-            <FadeIn delay={0.2} className="mt-14">
-              <div className="relative rounded-2xl bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-100 p-8 sm:p-12">
+            <FadeIn delay={0.2} className="mt-8 sm:mt-14">
+              <div className="relative rounded-2xl bg-gradient-to-br from-blue-50 to-blue-50 border border-blue-100 p-5 sm:p-12">
                 <div className="absolute top-6 right-6 opacity-10">
                   <MonitorSmartphone className="h-32 w-32 text-blue-700" />
                 </div>
@@ -456,7 +456,7 @@ export default function HomePage() {
                       <Globe className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-foreground">
+                      <h3 className="text-lg sm:text-2xl font-bold text-foreground">
                         Workphelo solves this challenge by bringing all critical business
                         functions into a single integrated platform.
                       </h3>
@@ -475,26 +475,26 @@ export default function HomePage() {
         </section>
 
         {/* ===================== MODULES ===================== */}
-        <section id="modules" className="py-20 lg:py-28 bg-muted/30">
+        <section id="modules" className="py-12 sm:py-20 lg:py-28 bg-muted/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <FadeIn className="max-w-3xl mx-auto text-center">
               <Badge variant="secondary" className="mb-4">
                 Core Modules
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+              <h2 className="text-2xl sm:text-4xl font-bold text-foreground">
                 Everything Your Business Needs, In One Place
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground">
                 Four powerful modules designed to cover every aspect of your business operations.
               </p>
             </FadeIn>
 
-            <div className="mt-16 grid md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="mt-10 sm:mt-16 grid md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {modules.map((mod, i) => {
                 const Icon = mod.icon;
                 return (
                   <FadeIn key={mod.title} delay={i * 0.1} direction={i % 2 === 0 ? 'left' : 'right'}>
-                    <div className="group relative h-full bg-white rounded-2xl border border-border p-6 lg:p-8 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1">
+                    <div className="group relative h-full bg-white rounded-2xl border border-border p-5 sm:p-6 lg:p-8 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 hover:-translate-y-1">
                       {/* Gradient bar */}
                       <div
                         className={`absolute top-0 left-6 right-6 h-1 rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
@@ -528,9 +528,9 @@ export default function HomePage() {
         </section>
 
         {/* ===================== EXECUTIVE DASHBOARD ===================== */}
-        <section id="dashboard" className="py-20 lg:py-28 bg-white overflow-hidden">
+        <section id="dashboard" className="py-12 sm:py-20 lg:py-28 bg-white overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               {/* Image */}
               <FadeIn direction="left" className="order-2 lg:order-1">
                 <div className="relative">
@@ -555,10 +555,10 @@ export default function HomePage() {
                   </Badge>
                 </FadeIn>
                 <FadeIn delay={0.1}>
-                  <h2 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">
+                  <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
                     Better Decision-Making with Real-Time Visibility
                   </h2>
-                  <p className="mt-4 text-muted-foreground leading-relaxed">
+                  <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground leading-relaxed">
                     One of Workphelo&apos;s biggest advantages is the visibility it provides
                     to management. CEOs, Managing Directors, and Department Heads can access
                     real-time dashboards that provide:
@@ -593,7 +593,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BENEFITS ===================== */}
-        <section id="benefits" className="py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
+        <section id="benefits" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
           {/* Decorative */}
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.08)_0%,_transparent_70%)]" />
@@ -603,16 +603,16 @@ export default function HomePage() {
               <Badge variant="secondary" className="mb-4 bg-blue-500/20 text-blue-300 border-blue-500/30">
                 Key Benefits
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">
+              <h2 className="text-2xl sm:text-4xl font-bold text-white">
                 Reduced Costs. Improved Efficiency.
               </h2>
-              <p className="mt-4 text-lg text-white/60">
+              <p className="mt-3 sm:mt-4 text-base sm:text-lg text-white/60">
                 By replacing multiple standalone applications with a single integrated platform,
                 organizations can transform how they work.
               </p>
             </FadeIn>
 
-            <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="mt-10 sm:mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {benefits.map((b, i) => {
                 const Icon = b.icon;
                 return (
@@ -632,7 +632,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BUILT FOR AFRICA ===================== */}
-        <section id="about" className="py-20 lg:py-28 bg-white">
+        <section id="about" className="py-12 sm:py-20 lg:py-28 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <FadeIn>
@@ -642,13 +642,13 @@ export default function HomePage() {
                 </Badge>
               </FadeIn>
               <FadeIn delay={0.1}>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground leading-tight">
+                <h2 className="text-2xl sm:text-4xl font-bold text-foreground leading-tight">
                   Enterprise-Grade Capabilities,{' '}
                   <span className="text-blue-700">African-First Design</span>
                 </h2>
               </FadeIn>
               <FadeIn delay={0.2}>
-                <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                <p className="mt-4 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                   Workphelo is designed with the realities of African businesses in mind,
                   providing enterprise-grade capabilities while remaining affordable,
                   flexible, and easy to deploy.
@@ -683,20 +683,20 @@ export default function HomePage() {
         </section>
 
         {/* ===================== VALUE PROPOSITION ===================== */}
-        <section className="py-16 lg:py-20 bg-muted/30">
+        <section className="py-10 sm:py-16 lg:py-20 bg-muted/30">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <FadeIn>
-              <div className="relative rounded-3xl bg-white border border-border p-8 sm:p-12 shadow-lg">
+              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-border p-5 sm:p-12 shadow-lg">
                 <div className="absolute -top-5 left-1/2 -translate-x-1/2">
                   <div className="w-10 h-10 rounded-full bg-blue-700 hover:bg-blue-800 flex items-center justify-center shadow-lg shadow-blue-700/30">
                     <Lock className="h-5 w-5 text-white" />
                   </div>
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-foreground mt-2">
+                <h2 className="text-xl sm:text-3xl font-bold text-foreground mt-2">
                   Workphelo&apos;s Core Value Proposition
                 </h2>
-                <div className="mt-6 mx-auto max-w-2xl">
-                  <p className="text-lg text-muted-foreground leading-relaxed italic">
+                <div className="mt-4 sm:mt-6 mx-auto max-w-2xl">
+                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed italic">
                     &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
                     Fleet Management, and Executive Reporting into one intelligent platform,
                     giving organizations a single source of truth, a single login, and a
@@ -709,7 +709,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-section" className="py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
+        <section id="waitlist-section" className="py-12 sm:py-20 lg:py-28 bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.12)_0%,_transparent_60%)]" />
 
           <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -719,17 +719,17 @@ export default function HomePage() {
               </Badge>
             </FadeIn>
             <FadeIn delay={0.1}>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
                 Be Among the First to Experience Workphelo
               </h2>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <p className="mt-5 text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="mt-3 sm:mt-5 text-base sm:text-lg text-white/60 max-w-2xl mx-auto">
                 Join our waitlist and get priority access when we launch. Help shape the
                 future of business management in Africa.
               </p>
             </FadeIn>
-            <FadeIn delay={0.3} className="mt-10">
+            <FadeIn delay={0.3} className="mt-8 sm:mt-10">
               <WaitlistForm variant="section" />
             </FadeIn>
           </div>
@@ -738,7 +738,7 @@ export default function HomePage() {
 
       {/* ===================== FOOTER ===================== */}
       <footer className="bg-blue-950 text-white/70 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-1">
@@ -759,11 +759,11 @@ export default function HomePage() {
               <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                 Modules
               </h4>
-              <ul className="space-y-2.5 text-sm">
-                <li><button onClick={() => scrollTo('modules')} className="hover:text-white transition-colors cursor-pointer">HR Management</button></li>
-                <li><button onClick={() => scrollTo('modules')} className="hover:text-white transition-colors cursor-pointer">Marketing & BD</button></li>
-                <li><button onClick={() => scrollTo('modules')} className="hover:text-white transition-colors cursor-pointer">Accounting</button></li>
-                <li><button onClick={() => scrollTo('modules')} className="hover:text-white transition-colors cursor-pointer">Operations</button></li>
+              <ul className="space-y-1 text-sm">
+                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">HR Management</button></li>
+                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Marketing & BD</button></li>
+                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Accounting</button></li>
+                <li><button onClick={() => scrollTo('modules')} className="block py-3 hover:text-white transition-colors cursor-pointer">Operations</button></li>
               </ul>
             </div>
 
@@ -772,11 +772,11 @@ export default function HomePage() {
               <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
                 Company
               </h4>
-              <ul className="space-y-2.5 text-sm">
-                <li><button onClick={() => scrollTo('about')} className="hover:text-white transition-colors cursor-pointer">About</button></li>
-                <li><button onClick={() => scrollTo('benefits')} className="hover:text-white transition-colors cursor-pointer">Benefits</button></li>
-                <li><button onClick={() => scrollTo('dashboard')} className="hover:text-white transition-colors cursor-pointer">Dashboard</button></li>
-                <li><button onClick={() => scrollTo('waitlist-section')} className="hover:text-white transition-colors cursor-pointer">Waitlist</button></li>
+              <ul className="space-y-1 text-sm">
+                <li><button onClick={() => scrollTo('about')} className="block py-3 hover:text-white transition-colors cursor-pointer">About</button></li>
+                <li><button onClick={() => scrollTo('benefits')} className="block py-3 hover:text-white transition-colors cursor-pointer">Benefits</button></li>
+                <li><button onClick={() => scrollTo('dashboard')} className="block py-3 hover:text-white transition-colors cursor-pointer">Dashboard</button></li>
+                <li><button onClick={() => scrollTo('waitlist-section')} className="block py-3 hover:text-white transition-colors cursor-pointer">Waitlist</button></li>
               </ul>
             </div>
 
@@ -795,7 +795,7 @@ export default function HomePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => scrollTo('waitlist-section')}
-                  className="border-white/20 text-white hover:bg-white/10 hover:text-white cursor-pointer"
+                  className="border-white/20 text-white hover:bg-white/10 hover:text-white min-h-[44px] cursor-pointer"
                 >
                   Join Waitlist
                   <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
