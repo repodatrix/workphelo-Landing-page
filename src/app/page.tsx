@@ -405,17 +405,6 @@ export default function HomePage() {
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
             className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
           >
-            {/* Eyebrow pill */}
-            <motion.div
-              initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              transition={{ ...gentleSpring, delay: 0.2 }}
-              className="inline-flex items-center gap-2.5 border border-white/10 rounded-full px-4 py-1.5 mb-8 sm:mb-10 backdrop-blur-sm bg-white/[0.04]"
-            >
-              <Lock className="h-3.5 w-3.5 text-orange-400" />
-              <span className="text-[13px] text-white/60 font-medium tracking-wide">ERP for African Businesses</span>
-            </motion.div>
-
             {/* Headline */}
             <motion.h1
               className="text-[1.9rem] sm:text-[2.6rem] md:text-[3.15rem] lg:text-[4.2rem] xl:text-[4.9rem] font-extrabold tracking-tight text-white leading-[0.95]"
@@ -460,21 +449,6 @@ export default function HomePage() {
               </motion.span>
             </motion.h1>
 
-            {/* "One Login." — floating badge accent */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ ...snappySpring, delay: 0.9 }}
-              className="mt-8 sm:mt-10 inline-flex items-center gap-3 bg-white/[0.08] border border-white/[0.12] rounded-full px-6 py-3 backdrop-blur-sm"
-            >
-              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                </svg>
-              </div>
-              <span className="text-white text-base sm:text-lg font-semibold tracking-tight">One Login.</span>
-            </motion.div>
-
             {/* Subtitle */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -511,6 +485,30 @@ export default function HomePage() {
                 </motion.div>
               ))}
             </motion.div>
+          </motion.div>
+
+          {/* Floating "One Login." badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ ...snappySpring, delay: 1.0 }}
+            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+            style={{
+              bottom: '18%',
+              right: '8%',
+            }}
+          >
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                </svg>
+              </div>
+            </motion.div>
+            <span className="text-white text-base font-semibold tracking-tight">One Login.</span>
           </motion.div>
 
           {/* Scroll indicator */}
