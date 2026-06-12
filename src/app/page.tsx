@@ -381,109 +381,142 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* ===================== HERO ===================== */}
-        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen">
-          {/* Solid bg */}
+        <section ref={heroRef} className="relative overflow-hidden lg:min-h-screen flex flex-col justify-center">
+          {/* Background */}
           <div className="absolute inset-0 bg-blue-950" />
-          {/* Subtle radial accents */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_40%,_rgba(59,130,246,0.12)_0%,_transparent_70%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_20%_80%,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
+          {/* Large soft glow behind the headline */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-blue-900/30 rounded-full blur-[120px]" />
+          {/* Subtle warm accent glow */}
+          <div className="absolute bottom-0 right-0 w-[500px] h-[400px] bg-orange-500/[0.04] rounded-full blur-[100px]" />
           {/* Dot grid */}
-          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
 
-          {/* Parallax content wrapper */}
+          {/* Content */}
           <motion.div
             style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
-            className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-20 lg:pt-0 lg:pb-0"
+            className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-8 sm:pt-40 sm:pb-12 lg:pt-0 lg:pb-0 text-center"
           >
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-              {/* Left: Text + Form */}
-              <div className="text-center lg:text-left">
-                <Reveal delay={0.4}>
-                  <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] xl:text-[4.75rem] font-extrabold tracking-tight text-white leading-[1.08]">
-                    One Platform.{' '}
-                    <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
-                      One Login.
-                    </span>
-                    <br />
-                    <span className="text-white/90">Complete Business</span>
-                    <br />
-                    <span className="text-white/90">Visibility.</span>
-                  </h1>
-                </Reveal>
-
-                <Reveal delay={0.55}>
-                  <p className="mt-6 sm:mt-8 text-lg sm:text-xl text-white/50 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
-                    Fleet Management, and Executive Reporting into one intelligent
-                    platform — giving organizations a single source of truth.
-                  </p>
-                </Reveal>
-
-                <Reveal delay={0.7}>
-                  <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-5 sm:gap-8 text-sm text-white/35">
-                    {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
-                      <div key={t} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-orange-400/70" />
-                        <span>{t}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Reveal>
+            {/* Eyebrow */}
+            <Reveal delay={0.2}>
+              <div className="inline-flex items-center gap-2 bg-white/[0.07] border border-white/[0.1] rounded-full px-4 py-1.5 mb-8 backdrop-blur-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                </span>
+                <span className="text-sm text-white/70 font-medium">Now in Early Access</span>
               </div>
+            </Reveal>
 
-              {/* Right: Hero image */}
-              <Reveal delay={0.5} className="hidden lg:block">
-                <div className="relative">
-                  <div className="absolute -inset-6 bg-blue-900/30 rounded-[2rem] blur-3xl" />
-                  <motion.div
-                    className="relative rounded-3xl overflow-hidden shadow-2xl shadow-black/40 border border-white/[0.08]"
-                    whileHover={{ scale: 1.015, transition: snappySpring }}
-                  >
-                    <Image
-                      src="/images/hero-erp.png"
-                      alt="Workphelo ERP Dashboard"
-                      width={1344}
-                      height={768}
-                      className="w-full h-auto"
-                      priority
-                    />
-                  </motion.div>
-                  {/* Floating badge 1 */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 20, y: 10 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    transition={{ ...gentleSpring, delay: 1.2 }}
-                    whileHover={{ scale: 1.06, transition: snappySpring }}
-                    className="absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-blue-900" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Real-time Insights</p>
-                      <p className="text-xs text-muted-foreground">Live KPIs & Reports</p>
-                    </div>
-                  </motion.div>
-                  {/* Floating badge 2 */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20, y: -10 }}
-                    animate={{ opacity: 1, x: 0, y: 0 }}
-                    transition={{ ...gentleSpring, delay: 1.4 }}
-                    whileHover={{ scale: 1.06, transition: snappySpring }}
-                    className="absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl shadow-black/10 p-3.5 flex items-center gap-3"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-blue-300 flex items-center justify-center">
-                      <ShieldCheck className="h-5 w-5 text-blue-900" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">Enterprise Security</p>
-                      <p className="text-xs text-muted-foreground">Role-based Access</p>
-                    </div>
-                  </motion.div>
-                </div>
-              </Reveal>
-            </div>
+            {/* Headline */}
+            <Reveal delay={0.35}>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-white leading-[1.05]">
+                One Platform.
+                <br />
+                <span className="bg-gradient-to-r from-orange-300 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+                  Total Control.
+                </span>
+              </h1>
+            </Reveal>
+
+            {/* Subtitle */}
+            <Reveal delay={0.5}>
+              <p className="mt-6 sm:mt-8 text-lg sm:text-xl lg:text-2xl text-white/45 max-w-2xl mx-auto leading-relaxed font-light">
+                Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+                Fleet Management, and Executive Reporting — giving organizations
+                a single source of truth.
+              </p>
+            </Reveal>
+
+            {/* CTAs */}
+            <Reveal delay={0.65}>
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button
+                  size="lg"
+                  className="bg-orange-600 hover:bg-orange-500 text-white px-8 py-6 text-base rounded-full shadow-lg shadow-orange-600/25 hover:shadow-orange-500/40 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
+                  onClick={() => {
+                    const el = document.getElementById('waitlist-cta');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Get Early Access
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="text-white/60 hover:text-white hover:bg-white/[0.08] px-8 py-6 text-base rounded-full transition-all duration-300"
+                  onClick={() => {
+                    const el = document.getElementById('modules');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Explore Modules
+                </Button>
+              </div>
+            </Reveal>
+
+            {/* Trust line */}
+            <Reveal delay={0.8}>
+              <p className="mt-8 text-sm text-white/25 font-medium">
+                Free to join · No credit card required · Built for Africa
+              </p>
+            </Reveal>
           </motion.div>
+
+          {/* Dashboard Preview */}
+          <Reveal delay={0.7} className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-8 pb-8">
+            <div className="relative">
+              {/* Glow behind image */}
+              <div className="absolute -inset-4 bg-blue-800/20 rounded-[2.5rem] blur-2xl" />
+              <motion.div
+                className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/50"
+                whileHover={{ scale: 1.008, transition: snappySpring }}
+              >
+                <Image
+                  src="/images/hero-erp.png"
+                  alt="Workphelo ERP Dashboard"
+                  width={1344}
+                  height={768}
+                  className="w-full h-auto"
+                  priority
+                />
+                {/* Subtle top edge highlight */}
+                <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              </motion.div>
+
+              {/* Floating stat card — left */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...gentleSpring, delay: 1.3 }}
+                className="absolute -bottom-4 left-4 sm:left-8 bg-white rounded-2xl shadow-xl shadow-black/10 p-4 flex items-center gap-3.5 border border-gray-100"
+              >
+                <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs text-muted-foreground font-medium">Revenue Growth</p>
+                  <p className="text-lg font-bold text-foreground">+34.2%</p>
+                </div>
+              </motion.div>
+
+              {/* Floating stat card — right */}
+              <motion.div
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...gentleSpring, delay: 1.5 }}
+                className="absolute -top-4 right-4 sm:right-8 bg-white rounded-2xl shadow-xl shadow-black/10 p-4 flex items-center gap-3.5 border border-gray-100"
+              >
+                <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs text-muted-foreground font-medium">Active Users</p>
+                  <p className="text-lg font-bold text-foreground">1,240+</p>
+                </div>
+              </motion.div>
+            </div>
+          </Reveal>
 
           {/* Scroll indicator */}
           <motion.div
@@ -492,12 +525,12 @@ export default function HomePage() {
             transition={{ delay: 2, duration: 1 }}
             className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
           >
-            <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
+            <span className="text-white/20 text-xs font-medium tracking-widest uppercase">Scroll</span>
             <motion.div
               animate={{ y: [0, 6, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <ChevronDown className="h-5 w-5 text-white/25" />
+              <ChevronDown className="h-5 w-5 text-white/15" />
             </motion.div>
           </motion.div>
 
@@ -785,7 +818,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-section" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
+        <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
           {/* Top fade */}
           <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white to-transparent" />
