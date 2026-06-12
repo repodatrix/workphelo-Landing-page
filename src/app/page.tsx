@@ -386,7 +386,7 @@ export default function HomePage() {
 
       <main className="flex-1">
         {/* ===================== HERO ===================== */}
-        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen">
+        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen cursor-dot">
           {/* Background image */}
           <Image
             src="/images/hero-bg.png"
@@ -538,7 +538,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
-        <section className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden">
+        <section className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
           <div className="max-w-5xl mx-auto px-6 sm:px-8">
             <Reveal>
               <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">The Problem</p>
@@ -595,7 +595,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== MODULES ===================== */}
-        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70 relative overflow-hidden">
+        <section id="modules" className="py-24 sm:py-32 lg:py-44 bg-stone-50/70 relative overflow-hidden cursor-dot">
           <div className="max-w-6xl mx-auto px-6 sm:px-8">
             <Reveal className="max-w-3xl mx-auto text-center">
               <p className="text-sm font-semibold text-orange-600 tracking-widest uppercase mb-4">Core Modules</p>
@@ -645,7 +645,7 @@ export default function HomePage() {
             </svg>
           </div>
         </section>
-        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden relative">
+        <section id="dashboard" className="py-24 sm:py-32 lg:py-44 bg-white overflow-hidden relative cursor-logo">
           <div className="max-w-6xl mx-auto px-6 sm:px-8">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               {/* Image */}
@@ -709,7 +709,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BENEFITS ===================== */}
-        <section id="benefits" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
+        <section id="benefits" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
           {/* Dot texture */}
           <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
           <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]" />
@@ -756,7 +756,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== BUILT FOR AFRICA ===================== */}
-        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden">
+        <section id="about" className="py-24 sm:py-32 lg:py-44 bg-white relative overflow-hidden cursor-logo">
           <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
             <Reveal>
               <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
@@ -810,7 +810,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== VALUE PROPOSITION ===================== */}
-        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden">
+        <section className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
           <div className="max-w-4xl mx-auto px-6 sm:px-8">
             <Reveal>
               <div className="relative rounded-3xl bg-white border border-gray-100 p-8 sm:p-14 lg:p-16 shadow-sm">
@@ -841,7 +841,7 @@ export default function HomePage() {
         </section>
 
         {/* ===================== WAITLIST CTA ===================== */}
-        <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden">
+        <section id="waitlist-cta" className="py-24 sm:py-32 lg:py-44 bg-blue-950 relative overflow-hidden cursor-dot">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
 
           <div className="relative max-w-3xl mx-auto px-6 sm:px-8 text-center">
@@ -871,7 +871,7 @@ export default function HomePage() {
       </main>
 
       {/* ===================== FOOTER ===================== */}
-      <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06]">
+      <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06] cursor-dot">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-16 lg:py-20">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
             {/* Brand */}

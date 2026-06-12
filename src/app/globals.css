@@ -112,6 +112,31 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Custom cursors */
+.cursor-logo {
+  cursor: url('/images/cursor-logo-sm.png') 16 13, auto;
+}
+.cursor-dot {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='5' fill='white' fill-opacity='0.9'/%3E%3C/svg%3E") 8 8, auto;
+}
+/* Override cursor on interactive elements within custom cursor sections */
+.cursor-logo a,
+.cursor-logo button,
+.cursor-logo [role="button"],
+.cursor-logo input,
+.cursor-logo select,
+.cursor-logo textarea {
+  cursor: url('/images/cursor-logo-sm.png') 16 13, pointer;
+}
+.cursor-dot a,
+.cursor-dot button,
+.cursor-dot [role="button"],
+.cursor-dot input,
+.cursor-dot select,
+.cursor-dot textarea {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='5' fill='white' fill-opacity='0.9'/%3E%3C/svg%3E") 8 8, pointer;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
