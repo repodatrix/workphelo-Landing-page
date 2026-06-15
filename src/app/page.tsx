@@ -925,44 +925,6 @@ export default function HomePage() {
             <span className="text-white text-base font-semibold tracking-tight">One Login.</span>
           </motion.div>
 
-          {/* Mobile floating badges — stacked at bottom */}
-          <div className="absolute z-20 bottom-28 left-0 right-0 flex flex-col items-center gap-3 lg:hidden">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...gentleSpring, delay: 1.2 }}
-              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
-            >
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <Layers className="w-3 h-3 text-blue-400" />
-                </div>
-              </motion.div>
-              <span className="text-white text-sm font-semibold">One Platform.</span>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...gentleSpring, delay: 1.4 }}
-              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
-            >
-              <motion.div
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              >
-                <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                  </svg>
-                </div>
-              </motion.div>
-              <span className="text-white text-sm font-semibold">One Login.</span>
-            </motion.div>
-          </div>
-
           {/* Curved bottom edge */}
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
             <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
