@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { sendWaitlistNotification } from '@/lib/email';
 import { z } from 'zod/v4';
 
 const waitlistSchema = z.object({
@@ -44,6 +45,21 @@ export async function POST(request: NextRequest) {
         module: module || null,
       },
     });
+
+    const emailSent = await sendWaitlistNotification({
+      fullName,
+      email,
+      company,
+      role,
+      module,
+    });
+
+    if (!emailSent) {
+      return NextResponse.json(
+        { error: 'Signup saved, but the notification email could not be sent.' },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json(
       { message: 'Welcome to the waitlist! We will be in touch soon.' },
