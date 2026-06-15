@@ -382,7 +382,7 @@ function FeaturePreview({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.95 }}
             transition={{ ...snappySpring }}
-            className={`absolute z-50 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none ${
+            className={`absolute z-[100] top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none ${
               pos === 'right'
                 ? 'left-full ml-4'
                 : 'right-full mr-4'
@@ -1001,7 +1001,7 @@ export default function HomePage() {
         </div>
 
         {/* ===================== MODULES ===================== */}
-        <section id="modules" className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative overflow-hidden cursor-dot">
+        <section id="modules" className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative cursor-dot">
           {/* Floating decorative orbs */}
           <FloatingOrb size={160} color="purple" className="top-32 -right-24 hidden lg:block" delay={2} />
           <FloatingOrb size={130} color="amber" className="bottom-40 -left-20 hidden lg:block" delay={0} />
@@ -1026,7 +1026,7 @@ export default function HomePage() {
                       whileHover={{ y: -6, transition: snappySpring }}
                       whileTap={{ scale: 0.98 }}
                       data-module-card=""
-                      className="group relative h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-5 sm:p-9 transition-shadow duration-500 card-shimmer"
+                      className="group relative z-0 h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] hover:z-20 p-5 sm:p-9 transition-[shadow,z-index] duration-300 card-shimmer"
                     >
                       {/* Top accent line */}
                       <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
