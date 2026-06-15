@@ -17,7 +17,6 @@ import {
   TrendingUp,
   Building2,
   MonitorSmartphone,
-  Lock,
   Layers,
   Menu,
   X,
@@ -1273,16 +1272,7 @@ export default function HomePage() {
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 <div className="relative">
-                  <div className="absolute -top-5 sm:-top-6 left-1/2 -translate-x-1/2">
-                    <motion.div
-                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/30"
-                      animate={{ y: [0, -4, 0] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <Lock className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                    </motion.div>
-                  </div>
-                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground mt-3 text-center">
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground text-center">
                     Workphelo&apos;s Core Value Proposition
                   </h2>
                   <div className="mt-5 sm:mt-8 mx-auto max-w-2xl text-center">
