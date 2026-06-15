@@ -347,3 +347,35 @@ Stage Summary:
 - Hero has floating particles, text cycling, and animated gradient text
 - Mobile: AI agent descriptions visible, improved touch targets, better spacing
 - Zero lint errors, zero console errors, browser-verified
+
+---
+Task ID: 11
+Agent: Main Agent
+Task: Add hover popup screenshots to module feature lists
+
+Work Log:
+- Generated 8 ERP module screenshots (1344x768) using z-ai image generation:
+  - HR: hr-employees.png (employee directory table), hr-payroll.png (payroll/leave/attendance)
+  - Marketing: mkt-leads.png (sales pipeline kanban), mkt-crm.png (CRM contact/timeline)
+  - Accounting: acc-ledger.png (general ledger transactions), acc-reports.png (P&L/cash flow charts)
+  - Operations: ops-process.png (workflow/approval chain), ops-industry.png (industry modules grid)
+- Created FeaturePreview component:
+  - Shows ERP screenshot popup on hover (desktop only: hidden lg:block)
+  - AnimatePresence + motion.div with scale/opacity spring animation
+  - Smart positioning: detects which side of the card the feature is on, positions popup left or right
+  - Arrow indicator pointing back to the feature item
+  - Feature name label above the screenshot
+  - Animated orange pulse dot indicator
+  - Feature text darkens on hover for visual feedback
+  - CheckCircle2 icon transitions from muted to visible on hover
+- Updated module data: features changed from string[] to {name, image}[] objects
+- Each feature mapped to the most relevant module screenshot
+- Added data-module-card attribute to module card divs for popup positioning reference
+- Lint: zero errors
+- Browser verified: popup renders correctly, images load via Next.js Image optimization
+
+Stage Summary:
+- 8 AI-generated ERP screenshots in /public/images/modules/
+- FeaturePreview hover popup component with smart positioning and spring animations
+- Module features now show contextual ERP screenshots on desktop hover
+- Zero lint errors, images confirmed loading correctly

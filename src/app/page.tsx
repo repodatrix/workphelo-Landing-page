@@ -337,6 +337,98 @@ function CountUp({ target, duration = 2, suffix = '' }: { target: number; durati
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
+/** Hover popup that shows an ERP screenshot when hovering a feature item */
+function FeaturePreview({
+  children,
+  image,
+  featureName,
+}: {
+  children: React.ReactNode;
+  image: string;
+  featureName: string;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [pos, setPos] = useState<'left' | 'right'>('right');
+  const itemRef = useRef<HTMLLIElement>(null);
+
+  const handleMouseEnter = () => {
+    if (!itemRef.current) return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const cardRect = itemRef.current.closest('[data-module-card]')?.getBoundingClientRect();
+    if (cardRect) {
+      const itemCenter = rect.left + rect.width / 2;
+      const cardCenter = cardRect.left + cardRect.width / 2;
+      setPos(itemCenter < cardCenter ? 'right' : 'left');
+    }
+    setHovered(true);
+  };
+
+  return (
+    <li
+      ref={itemRef}
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="flex items-start gap-2.5 group/feat cursor-default">
+        <CheckCircle2 className={`shrink-0 h-[18px] w-[18px] mt-0.5 text-foreground/20 group-hover/feat:text-foreground/50 transition-colors duration-300`} />
+        <span className="text-[15px] text-muted-foreground leading-relaxed group-hover/feat:text-foreground transition-colors duration-300">{children}</span>
+      </div>
+      {/* Hover popup */}
+      <AnimatePresence>
+        {hovered && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+            transition={{ ...snappySpring }}
+            className={`absolute z-50 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none ${
+              pos === 'right'
+                ? 'left-full ml-4'
+                : 'right-full mr-4'
+            }`}
+            style={{ width: 340 }}
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-gray-200/80 bg-white p-2">
+              {/* Feature name label */}
+              <div className="px-2 py-1.5 mb-1.5">
+                <p className="text-xs font-semibold text-foreground/80 truncate">{featureName}</p>
+              </div>
+              {/* Screenshot */}
+              <div className="relative rounded-xl overflow-hidden bg-gray-100">
+                <Image
+                  src={image}
+                  alt={featureName}
+                  width={672}
+                  height={384}
+                  className="w-full h-auto block"
+                />
+                {/* Subtle gradient overlay at edges */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+              </div>
+              {/* Module indicator dot */}
+              <div className="absolute top-3 right-3">
+                <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+              </div>
+            </div>
+            {/* Arrow */}
+            <div
+              className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border border-gray-200/80 rotate-45 ${
+                pos === 'right' ? '-left-[5px]' : '-right-[5px]'
+              }`}
+              style={{
+                borderTopColor: 'transparent',
+                borderBottomColor: 'transparent',
+                [pos === 'right' ? 'borderLeftColor' : 'borderRightColor']: 'white',
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </li>
+  );
+}
+
 /* ================================================================== */
 /*  DATA                                                               */
 /* ================================================================== */
@@ -348,13 +440,13 @@ const modules = [
     lightBg: 'bg-blue-300',
     textColor: 'text-blue-900',
     features: [
-      'Employee records management',
-      'Leave & attendance management',
-      'Performance management',
-      'Recruitment & onboarding',
-      'Employee self-service portal',
-      'Approval workflows',
-      'Payroll Management',
+      { name: 'Employee records management', image: '/images/modules/hr-employees.png' },
+      { name: 'Leave & attendance management', image: '/images/modules/hr-payroll.png' },
+      { name: 'Performance management', image: '/images/modules/hr-employees.png' },
+      { name: 'Recruitment & onboarding', image: '/images/modules/hr-employees.png' },
+      { name: 'Employee self-service portal', image: '/images/modules/hr-payroll.png' },
+      { name: 'Approval workflows', image: '/images/modules/hr-payroll.png' },
+      { name: 'Payroll Management', image: '/images/modules/hr-payroll.png' },
     ],
   },
   {
@@ -364,12 +456,12 @@ const modules = [
     lightBg: 'bg-amber-50',
     textColor: 'text-amber-700',
     features: [
-      'Lead management',
-      'Opportunity tracking',
-      'Customer relationship management',
-      'Follow-up monitoring',
-      'Sales pipeline visibility',
-      'Fleet management',
+      { name: 'Lead management', image: '/images/modules/mkt-leads.png' },
+      { name: 'Opportunity tracking', image: '/images/modules/mkt-leads.png' },
+      { name: 'Customer relationship management', image: '/images/modules/mkt-crm.png' },
+      { name: 'Follow-up monitoring', image: '/images/modules/mkt-crm.png' },
+      { name: 'Sales pipeline visibility', image: '/images/modules/mkt-leads.png' },
+      { name: 'Fleet management', image: '/images/modules/mkt-crm.png' },
     ],
   },
   {
@@ -379,14 +471,14 @@ const modules = [
     lightBg: 'bg-rose-50',
     textColor: 'text-rose-700',
     features: [
-      'General Ledger',
-      'Accounts Payable & Receivable',
-      'Cash Management',
-      'Bank Reconciliation',
-      'Financial Reporting',
-      'Budget Management & Expense Tracking',
-      'Multi-branch accounting',
-      'Payroll Management',
+      { name: 'General Ledger', image: '/images/modules/acc-ledger.png' },
+      { name: 'Accounts Payable & Receivable', image: '/images/modules/acc-ledger.png' },
+      { name: 'Cash Management', image: '/images/modules/acc-reports.png' },
+      { name: 'Bank Reconciliation', image: '/images/modules/acc-ledger.png' },
+      { name: 'Financial Reporting', image: '/images/modules/acc-reports.png' },
+      { name: 'Budget Management & Expense Tracking', image: '/images/modules/acc-reports.png' },
+      { name: 'Multi-branch accounting', image: '/images/modules/acc-reports.png' },
+      { name: 'Payroll Management', image: '/images/modules/acc-ledger.png' },
     ],
   },
   {
@@ -396,12 +488,12 @@ const modules = [
     lightBg: 'bg-violet-50',
     textColor: 'text-violet-700',
     features: [
-      'Reinsurance Brokerage Software',
-      'Insurance Brokerage Software',
-      'Hospital Management Software',
-      'School Management Software',
-      'Manufacturing processes',
-      'Industry-specific business processes',
+      { name: 'Reinsurance Brokerage Software', image: '/images/modules/ops-process.png' },
+      { name: 'Insurance Brokerage Software', image: '/images/modules/ops-process.png' },
+      { name: 'Hospital Management Software', image: '/images/modules/ops-industry.png' },
+      { name: 'School Management Software', image: '/images/modules/ops-industry.png' },
+      { name: 'Manufacturing processes', image: '/images/modules/ops-process.png' },
+      { name: 'Industry-specific business processes', image: '/images/modules/ops-industry.png' },
     ],
   },
 ];
@@ -933,6 +1025,7 @@ export default function HomePage() {
                     <motion.div
                       whileHover={{ y: -6, transition: snappySpring }}
                       whileTap={{ scale: 0.98 }}
+                      data-module-card=""
                       className="group relative h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] p-5 sm:p-9 transition-shadow duration-500 card-shimmer"
                     >
                       {/* Top accent line */}
@@ -945,10 +1038,9 @@ export default function HomePage() {
                       </div>
                       <ul className="space-y-3">
                         {mod.features.map((f) => (
-                          <li key={f} className="flex items-start gap-2.5">
-                            <CheckCircle2 className={`shrink-0 h-[18px] w-[18px] mt-0.5 ${mod.textColor}`} />
-                            <span className="text-[15px] text-muted-foreground leading-relaxed">{f}</span>
-                          </li>
+                          <FeaturePreview key={f.name} image={f.image} featureName={f.name}>
+                            {f.name}
+                          </FeaturePreview>
                         ))}
                       </ul>
                     </motion.div>
