@@ -13,7 +13,7 @@ import {
   Zap,
   ArrowRight,
   CheckCircle2,
-  ChevronDown,
+  
   TrendingUp,
   Building2,
   MonitorSmartphone,
@@ -962,43 +962,6 @@ export default function HomePage() {
               <span className="text-white text-sm font-semibold">One Login.</span>
             </motion.div>
           </div>
-
-          {/* Scroll indicator — desktop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2, duration: 1 }}
-            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
-          >
-            <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
-            <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <ChevronDown className="h-5 w-5 text-white/25" />
-            </motion.div>
-          </motion.div>
-
-          {/* Scroll indicator — mobile */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2, duration: 1 }}
-            className="absolute bottom-14 left-1/2 -translate-x-1/2 z-10 lg:hidden"
-          >
-            <motion.div
-              animate={{ y: [0, 5, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <div className="w-8 h-12 rounded-full border-2 border-white/20 flex items-start justify-center pt-2">
-                <motion.div
-                  className="w-1 h-2.5 rounded-full bg-white/50"
-                  animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
 
           {/* Curved bottom edge */}
           <div className="absolute bottom-0 left-0 right-0 -mb-1">
