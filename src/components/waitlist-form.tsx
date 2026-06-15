@@ -14,14 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, CheckCircle2, User, Mail, Building2, Briefcase, ArrowRight } from 'lucide-react';
+import { Loader2, CheckCircle2, User, Mail, Building2, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const waitlistFormSchema = z.object({
   fullName: z.string().min(2, 'Full name is required'),
   email: z.email('Please enter a valid email'),
   company: z.string().optional(),
-  role: z.string().optional(),
   module: z.string().optional(),
 });
 
@@ -44,7 +43,7 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
     formState: { errors },
   } = useForm<WaitlistFormValues>({
     resolver: zodResolver(waitlistFormSchema),
-    defaultValues: { fullName: '', email: '', company: '', role: '', module: '' },
+    defaultValues: { fullName: '', email: '', company: '', module: '' },
   });
 
   const onSubmit = async (data: WaitlistFormValues) => {
@@ -56,12 +55,6 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
         body: JSON.stringify(data),
       });
       const result = await res.json();
-
-      if (result.alreadyExists) {
-        toast.info('You are already on the waitlist!');
-        setIsSuccess(true);
-        return;
-      }
 
       if (!res.ok) {
         toast.error(result.error || 'Something went wrong');
@@ -129,19 +122,12 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             {errors.email && <p className="text-xs text-red-400/80 mt-1">{errors.email.message}</p>}
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div className="space-y-2">
             <Label htmlFor="hero-company" className="text-xs font-medium text-white/50">Company</Label>
             <div className="relative">
               <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
               <Input id="hero-company" placeholder="Your company" {...register('company')} className={heroInput} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="hero-role" className="text-xs font-medium text-white/50">Role</Label>
-            <div className="relative">
-              <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-              <Input id="hero-role" placeholder="CEO, Manager..." {...register('role')} className={heroInput} />
             </div>
           </div>
           <div className="space-y-2">
@@ -207,19 +193,12 @@ export function WaitlistForm({ variant = 'hero', className = '' }: WaitlistFormP
             {errors.email && <p className="text-xs text-red-400/80">{errors.email.message}</p>}
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="sec-company" className="text-white/50 text-sm font-medium">Company</Label>
             <div className="relative">
               <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
               <Input id="sec-company" placeholder="Your company" {...register('company')} className={sectionInput} />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="sec-role" className="text-white/50 text-sm font-medium">Role</Label>
-            <div className="relative">
-              <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-              <Input id="sec-role" placeholder="CEO, Manager..." {...register('role')} className={sectionInput} />
             </div>
           </div>
           <div className="space-y-2">

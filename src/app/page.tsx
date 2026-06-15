@@ -699,6 +699,19 @@ export default function HomePage() {
             </Button>
           </div>
 
+          {/* Mobile primary CTA */}
+          <Button
+            onClick={() => scrollTo('waitlist-cta')}
+            className={`md:hidden ml-auto mr-2 h-9 rounded-full px-3 text-[12px] font-semibold cursor-pointer transition-all duration-300 shadow-sm ${
+              scrolled || mobileMenuOpen
+                ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-orange-700/20'
+                : 'bg-white text-blue-950 hover:bg-white/90 shadow-black/10'
+            }`}
+            aria-label="Join waitlist"
+          >
+            Join Waitlist
+          </Button>
+
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

@@ -25,7 +25,6 @@ export async function sendWaitlistNotification(payload: {
     fullName: string;
     email: string;
     company?: string;
-    role?: string;
     module?: string;
 }) {
     try {
@@ -50,7 +49,6 @@ export async function sendWaitlistNotification(payload: {
         <p><strong>Name:</strong> ${escapeHtml(payload.fullName)}</p>
         <p><strong>Email:</strong> ${escapeHtml(payload.email)}</p>
         <p><strong>Company:</strong> ${escapeHtml(payload.company)}</p>
-        <p><strong>Role:</strong> ${escapeHtml(payload.role)}</p>
         <p><strong>Module:</strong> ${escapeHtml(payload.module)}</p>
       `,
         });
