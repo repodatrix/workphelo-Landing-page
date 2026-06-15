@@ -1,0 +1,1559 @@
+     1→'use client';
+     2→
+     3→import Image from 'next/image';
+     4→import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'framer-motion';
+     5→import {
+     6→  Users,
+     7→  Calculator,
+     8→  Megaphone,
+     9→  Settings,
+    10→  BarChart3,
+    11→  ShieldCheck,
+    12→  Globe,
+    13→  Zap,
+    14→  ArrowRight,
+    15→  CheckCircle2,
+    16→  ChevronDown,
+    17→  TrendingUp,
+    18→  Building2,
+    19→  MonitorSmartphone,
+    20→  Layers,
+    21→  Menu,
+    22→  X,
+    23→  Sparkles,
+    24→  Bot,
+    25→} from 'lucide-react';
+    26→import { Button } from '@/components/ui/button';
+    27→import { Badge } from '@/components/ui/badge';
+    28→import { Separator } from '@/components/ui/separator';
+    29→import { WaitlistForm } from '@/components/waitlist-form';
+    30→import { useState, useRef, useEffect } from 'react';
+    31→
+    32→/* ================================================================== */
+    33→/*  ANIMATION CONFIG                                                   */
+    34→/* ================================================================== */
+    35→const smoothSpring = { type: 'spring' as const, stiffness: 80, damping: 20, mass: 1 };
+    36→const snappySpring = { type: 'spring' as const, stiffness: 400, damping: 30, mass: 0.6 };
+    37→const gentleSpring = { type: 'spring' as const, stiffness: 120, damping: 24, mass: 0.8 };
+    38→
+    39→/* -- Variant: fade up with subtle blur (Apple materialisation) -------- */
+    40→const fadeUp = {
+    41→  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
+    42→  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+    43→};
+    44→
+    45→/* -- Variant: fade in ------------------------------------------------ */
+    46→const fadeIn = {
+    47→  hidden: { opacity: 0 },
+    48→  visible: { opacity: 1 },
+    49→};
+    50→
+    51→/* -- Variant: scale in ---------------------------------------------- */
+    52→const scaleIn = {
+    53→  hidden: { opacity: 0, scale: 0.92, y: 20 },
+    54→  visible: { opacity: 1, scale: 1, y: 0 },
+    55→};
+    56→
+    57→/* -- Variant: stagger container -------------------------------------- */
+    58→const stagger = {
+    59→  hidden: {},
+    60→  visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+    61→};
+    62→
+    63→/* -- Variant: slow stagger for long lists ---------------------------- */
+    64→const slowStagger = {
+    65→  hidden: {},
+    66→  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.15 } },
+    67→};
+    68→
+    69→/* -- Variant: slide in from left ------------------------------------ */
+    70→const slideInLeft = {
+    71→  hidden: { opacity: 0, x: -40, filter: 'blur(4px)' },
+    72→  visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+    73→};
+    74→
+    75→/* -- Variant: slide in from right ----------------------------------- */
+    76→const slideInRight = {
+    77→  hidden: { opacity: 0, x: 40, filter: 'blur(4px)' },
+    78→  visible: { opacity: 1, x: 0, filter: 'blur(0px)' },
+    79→};
+    80→
+    81→/* -- Variant: fade in scale ------------------------------------------ */
+    82→const fadeInScale = {
+    83→  hidden: { opacity: 0, scale: 0.9 },
+    84→  visible: { opacity: 1, scale: 1 },
+    85→};
+    86→
+    87→/* -- Variant: stagger from bottom ------------------------------------ */
+    88→const staggerBottom = {
+    89→  hidden: {},
+    90→  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+    91→};
+    92→
+    93→/* -- Stagger config for AI agent cards ------------------------------ */
+    94→const aiAgentStagger = {
+    95→  hidden: {},
+    96→  visible: { transition: { staggerChildren: 0.07, delayChildren: 0.4 } },
+    97→};
+    98→
+    99→/* -- Variant: clip reveal from bottom -------------------------------- */
+   100→const clipReveal = {
+   101→  hidden: { opacity: 0, clipPath: 'inset(100% 0% 0% 0%)' },
+   102→  visible: { opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' },
+   103→};
+   104→
+   105→/* -- Variant: rotate in --------------------------------------------- */
+   106→const rotateIn = {
+   107→  hidden: { opacity: 0, scale: 0.85, rotate: -3 },
+   108→  visible: { opacity: 1, scale: 1, rotate: 0 },
+   109→};
+   110→
+   111→/* -- Variant: fade from below with no blur (lighter variant) -------- */
+   112→const fadeUpLight = {
+   113→  hidden: { opacity: 0, y: 30 },
+   114→  visible: { opacity: 1, y: 0 },
+   115→};
+   116→
+   117→/* -- Variant for marquee -------------------------------------------- */
+   118→const marqueeTrack = {
+   119→  animate: { x: ['0%', '-50%'] },
+   120→};
+   121→
+   122→/* ================================================================== */
+   123→/*  HELPER COMPONENTS                                                  */
+   124→/* ================================================================== */
+   125→
+   126→/** Decorative floating orb for section backgrounds */
+   127→function FloatingOrb({
+   128→  size = 200,
+   129→  color = 'blue',
+   130→  className = '',
+   131→  delay = 0,
+   132→}: {
+   133→  size?: number;
+   134→  color?: 'blue' | 'orange' | 'purple' | 'amber';
+   135→  className?: string;
+   136→  delay?: number;
+   137→}) {
+   138→  const colorMap = {
+   139→    blue: 'bg-blue-400/15',
+   140→    orange: 'bg-orange-400/12',
+   141→    purple: 'bg-purple-400/10',
+   142→    amber: 'bg-amber-400/12',
+   143→  };
+   144→  const animClass = delay === 0 ? 'animate-orb-1' : delay === 1 ? 'animate-orb-2' : 'animate-orb-3';
+   145→
+   146→  return (
+   147→    <div
+   148→      className={`absolute rounded-full blur-3xl pointer-events-none ${colorMap[color]} ${animClass} ${className}`}
+   149→      style={{ width: size, height: size }}
+   150→    />
+   151→  );
+   152→}
+   153→
+   154→/** Text cycle animation for hero */
+   155→function TextCycle({ words, interval = 3000 }: { words: string[]; interval?: number }) {
+   156→  const [index, setIndex] = useState(0);
+   157→
+   158→  useEffect(() => {
+   159→    const timer = setInterval(() => {
+   160→      setIndex((prev) => (prev + 1) % words.length);
+   161→    }, interval);
+   162→    return () => clearInterval(timer);
+   163→  }, [words.length, interval]);
+   164→
+   165→  return (
+   166→    <AnimatePresence mode="wait">
+   167→      <motion.span
+   168→        key={words[index]}
+   169→        initial={{ opacity: 0, y: 20, filter: 'blur(6px)' }}
+   170→        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+   171→        exit={{ opacity: 0, y: -20, filter: 'blur(6px)' }}
+   172→        transition={{ ...gentleSpring }}
+   173→        className="inline-block"
+   174→      >
+   175→        {words[index]}
+   176→      </motion.span>
+   177→    </AnimatePresence>
+   178→  );
+   179→}
+   180→
+   181→/** Infinite scrolling marquee */
+   182→function Marquee({
+   183→  children,
+   184→  speed = 30,
+   185→  reverse = false,
+   186→  className = '',
+   187→}: {
+   188→  children: React.ReactNode;
+   189→  speed?: number;
+   190→  reverse?: boolean;
+   191→  className?: string;
+   192→}) {
+   193→  return (
+   194→    <div className={`overflow-hidden ${className}`}>
+   195→      <motion.div
+   196→        className="flex gap-8 w-max"
+   197→        animate={{ x: reverse ? ['0%', '-50%'] : ['-50%', '0%'] }}
+   198→        transition={{
+   199→          x: {
+   200→            repeat: Infinity,
+   201→            repeatType: 'loop',
+   202→            duration: speed,
+   203→            ease: 'linear',
+   204→          },
+   205→        }}
+   206→      >
+   207→        {children}
+   208→        {children}
+   209→      </motion.div>
+   210→    </div>
+   211→  );
+   212→}
+   213→
+   214→/** Apple-style section reveal */
+   215→function Reveal({
+   216→  children,
+   217→  className = '',
+   218→  delay = 0,
+   219→  once = true,
+   220→}: {
+   221→  children: React.ReactNode;
+   222→  className?: string;
+   223→  delay?: number;
+   224→  once?: boolean;
+   225→}) {
+   226→  return (
+   227→    <motion.div
+   228→      initial="hidden"
+   229→      whileInView="visible"
+   230→      viewport={{ once, margin: '-80px' }}
+   231→      variants={fadeUp}
+   232→      transition={{ ...smoothSpring, delay }}
+   233→      className={className}
+   234→    >
+   235→      {children}
+   236→    </motion.div>
+   237→  );
+   238→}
+   239→
+   240→/** Staggered children container */
+   241→function StaggerReveal({
+   242→  children,
+   243→  className = '',
+   244→  variant = stagger,
+   245→}: {
+   246→  children: React.ReactNode;
+   247→  className?: string;
+   248→  variant?: typeof stagger;
+   249→}) {
+   250→  return (
+   251→    <motion.div
+   252→      initial="hidden"
+   253→      whileInView="visible"
+   254→      viewport={{ once: true, margin: '-60px' }}
+   255→      variants={variant}
+   256→      className={className}
+   257→    >
+   258→      {children}
+   259→    </motion.div>
+   260→  );
+   261→}
+   262→
+   263→/** Single stagger child item */
+   264→function StaggerItem({
+   265→  children,
+   266→  className = '',
+   267→  variants = fadeUp,
+   268→}: {
+   269→  children: React.ReactNode;
+   270→  className?: string;
+   271→  variants?: typeof fadeUp;
+   272→}) {
+   273→  return (
+   274→    <motion.div variants={variants} transition={smoothSpring} className={className}>
+   275→      {children}
+   276→    </motion.div>
+   277→  );
+   278→}
+   279→
+   280→/** Scroll progress bar at top of viewport */
+   281→function ScrollProgress() {
+   282→  const { scrollYProgress } = useScroll();
+   283→  return (
+   284→    <motion.div
+   285→      className="fixed top-0 left-0 right-0 h-[2px] bg-orange-500 origin-left z-[60]"
+   286→      style={{ scaleX: scrollYProgress }}
+   287→    />
+   288→  );
+   289→}
+   290→
+   291→/** Animated section label with growing underline */
+   292→function SectionLabel({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+   293→  return (
+   294→    <Reveal className="inline-flex flex-col items-start">
+   295→      <p className={`text-sm font-semibold tracking-widest uppercase mb-1 ${light ? 'text-orange-400' : 'text-orange-600'}`}>
+   296→        {children}
+   297→      </p>
+   298→      <motion.div
+   299→        className="h-[2px] rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+   300→        initial={{ scaleX: 0, originX: 0 }}
+   301→        whileInView={{ scaleX: 1 }}
+   302→        viewport={{ once: true }}
+   303→        transition={{ ...smoothSpring, delay: 0.15 }}
+   304→        style={{ width: '3rem' }}
+   305→      />
+   306→    </Reveal>
+   307→  );
+   308→}
+   309→
+   310→/** Animated count-up number */
+   311→function CountUp({ target, duration = 2, suffix = '' }: { target: number; duration?: number; suffix?: string }) {
+   312→  const [count, setCount] = useState(0);
+   313→  const ref = useRef<HTMLSpanElement>(null);
+   314→  const hasAnimated = useRef(false);
+   315→
+   316→  useEffect(() => {
+   317→    const observer = new IntersectionObserver(
+   318→      ([entry]) => {
+   319→        if (entry.isIntersecting && !hasAnimated.current) {
+   320→          hasAnimated.current = true;
+   321→          const start = performance.now();
+   322→          const step = (now: number) => {
+   323→            const progress = Math.min((now - start) / (duration * 1000), 1);
+   324→            const eased = 1 - Math.pow(1 - progress, 3);
+   325→            setCount(Math.round(eased * target));
+   326→            if (progress < 1) requestAnimationFrame(step);
+   327→          };
+   328→          requestAnimationFrame(step);
+   329→        }
+   330→      },
+   331→      { threshold: 0.5 }
+   332→    );
+   333→    if (ref.current) observer.observe(ref.current);
+   334→    return () => observer.disconnect();
+   335→  }, [target, duration]);
+   336→
+   337→  return <span ref={ref}>{count}{suffix}</span>;
+   338→}
+   339→
+   340→/** Hover popup that shows an ERP screenshot when hovering a feature item */
+   341→function FeaturePreview({
+   342→  children,
+   343→  image,
+   344→  featureName,
+   345→}: {
+   346→  children: React.ReactNode;
+   347→  image: string;
+   348→  featureName: string;
+   349→}) {
+   350→  const [hovered, setHovered] = useState(false);
+   351→  const [pos, setPos] = useState<'left' | 'right'>('right');
+   352→  const itemRef = useRef<HTMLLIElement>(null);
+   353→
+   354→  const handleMouseEnter = () => {
+   355→    if (!itemRef.current) return;
+   356→    const rect = itemRef.current.getBoundingClientRect();
+   357→    const cardRect = itemRef.current.closest('[data-module-card]')?.getBoundingClientRect();
+   358→    if (cardRect) {
+   359→      const itemCenter = rect.left + rect.width / 2;
+   360→      const cardCenter = cardRect.left + cardRect.width / 2;
+   361→      setPos(itemCenter < cardCenter ? 'right' : 'left');
+   362→    }
+   363→    setHovered(true);
+   364→  };
+   365→
+   366→  return (
+   367→    <li
+   368→      ref={itemRef}
+   369→      className="relative"
+   370→      onMouseEnter={handleMouseEnter}
+   371→      onMouseLeave={() => setHovered(false)}
+   372→    >
+   373→      <div className="flex items-start gap-2.5 group/feat cursor-default">
+   374→        <CheckCircle2 className={`shrink-0 h-[18px] w-[18px] mt-0.5 text-foreground/20 group-hover/feat:text-foreground/50 transition-colors duration-300`} />
+   375→        <span className="text-[15px] text-muted-foreground leading-relaxed group-hover/feat:text-foreground transition-colors duration-300">{children}</span>
+   376→      </div>
+   377→      {/* Hover popup */}
+   378→      <AnimatePresence>
+   379→        {hovered && (
+   380→          <motion.div
+   381→            initial={{ opacity: 0, y: 6, scale: 0.95 }}
+   382→            animate={{ opacity: 1, y: 0, scale: 1 }}
+   383→            exit={{ opacity: 0, y: 6, scale: 0.95 }}
+   384→            transition={{ ...snappySpring }}
+   385→            className={`absolute z-[100] top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none ${
+   386→              pos === 'right'
+   387→                ? 'left-full ml-4'
+   388→                : 'right-full mr-4'
+   389→            }`}
+   390→            style={{ width: 340 }}
+   391→          >
+   392→            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/20 border border-gray-200/80 bg-white p-2">
+   393→              {/* Feature name label */}
+   394→              <div className="px-2 py-1.5 mb-1.5">
+   395→                <p className="text-xs font-semibold text-foreground/80 truncate">{featureName}</p>
+   396→              </div>
+   397→              {/* Screenshot */}
+   398→              <div className="relative rounded-xl overflow-hidden bg-gray-100">
+   399→                <Image
+   400→                  src={image}
+   401→                  alt={featureName}
+   402→                  width={672}
+   403→                  height={384}
+   404→                  className="w-full h-auto block"
+   405→                />
+   406→                {/* Subtle gradient overlay at edges */}
+   407→                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent pointer-events-none" />
+   408→              </div>
+   409→              {/* Module indicator dot */}
+   410→              <div className="absolute top-3 right-3">
+   411→                <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+   412→              </div>
+   413→            </div>
+   414→            {/* Arrow */}
+   415→            <div
+   416→              className={`absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white border border-gray-200/80 rotate-45 ${
+   417→                pos === 'right' ? '-left-[5px]' : '-right-[5px]'
+   418→              }`}
+   419→              style={{
+   420→                borderTopColor: 'transparent',
+   421→                borderBottomColor: 'transparent',
+   422→                [pos === 'right' ? 'borderLeftColor' : 'borderRightColor']: 'white',
+   423→              }}
+   424→            />
+   425→          </motion.div>
+   426→        )}
+   427→      </AnimatePresence>
+   428→    </li>
+   429→  );
+   430→}
+   431→
+   432→/* ================================================================== */
+   433→/*  DATA                                                               */
+   434→/* ================================================================== */
+   435→const modules = [
+   436→  {
+   437→    icon: Users,
+   438→    title: 'HR Management',
+   439→    color: 'from-blue-900 to-blue-900',
+   440→    lightBg: 'bg-blue-300',
+   441→    textColor: 'text-blue-900',
+   442→    features: [
+   443→      { name: 'Employee records management', image: '/images/modules/hr-employees.png' },
+   444→      { name: 'Leave & attendance management', image: '/images/modules/hr-payroll.png' },
+   445→      { name: 'Performance management', image: '/images/modules/hr-employees.png' },
+   446→      { name: 'Recruitment & onboarding', image: '/images/modules/hr-employees.png' },
+   447→      { name: 'Employee self-service portal', image: '/images/modules/hr-payroll.png' },
+   448→      { name: 'Approval workflows', image: '/images/modules/hr-payroll.png' },
+   449→      { name: 'Payroll Management', image: '/images/modules/hr-payroll.png' },
+   450→    ],
+   451→  },
+   452→  {
+   453→    icon: Megaphone,
+   454→    title: 'Marketing & Business Development',
+   455→    color: 'from-amber-500 to-orange-600',
+   456→    lightBg: 'bg-amber-50',
+   457→    textColor: 'text-amber-700',
+   458→    features: [
+   459→      { name: 'Lead management', image: '/images/modules/mkt-leads.png' },
+   460→      { name: 'Opportunity tracking', image: '/images/modules/mkt-leads.png' },
+   461→      { name: 'Customer relationship management', image: '/images/modules/mkt-crm.png' },
+   462→      { name: 'Follow-up monitoring', image: '/images/modules/mkt-crm.png' },
+   463→      { name: 'Sales pipeline visibility', image: '/images/modules/mkt-leads.png' },
+   464→      { name: 'Fleet management', image: '/images/modules/mkt-crm.png' },
+   465→    ],
+   466→  },
+   467→  {
+   468→    icon: Calculator,
+   469→    title: 'Accounting',
+   470→    color: 'from-rose-500 to-pink-600',
+   471→    lightBg: 'bg-rose-50',
+   472→    textColor: 'text-rose-700',
+   473→    features: [
+   474→      { name: 'General Ledger', image: '/images/modules/acc-ledger.png' },
+   475→      { name: 'Accounts Payable & Receivable', image: '/images/modules/acc-ledger.png' },
+   476→      { name: 'Cash Management', image: '/images/modules/acc-reports.png' },
+   477→      { name: 'Bank Reconciliation', image: '/images/modules/acc-ledger.png' },
+   478→      { name: 'Financial Reporting', image: '/images/modules/acc-reports.png' },
+   479→      { name: 'Budget Management & Expense Tracking', image: '/images/modules/acc-reports.png' },
+   480→      { name: 'Multi-branch accounting', image: '/images/modules/acc-reports.png' },
+   481→      { name: 'Payroll Management', image: '/images/modules/acc-ledger.png' },
+   482→    ],
+   483→  },
+   484→  {
+   485→    icon: Settings,
+   486→    title: 'Operations',
+   487→    color: 'from-violet-500 to-purple-600',
+   488→    lightBg: 'bg-violet-50',
+   489→    textColor: 'text-violet-700',
+   490→    features: [
+   491→      { name: 'Reinsurance Brokerage Software', image: '/images/modules/ops-process.png' },
+   492→      { name: 'Insurance Brokerage Software', image: '/images/modules/ops-process.png' },
+   493→      { name: 'Hospital Management Software', image: '/images/modules/ops-industry.png' },
+   494→      { name: 'School Management Software', image: '/images/modules/ops-industry.png' },
+   495→      { name: 'Manufacturing processes', image: '/images/modules/ops-process.png' },
+   496→      { name: 'Industry-specific business processes', image: '/images/modules/ops-industry.png' },
+   497→    ],
+   498→  },
+   499→];
+   500→
+   501→const dashboardFeatures = [
+   502→  'Company-wide performance metrics',
+   503→  'Sales pipeline status',
+   504→  'Revenue tracking',
+   505→  'Staff productivity insights',
+   506→  'Operational performance indicators',
+   507→  'Financial health monitoring',
+   508→  'Departmental performance reports',
+   509→];
+   510→
+   511→const benefits = [
+   512→  { icon: TrendingUp, title: 'Reduce Software Costs', desc: 'Replace multiple standalone applications with a single integrated platform to lower subscription and licensing expenses.' },
+   513→  { icon: Layers, title: 'Eliminate Duplicate Data', desc: 'A single source of truth means no more re-entering data across disconnected systems.' },
+   514→  { icon: Users, title: 'Improve Collaboration', desc: 'Departments share real-time data, breaking down silos and boosting teamwork.' },
+   515→  { icon: BarChart3, title: 'Enhance Reporting', desc: 'Consolidated, accurate reports replace fragmented spreadsheets and guesswork.' },
+   516→  { icon: Zap, title: 'Increase Productivity', desc: 'One login, one platform — employees spend less time switching tools and more time delivering results.' },
+   517→  { icon: ShieldCheck, title: 'Simplify IT Administration', desc: 'Manage one system instead of dozens, reducing IT overhead and complexity.' },
+   518→];
+   519→
+   520→/* ================================================================== */
+   521→/*  MAIN PAGE                                                          */
+   522→/* ================================================================== */
+   523→export default function HomePage() {
+   524→  const [scrolled, setScrolled] = useState(false);
+   525→  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+   526→  const heroRef = useRef<HTMLElement>(null);
+   527→
+   528→  const { scrollYProgress: heroProgress } = useScroll({
+   529→    target: heroRef,
+   530→    offset: ['start start', 'end start'],
+   531→  });
+   532→  const heroContentY = useTransform(heroProgress, [0, 1], [0, 120]);
+   533→  const heroContentOpacity = useTransform(heroProgress, [0, 0.75], [1, 0]);
+   534→  const heroContentScale = useTransform(heroProgress, [0, 1], [1, 0.97]);
+   535→
+   536→  useMotionValueEvent(useScroll().scrollY, 'change', (latest) => {
+   537→    setScrolled(latest > 60);
+   538→  });
+   539→
+   540→  const scrollTo = (id: string) => {
+   541→    setMobileMenuOpen(false);
+   542→    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+   543→  };
+   544→
+   545→  const navLinks = ['modules', 'dashboard', 'benefits', 'about'];
+   546→
+   547→  return (
+   548→    <div className="min-h-screen flex flex-col bg-white overflow-x-hidden">
+   549→      <ScrollProgress />
+   550→
+   551→      {/* ===================== HEADER ===================== */}
+   552→      <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+   553→        <motion.nav
+   554→          initial={{ y: -100, opacity: 0 }}
+   555→          animate={{ y: 0, opacity: 1 }}
+   556→          transition={{ ...gentleSpring, delay: 0.2 }}
+   557→          className={`mx-auto transition-all duration-500 ${
+   558→            scrolled || mobileMenuOpen
+   559→              ? 'max-w-3xl mt-3 px-2 py-1.5 rounded-full bg-white/70 backdrop-blur-2xl shadow-lg shadow-black/[0.06] border border-white/40 flex items-center justify-between text-foreground'
+   560→              : 'max-w-7xl mt-0 px-6 sm:px-8 lg:px-12 py-3 flex items-center justify-between text-white'
+   561→          }`}
+   562→        >
+   563→          {/* Logo */}
+   564→          <button
+   565→            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+   566→            className="flex items-center gap-2 cursor-pointer shrink-0"
+   567→          >
+   568→            <Image
+   569→              src="/images/workphelo-logo.png"
+   570→              alt="Workphelo"
+   571→              width={120}
+   572→              height={32}
+   573→              className={`h-5 w-auto transition-all duration-500 ${
+   574→                scrolled
+   575→                  ? 'h-5 w-auto opacity-100'
+   576→                  : 'h-[22px] w-auto brightness-0 invert'
+   577→              }`}
+   578→            />
+   579→          </button>
+   580→
+   581→          {/* Desktop links */}
+   582→          <div className="hidden md:flex items-center gap-1">
+   583→            {navLinks.map((id) => (
+   584→              <button
+   585→                key={id}
+   586→                onClick={() => scrollTo(id)}
+   587→                className={`px-3 py-2 rounded-full text-[13px] font-medium transition-all duration-300 cursor-pointer capitalize min-h-[44px] flex items-center ${
+   588→                  scrolled
+   589→                    ? 'text-muted-foreground hover:text-foreground hover:bg-black/5'
+   590→                    : 'hover:bg-white/10'
+   591→                }`}
+   592→                style={!scrolled ? { color: 'white' } : undefined}
+   593→              >
+   594→                {id === 'about' ? 'Built for Africa' : id}
+   595→              </button>
+   596→            ))}
+   597→          </div>
+   598→
+   599→          {/* CTA */}
+   600→          <div className="hidden md:flex items-center shrink-0">
+   601→            <Button
+   602→              onClick={() => scrollTo('waitlist-cta')}
+   603→              className={`rounded-full font-semibold cursor-pointer transition-all duration-300 text-[13px] px-4 ${
+   604→                scrolled
+   605→                  ? 'bg-blue-900 hover:bg-blue-950 text-white shadow-md shadow-blue-900/20'
+   606→                  : 'bg-white/15 backdrop-blur-sm text-white border border-white/20 hover:bg-white/25'
+   607→              }`}
+   608→            >
+   609→              Join Waitlist
+   610→              <ArrowRight className="ml-1 h-3 w-3" />
+   611→            </Button>
+   612→          </div>
+   613→
+   614→          {/* Mobile toggle */}
+   615→          <button
+   616→            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+   617→            className={`md:hidden p-1.5 rounded-full cursor-pointer transition-colors ${
+   618→              scrolled ? 'text-foreground hover:bg-black/5' : 'hover:bg-white/10'
+   619→            }`}
+   620→            style={!scrolled ? { color: 'white' } : undefined}
+   621→            aria-label="Toggle menu"
+   622→          >
+   623→            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+   624→          </button>
+   625→        </motion.nav>
+   626→      </header>
+   627→
+   628→      {/* Mobile menu — full-screen overlay */}
+   629→      <AnimatePresence>
+   630→        {mobileMenuOpen && (
+   631→          <motion.div
+   632→            initial={{ opacity: 0 }}
+   633→            animate={{ opacity: 1 }}
+   634→            exit={{ opacity: 0 }}
+   635→            transition={{ duration: 0.25 }}
+   636→            className="fixed inset-0 z-40 bg-blue-950/95 backdrop-blur-2xl md:hidden"
+   637→          >
+   638→            <div className="flex flex-col items-center justify-center h-full gap-2">
+   639→              {navLinks.map((id, i) => (
+   640→                <motion.button
+   641→                  key={id}
+   642→                  initial={{ opacity: 0, y: 20 }}
+   643→                  animate={{ opacity: 1, y: 0 }}
+   644→                  exit={{ opacity: 0, y: 10 }}
+   645→                  transition={{ ...gentleSpring, delay: 0.05 + i * 0.06 }}
+   646→                  onClick={() => scrollTo(id)}
+   647→                  className="text-2xl font-semibold text-white/80 hover:text-white transition-colors capitalize cursor-pointer py-3"
+   648→                >
+   649→                  {id === 'about' ? 'Built for Africa' : id}
+   650→                </motion.button>
+   651→              ))}
+   652→              <motion.div
+   653→                initial={{ opacity: 0, y: 20 }}
+   654→                animate={{ opacity: 1, y: 0 }}
+   655→                exit={{ opacity: 0, y: 10 }}
+   656→                transition={{ ...gentleSpring, delay: 0.05 + navLinks.length * 0.06 }}
+   657→                className="mt-4"
+   658→              >
+   659→                <Button
+   660→                  onClick={() => scrollTo('waitlist-section')}
+   661→                  className="rounded-full bg-orange-600 hover:bg-orange-700 text-white font-semibold cursor-pointer shadow-lg shadow-orange-600/30 px-8"
+   662→                >
+   663→                  Join the Waitlist
+   664→                  <ArrowRight className="ml-2 h-4 w-4" />
+   665→                </Button>
+   666→              </motion.div>
+   667→            </div>
+   668→          </motion.div>
+   669→        )}
+   670→      </AnimatePresence>
+   671→
+   672→      <main className="flex-1">
+   673→        {/* ===================== HERO ===================== */}
+   674→        <section ref={heroRef} className="relative flex items-center justify-center overflow-hidden lg:min-h-screen min-h-[100svh] cursor-dot">
+   675→          {/* Background image */}
+   676→          <Image
+   677→            src="/images/hero-bg.png"
+   678→            alt=""
+   679→            fill
+   680→            className="object-cover object-center scale-105"
+   681→            priority
+   682→          />
+   683→          {/* Dark overlay — deep shade with subtle animated gradient */}
+   684→          <div className="absolute inset-0 bg-black/80" />
+   685→          <div className="absolute inset-0 bg-gradient-to-br from-blue-950/30 via-transparent to-orange-950/20 animate-gradient-shift" />
+   686→          {/* Vignette for depth */}
+   687→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_rgba(0,0,0,0.4)_100%)]" />
+   688→
+   689→          {/* Decorative floating particles */}
+   690→          {[...Array(6)].map((_, i) => (
+   691→            <motion.div
+   692→              key={i}
+   693→              className="absolute rounded-full bg-white/[0.03] pointer-events-none"
+   694→              style={{
+   695→                width: 4 + (i * 3),
+   696→                height: 4 + (i * 3),
+   697→                top: `${15 + (i * 12)}%`,
+   698→                left: `${10 + (i * 15)}%`,
+   699→              }}
+   700→              animate={{
+   701→                y: [0, -30 - (i * 8), 0],
+   702→                opacity: [0.2, 0.6, 0.2],
+   703→                scale: [1, 1.2, 1],
+   704→              }}
+   705→              transition={{
+   706→                duration: 5 + i * 1.5,
+   707→                repeat: Infinity,
+   708→                ease: 'easeInOut',
+   709→                delay: i * 0.7,
+   710→              }}
+   711→            />
+   712→          ))}
+   713→
+   714→          {/* Content */}
+   715→          <motion.div
+   716→            style={{ y: heroContentY, opacity: heroContentOpacity, scale: heroContentScale }}
+   717→            className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 pt-32 pb-24 lg:pt-0 lg:pb-0 text-center"
+   718→          >
+   719→            {/* Headline */}
+   720→            <motion.h1
+   721→              className="text-[1.9rem] sm:text-[2.6rem] md:text-[3.15rem] lg:text-[4.2rem] xl:text-[4.9rem] font-extrabold tracking-tight text-white leading-[0.95]"
+   722→              initial="hidden"
+   723→              animate="visible"
+   724→              variants={{
+   725→                hidden: {},
+   726→                visible: { transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+   727→              }}
+   728→            >
+   729→              {/* Line 1: Complete Business */}
+   730→              <motion.span
+   731→                className="block text-white/80"
+   732→                variants={{
+   733→                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+   734→                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+   735→                }}
+   736→              >
+   737→                Complete Business
+   738→              </motion.span>
+   739→
+   740→              {/* Line 3: Visibility. — with animated orange accent */}
+   741→              <motion.span
+   742→                className="block bg-gradient-to-r from-orange-300 via-orange-400 to-amber-300 bg-clip-text text-transparent animate-gradient-text"
+   743→                variants={{
+   744→                  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+   745→                  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: gentleSpring },
+   746→                }}
+   747→              >
+   748→                Visibility.
+   749→              </motion.span>
+   750→            </motion.h1>
+   751→
+   752→            {/* Subtitle */}
+   753→            <motion.p
+   754→              initial={{ opacity: 0, y: 20 }}
+   755→              animate={{ opacity: 1, y: 0 }}
+   756→              transition={{ ...smoothSpring, delay: 1.1 }}
+   757→              className="mt-8 sm:mt-10 text-sm sm:text-base text-white/40 max-w-xl mx-auto leading-relaxed"
+   758→            >
+   759→              Workphelo unifies{' '}
+   760→              <TextCycle
+   761→                words={['HR', 'Marketing', 'Accounting', 'Operations', 'Fleet Management']}
+   762→                interval={2500}
+   763→              />
+   764→              , and Executive Reporting — giving organizations
+   765→              a single source of truth.
+   766→            </motion.p>
+   767→
+   768→            {/* Trust badges */}
+   769→            <motion.div
+   770→              className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2"
+   771→              initial="hidden"
+   772→              animate="visible"
+   773→              variants={{
+   774→                hidden: {},
+   775→                visible: { transition: { staggerChildren: 0.1, delayChildren: 1.3 } },
+   776→              }}
+   777→            >
+   778→              {['No credit card required', 'Free early access', 'Built for Africa'].map((t) => (
+   779→                <motion.div
+   780→                  key={t}
+   781→                  className="flex items-center gap-1.5 text-[13px] text-white/25"
+   782→                  variants={{
+   783→                    hidden: { opacity: 0 },
+   784→                    visible: { opacity: 1, transition: { duration: 0.6 } },
+   785→                  }}
+   786→                >
+   787→                  <span className="w-1 h-1 rounded-full bg-orange-400/50" />
+   788→                  <span>{t}</span>
+   789→                </motion.div>
+   790→              ))}
+   791→            </motion.div>
+   792→          </motion.div>
+   793→
+   794→          {/* Floating "One Platform." badge — left (desktop) */}
+   795→          <motion.div
+   796→            initial={{ opacity: 0, scale: 0.7 }}
+   797→            animate={{ opacity: 1, scale: 1 }}
+   798→            transition={{ ...snappySpring, delay: 0.8 }}
+   799→            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+   800→            style={{
+   801→              bottom: '18%',
+   802→              left: '8%',
+   803→            }}
+   804→          >
+   805→            <motion.div
+   806→              animate={{ y: [0, -6, 0] }}
+   807→              transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+   808→            >
+   809→              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+   810→                <Layers className="w-4 h-4 text-blue-400" />
+   811→              </div>
+   812→            </motion.div>
+   813→            <span className="text-white text-base font-semibold tracking-tight">One Platform.</span>
+   814→          </motion.div>
+   815→
+   816→          {/* Floating "One Login." badge — right (desktop) */}
+   817→          <motion.div
+   818→            initial={{ opacity: 0, scale: 0.7 }}
+   819→            animate={{ opacity: 1, scale: 1 }}
+   820→            transition={{ ...snappySpring, delay: 1.0 }}
+   821→            className="absolute z-20 hidden lg:flex items-center gap-3 bg-white/[0.07] border border-white/[0.1] rounded-full px-5 py-2.5 backdrop-blur-md"
+   822→            style={{
+   823→              bottom: '18%',
+   824→              right: '8%',
+   825→            }}
+   826→          >
+   827→            <motion.div
+   828→              animate={{ y: [0, -6, 0] }}
+   829→              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+   830→            >
+   831→              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+   832→                <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+   833→                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+   834→                </svg>
+   835→              </div>
+   836→            </motion.div>
+   837→            <span className="text-white text-base font-semibold tracking-tight">One Login.</span>
+   838→          </motion.div>
+   839→
+   840→          {/* Mobile floating badges — stacked at bottom */}
+   841→          <div className="absolute z-20 bottom-28 left-0 right-0 flex flex-col items-center gap-3 lg:hidden">
+   842→            <motion.div
+   843→              initial={{ opacity: 0, y: 20 }}
+   844→              animate={{ opacity: 1, y: 0 }}
+   845→              transition={{ ...gentleSpring, delay: 1.2 }}
+   846→              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
+   847→            >
+   848→              <motion.div
+   849→                animate={{ y: [0, -4, 0] }}
+   850→                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+   851→              >
+   852→                <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center">
+   853→                  <Layers className="w-3 h-3 text-blue-400" />
+   854→                </div>
+   855→              </motion.div>
+   856→              <span className="text-white text-sm font-semibold">One Platform.</span>
+   857→            </motion.div>
+   858→            <motion.div
+   859→              initial={{ opacity: 0, y: 20 }}
+   860→              animate={{ opacity: 1, y: 0 }}
+   861→              transition={{ ...gentleSpring, delay: 1.4 }}
+   862→              className="flex items-center gap-2.5 bg-white/[0.08] border border-white/[0.12] rounded-full px-4 py-2 backdrop-blur-md"
+   863→            >
+   864→              <motion.div
+   865→                animate={{ y: [0, -4, 0] }}
+   866→                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+   867→              >
+   868→                <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center">
+   869→                  <svg className="w-3 h-3 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+   870→                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+   871→                  </svg>
+   872→                </div>
+   873→              </motion.div>
+   874→              <span className="text-white text-sm font-semibold">One Login.</span>
+   875→            </motion.div>
+   876→          </div>
+   877→
+   878→          {/* Scroll indicator — desktop */}
+   879→          <motion.div
+   880→            initial={{ opacity: 0 }}
+   881→            animate={{ opacity: 1 }}
+   882→            transition={{ delay: 2, duration: 1 }}
+   883→            className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 hidden lg:flex flex-col items-center gap-2"
+   884→          >
+   885→            <span className="text-white/30 text-xs font-medium tracking-widest uppercase">Scroll</span>
+   886→            <motion.div
+   887→              animate={{ y: [0, 6, 0] }}
+   888→              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   889→            >
+   890→              <ChevronDown className="h-5 w-5 text-white/25" />
+   891→            </motion.div>
+   892→          </motion.div>
+   893→
+   894→          {/* Scroll indicator — mobile */}
+   895→          <motion.div
+   896→            initial={{ opacity: 0 }}
+   897→            animate={{ opacity: 1 }}
+   898→            transition={{ delay: 2, duration: 1 }}
+   899→            className="absolute bottom-14 left-1/2 -translate-x-1/2 z-10 lg:hidden"
+   900→          >
+   901→            <motion.div
+   902→              animate={{ y: [0, 5, 0] }}
+   903→              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   904→            >
+   905→              <div className="w-8 h-12 rounded-full border-2 border-white/20 flex items-start justify-center pt-2">
+   906→                <motion.div
+   907→                  className="w-1 h-2.5 rounded-full bg-white/50"
+   908→                  animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+   909→                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+   910→                />
+   911→              </div>
+   912→            </motion.div>
+   913→          </motion.div>
+   914→
+   915→          {/* Curved bottom edge */}
+   916→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   917→            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+   918→              <path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+   919→            </svg>
+   920→          </div>
+   921→        </section>
+   922→
+   923→        {/* ===================== PROBLEM / WHY WORKPHELO ===================== */}
+   924→        <section className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+   925→          {/* Floating decorative orbs */}
+   926→          <FloatingOrb size={180} color="blue" className="top-10 -right-20 hidden sm:block" delay={0} />
+   927→          <FloatingOrb size={120} color="orange" className="bottom-20 -left-16 hidden sm:block" delay={1} />
+   928→          <div className="max-w-5xl mx-auto px-5 sm:px-8">
+   929→            <Reveal>
+   930→              <SectionLabel>The Problem</SectionLabel>
+   931→            </Reveal>
+   932→            <Reveal delay={0.1}>
+   933→              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight max-w-4xl">
+   934→                Why Workphelo Is Better
+   935→                <br className="hidden sm:block" />
+   936→                {' '}Than Traditional ERP Systems
+   937→              </h2>
+   938→            </Reveal>
+   939→            <Reveal delay={0.2}>
+   940→              <p className="mt-5 sm:mt-8 text-base sm:text-xl text-muted-foreground leading-relaxed max-w-3xl">
+   941→                Most organizations in Ghana and Africa operate with multiple disconnected
+   942→                software solutions for HR, accounting, sales, operations, fleet management,
+   943→                and reporting. This creates inefficiencies, duplicate data entry, poor
+   944→                visibility, and higher operational costs.
+   945→              </p>
+   946→            </Reveal>
+   947→
+   948→            <Reveal delay={0.35} className="mt-10 sm:mt-16">
+   949→              <motion.div
+   950→                whileHover={{ y: -4, transition: snappySpring }}
+   951→                whileTap={{ scale: 0.99 }}
+   952→                className="relative rounded-2xl sm:rounded-3xl bg-blue-200/60 border border-blue-300/60 p-6 sm:p-14 card-shimmer"
+   953→              >
+   954→                <div className="absolute top-6 right-6 sm:top-8 sm:right-8 opacity-[0.07]">
+   955→                  <MonitorSmartphone className="h-28 w-28 sm:h-36 sm:w-36 text-blue-900" />
+   956→                </div>
+   957→                <div className="relative flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
+   958→                  <motion.div
+   959→                    initial="hidden"
+   960→                    whileInView="visible"
+   961→                    viewport={{ once: true }}
+   962→                    variants={rotateIn}
+   963→                    transition={{ ...smoothSpring, delay: 0.5 }}
+   964→                    className="shrink-0 w-12 h-12 rounded-2xl bg-blue-900 items-center justify-center shadow-lg shadow-blue-900/20 flex"
+   965→                  >
+   966→                    <Globe className="h-6 w-6 text-white" />
+   967→                  </motion.div>
+   968→                  <div>
+   969→                    <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-foreground leading-snug">
+   970→                      Workphelo solves this by bringing all critical business
+   971→                      functions into a single integrated platform.
+   972→                    </h3>
+   973→                    <p className="mt-3 sm:mt-4 text-muted-foreground leading-relaxed max-w-2xl text-sm sm:text-lg">
+   974→                      Unlike traditional setups where employees switch between multiple
+   975→                      applications for different tasks, Workphelo enables teams to work
+   976→                      from a single platform with one login, improving productivity and
+   977→                      collaboration across departments.
+   978→                    </p>
+   979→                  </div>
+   980→                </div>
+   981→              </motion.div>
+   982→            </Reveal>
+   983→          </div>
+   984→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+   985→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+   986→              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+   987→            </svg>
+   988→          </div>
+   989→        </section>
+   990→
+   991→        {/* ===================== MARQUEE STRIP ===================== */}
+   992→        <div className="py-5 sm:py-6 bg-stone-50/70 border-y border-gray-100/80 overflow-hidden cursor-dot">
+   993→          <Marquee speed={40} className="opacity-40">
+   994→            {['HR Management', 'Accounting', 'Marketing & BD', 'Operations', 'Fleet Management', 'Executive Dashboard', 'Agentic AI', 'Cloud-Based', 'Single Login', 'Built for Africa'].map((t) => (
+   995→              <span key={t} className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-foreground/60 whitespace-nowrap flex items-center gap-8">
+   996→                {t}
+   997→                <span className="w-1.5 h-1.5 rounded-full bg-orange-400/60" />
+   998→              </span>
+   999→            ))}
+  1000→          </Marquee>
+  1001→        </div>
+  1002→
+  1003→        {/* ===================== MODULES ===================== */}
+  1004→        <section id="modules" className="py-20 sm:py-28 lg:py-36 bg-stone-50/70 relative cursor-dot">
+  1005→          {/* Floating decorative orbs */}
+  1006→          <FloatingOrb size={160} color="purple" className="top-32 -right-24 hidden lg:block" delay={2} />
+  1007→          <FloatingOrb size={130} color="amber" className="bottom-40 -left-20 hidden lg:block" delay={0} />
+  1008→          <div className="max-w-6xl mx-auto px-5 sm:px-8">
+  1009→            <Reveal className="max-w-3xl mx-auto text-center">
+  1010→              <SectionLabel>Core Modules</SectionLabel>
+  1011→              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground mt-3">
+  1012→                Everything Your Business Needs,
+  1013→                <br className="hidden sm:block" /> In One Place
+  1014→              </h2>
+  1015→              <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+  1016→                Four powerful modules designed to cover every aspect of your business operations — plus an AI-powered future on the horizon.
+  1017→              </p>
+  1018→            </Reveal>
+  1019→
+  1020→            <StaggerReveal className="mt-10 sm:mt-16 grid md:grid-cols-2 gap-4 sm:gap-5 lg:gap-7" variant={stagger}>
+  1021→              {modules.map((mod) => {
+  1022→                const Icon = mod.icon;
+  1023→                return (
+  1024→                  <StaggerItem key={mod.title}>
+  1025→                    <motion.div
+  1026→                      whileHover={{ y: -6, transition: snappySpring }}
+  1027→                      whileTap={{ scale: 0.98 }}
+  1028→                      data-module-card=""
+  1029→                      className="group relative z-0 h-full bg-white rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-xl hover:shadow-black/[0.06] hover:z-20 p-5 sm:p-9 transition-[shadow,z-index] duration-300 card-shimmer"
+  1030→                    >
+  1031→                      {/* Top accent line */}
+  1032→                      <div className={`absolute top-0 left-8 right-8 h-[3px] rounded-b-full bg-gradient-to-r ${mod.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+  1033→                      <div className="flex items-start gap-4 mb-6">
+  1034→                        <div className={`shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br ${mod.color} flex items-center justify-center shadow-lg`}>
+  1035→                          <Icon className="h-6 w-6 text-white" />
+  1036→                        </div>
+  1037→                        <h3 className="text-xl font-bold text-foreground pt-2">{mod.title}</h3>
+  1038→                      </div>
+  1039→                      <ul className="space-y-3">
+  1040→                        {mod.features.map((f) => (
+  1041→                          <FeaturePreview key={f.name} image={f.image} featureName={f.name}>
+  1042→                            {f.name}
+  1043→                          </FeaturePreview>
+  1044→                        ))}
+  1045→                      </ul>
+  1046→                    </motion.div>
+  1047→                  </StaggerItem>
+  1048→                );
+  1049→              })}
+  1050→            </StaggerReveal>
+  1051→
+  1052→            {/* ========== AGENTIC AI MODULE — UPCOMING ========== */}
+  1053→            <Reveal delay={0.3} className="mt-6 sm:mt-8">
+  1054→              <motion.div
+  1055→                whileHover={{ y: -4, transition: snappySpring }}
+  1056→                whileTap={{ scale: 0.995 }}
+  1057→                className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-gradient-to-br from-orange-50/80 via-white to-amber-50/60 p-5 sm:p-10 lg:p-12 animated-gradient-border"
+  1058→              >
+  1059→                {/* Animated glow */}
+  1060→                <motion.div
+  1061→                  className="absolute -top-20 -right-20 w-48 h-48 sm:w-64 sm:h-64 bg-orange-400/10 rounded-full blur-3xl pointer-events-none"
+  1062→                  animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
+  1063→                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+  1064→                />
+  1065→                <motion.div
+  1066→                  className="absolute -bottom-20 -left-20 w-48 h-48 sm:w-64 sm:h-64 bg-blue-400/10 rounded-full blur-3xl pointer-events-none"
+  1067→                  animate={{ scale: [1.1, 0.95, 1.1], opacity: [0.4, 0.7, 0.4] }}
+  1068→                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+  1069→                />
+  1070→
+  1071→                <div className="relative">
+  1072→                  <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 mb-6 sm:mb-8">
+  1073→                    <motion.div
+  1074→                      className="shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20"
+  1075→                      animate={{ rotate: [0, 3, -3, 0] }}
+  1076→                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+  1077→                    >
+  1078→                      <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+  1079→                    </motion.div>
+  1080→                    <div className="flex-1">
+  1081→                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+  1082→                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Agentic AI Module</h3>
+  1083→                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 text-orange-700 text-[11px] sm:text-xs font-semibold tracking-wide uppercase">
+  1084→                          <span className="relative flex h-2 w-2">
+  1085→                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+  1086→                            <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+  1087→                          </span>
+  1088→                          Coming Soon
+  1089→                        </span>
+  1090→                      </div>
+  1091→                      <p className="text-muted-foreground leading-relaxed max-w-2xl text-sm sm:text-[17px]">
+  1092→                        Intelligent AI Agents that work alongside your teams — automating tasks, surfacing insights, and making proactive recommendations across every department.
+  1093→                      </p>
+  1094→                    </div>
+  1095→                  </div>
+  1096→
+  1097→                  <StaggerReveal className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4" variant={aiAgentStagger}>
+  1098→                    {[
+  1099→                      { dept: 'HR Agent', desc: 'Automate onboarding, leave approvals & performance reviews', icon: Users },
+  1100→                      { dept: 'Accounting Agent', desc: 'Smart reconciliation, invoice processing & financial insights', icon: Calculator },
+  1101→                      { dept: 'Marketing Agent', desc: 'Lead scoring, campaign optimization & follow-up automation', icon: Megaphone },
+  1102→                      { dept: 'Operations Agent', desc: 'Process automation, inventory alerts & workflow triggers', icon: Settings },
+  1103→                      { dept: 'Executive Agent', desc: 'AI-powered briefings, KPI monitoring & decision support', icon: BarChart3 },
+  1104→                    ].map((agent) => {
+  1105→                      const AgentIcon = agent.icon;
+  1106→                      return (
+  1107→                        <StaggerItem key={agent.dept} variants={fadeInScale}>
+  1108→                          <motion.div
+  1109→                            whileHover={{ y: -3, transition: snappySpring }}
+  1110→                            whileTap={{ scale: 0.97 }}
+  1111→                            className="group relative bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-orange-100/80 p-3.5 sm:p-5 hover:shadow-lg hover:shadow-orange-500/[0.08] hover:border-orange-200 transition-all duration-300 h-full"
+  1112→                          >
+  1113→                            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center mb-2.5 sm:mb-3 transition-colors duration-300">
+  1114→                              <AgentIcon className="h-4 w-4 sm:h-[18px] sm:w-[18px] text-orange-600 group-hover:text-white transition-colors duration-300" />
+  1115→                            </div>
+  1116→                            <h4 className="font-semibold text-foreground text-xs sm:text-sm lg:text-[15px] mb-1 sm:mb-1.5">{agent.dept}</h4>
+  1117→                            <p className="text-[11px] sm:text-[13px] text-muted-foreground leading-relaxed line-clamp-2">{agent.desc}</p>
+  1118→                          </motion.div>
+  1119→                        </StaggerItem>
+  1120→                      );
+  1121→                    })}
+  1122→                  </StaggerReveal>
+  1123→                </div>
+  1124→              </motion.div>
+  1125→            </Reveal>
+  1126→          </div>
+  1127→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+  1128→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+  1129→              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#ffffff"/>
+  1130→            </svg>
+  1131→          </div>
+  1132→        </section>
+  1133→        <section id="dashboard" className="py-20 sm:py-28 lg:py-36 bg-white overflow-hidden relative cursor-logo">
+  1134→          <FloatingOrb size={170} color="blue" className="top-24 -left-20 hidden lg:block" delay={1} />
+  1135→          <FloatingOrb size={130} color="orange" className="bottom-32 -right-16 hidden lg:block" delay={2} />
+  1136→          <div className="max-w-6xl mx-auto px-5 sm:px-8">
+  1137→            <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
+  1138→              {/* Image */}
+  1139→              <motion.div
+  1140→                initial="hidden"
+  1141→                whileInView="visible"
+  1142→                viewport={{ once: true, margin: '-60px' }}
+  1143→                variants={slideInLeft}
+  1144→                transition={{ ...smoothSpring, delay: 0.1 }}
+  1145→                className="order-2 lg:order-1"
+  1146→              >
+  1147→                <div className="relative">
+  1148→                  <motion.div
+  1149→                    className="absolute -inset-4 sm:-inset-6 bg-blue-400/20 rounded-[1.5rem] sm:rounded-[2rem] blur-3xl"
+  1150→                    animate={{ opacity: [0.3, 0.6, 0.3], scale: [0.98, 1.02, 0.98] }}
+  1151→                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+  1152→                  />
+  1153→                  <motion.div
+  1154→                    className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-gray-100"
+  1155→                    whileHover={{ scale: 1.01, transition: snappySpring }}
+  1156→                  >
+  1157→                    <Image
+  1158→                      src="/images/dashboard-preview.png"
+  1159→                      alt="Executive Dashboard Preview"
+  1160→                      width={1344}
+  1161→                      height={768}
+  1162→                      className="w-full h-auto"
+  1163→                    />
+  1164→                  </motion.div>
+  1165→                </div>
+  1166→              </motion.div>
+  1167→
+  1168→              {/* Content */}
+  1169→              <div className="order-1 lg:order-2">
+  1170→                <motion.div
+  1171→                  initial="hidden"
+  1172→                  whileInView="visible"
+  1173→                  viewport={{ once: true, margin: '-60px' }}
+  1174→                  variants={slideInRight}
+  1175→                  transition={{ ...smoothSpring }}
+  1176→                >
+  1177→                  <SectionLabel>Executive Dashboard</SectionLabel>
+  1178→                </motion.div>
+  1179→                <motion.div
+  1180→                  initial="hidden"
+  1181→                  whileInView="visible"
+  1182→                  viewport={{ once: true, margin: '-60px' }}
+  1183→                  variants={slideInRight}
+  1184→                  transition={{ ...smoothSpring, delay: 0.1 }}
+  1185→                >
+  1186→                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+  1187→                    Better Decisions with
+  1188→                    <br className="hidden sm:block" /> Real-Time Visibility
+  1189→                  </h2>
+  1190→                </motion.div>
+  1191→                <motion.div
+  1192→                  initial="hidden"
+  1193→                  whileInView="visible"
+  1194→                  viewport={{ once: true, margin: '-60px' }}
+  1195→                  variants={slideInRight}
+  1196→                  transition={{ ...smoothSpring, delay: 0.2 }}
+  1197→                >
+  1198→                  <p className="mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed">
+  1199→                    CEOs, Managing Directors, and Department Heads can access
+  1200→                    real-time dashboards that provide:
+  1201→                  </p>
+  1202→                </motion.div>
+  1203→                <StaggerReveal variant={slowStagger} className="mt-6 sm:mt-8 space-y-3 sm:space-y-3.5">
+  1204→                  {dashboardFeatures.map((f) => (
+  1205→                    <StaggerItem key={f} className="flex items-center gap-3 sm:gap-3.5">
+  1206→                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+  1207→                      <span className="text-foreground font-medium text-sm sm:text-[15px]">{f}</span>
+  1208→                    </StaggerItem>
+  1209→                  ))}
+  1210→                </StaggerReveal>
+  1211→                <Reveal delay={0.5}>
+  1212→                  <p className="mt-8 text-muted-foreground leading-relaxed text-base">
+  1213→                    This enables faster, data-driven decision-making and greater
+  1214→                    organizational control.
+  1215→                  </p>
+  1216→                </Reveal>
+  1217→              </div>
+  1218→            </div>
+  1219→          </div>
+  1220→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+  1221→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+  1222→              <path d="M0 0L60 8C120 16 240 32 360 42.5C480 53 600 58 720 55C840 52 960 41 1080 35C1200 29 1320 28 1380 27.5L1440 27V100H0Z" fill="#172554"/>
+  1223→            </svg>
+  1224→          </div>
+  1225→        </section>
+  1226→
+  1227→        {/* ===================== BENEFITS ===================== */}
+  1228→        <section id="benefits" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
+  1229→          {/* Dot texture */}
+  1230→          <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+  1231→          {/* Floating orbs */}
+  1232→          <FloatingOrb size={200} color="orange" className="top-20 -right-16 hidden sm:block" delay={1} />
+  1233→          <FloatingOrb size={150} color="blue" className="bottom-32 -left-20 hidden sm:block" delay={2} />
+  1234→          <motion.div
+  1235→            className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.06)_0%,_transparent_70%)]"
+  1236→            animate={{ opacity: [0.5, 1, 0.5] }}
+  1237→            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+  1238→          />
+  1239→
+  1240→          <div className="relative max-w-6xl mx-auto px-5 sm:px-8">
+  1241→            <Reveal className="max-w-3xl mx-auto text-center">
+  1242→              <SectionLabel light>Key Benefits</SectionLabel>
+  1243→              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mt-3">
+  1244→                Reduced Costs.
+  1245→                <br className="hidden sm:block" />
+  1246→                {' '}Improved Efficiency.
+  1247→              </h2>
+  1248→              <p className="mt-4 sm:mt-6 text-base sm:text-lg text-white/45 max-w-2xl mx-auto">
+  1249→                By replacing multiple standalone applications with a single integrated platform,
+  1250→                organizations can transform how they work.
+  1251→              </p>
+  1252→            </Reveal>
+  1253→
+  1254→            <StaggerReveal className="mt-10 sm:mt-16 grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6" variant={stagger}>
+  1255→              {benefits.map((b) => {
+  1256→                const Icon = b.icon;
+  1257→                return (
+  1258→                  <StaggerItem key={b.title} variants={scaleIn}>
+  1259→                    <motion.div
+  1260→                      whileHover={{ y: -4, transition: snappySpring }}
+  1261→                      whileTap={{ scale: 0.98 }}
+  1262→                      className="group h-full bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl sm:rounded-3xl p-5 sm:p-8 hover:bg-white/[0.07] transition-colors duration-500 card-shimmer"
+  1263→                    >
+  1264→                      <div className="w-11 h-11 rounded-2xl bg-orange-500/15 flex items-center justify-center mb-5 group-hover:bg-orange-500/25 transition-colors duration-500">
+  1265→                        <Icon className="h-5 w-5 text-orange-400" />
+  1266→                      </div>
+  1267→                      <h3 className="text-lg font-semibold text-white mb-2.5">{b.title}</h3>
+  1268→                      <p className="text-sm text-white/45 leading-relaxed">{b.desc}</p>
+  1269→                    </motion.div>
+  1270→                  </StaggerItem>
+  1271→                );
+  1272→              })}
+  1273→            </StaggerReveal>
+  1274→          </div>
+  1275→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+  1276→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+  1277→              <path d="M0 100L60 85C120 70 240 40 360 27.5C480 15 600 20 720 27.5C840 35 960 45 1080 52.5C1200 60 1320 65 1380 67.5L1440 70V100H0Z" fill="#ffffff"/>
+  1278→            </svg>
+  1279→          </div>
+  1280→        </section>
+  1281→
+  1282→        {/* ===================== MARQUEE STRIP 2 ===================== */}
+  1283→        <div className="py-4 sm:py-5 bg-white border-b border-gray-100/80 overflow-hidden cursor-logo">
+  1284→          <Marquee speed={35} reverse className="opacity-30">
+  1285→            {['Unified Platform', 'One Login', 'Real-Time Data', 'African-First', 'Cloud-Based', 'AI-Powered', 'Affordable', 'Scalable', 'Secure', 'Enterprise-Grade'].map((t) => (
+  1286→              <span key={t} className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-blue-950/60 whitespace-nowrap flex items-center gap-8">
+  1287→                <span className="w-1.5 h-1.5 rounded-full bg-blue-400/60" />
+  1288→                {t}
+  1289→              </span>
+  1290→            ))}
+  1291→          </Marquee>
+  1292→        </div>
+  1293→
+  1294→        {/* ===================== BUILT FOR AFRICA ===================== */}
+  1295→        <section id="about" className="py-20 sm:py-28 lg:py-36 bg-white relative overflow-hidden cursor-logo">
+  1296→          <FloatingOrb size={140} color="blue" className="top-16 left-[10%] hidden sm:block" delay={1} />
+  1297→          <FloatingOrb size={100} color="orange" className="bottom-24 right-[8%] hidden sm:block" delay={2} />
+  1298→          <div className="max-w-5xl mx-auto px-5 sm:px-8 text-center">
+  1299→            <Reveal>
+  1300→              <Badge variant="secondary" className="mb-5 bg-orange-50 text-orange-600 border-orange-200">
+  1301→                <Globe className="mr-1.5 h-3.5 w-3.5" />
+  1302→                Built for African Businesses
+  1303→              </Badge>
+  1304→            </Reveal>
+  1305→            <Reveal delay={0.1}>
+  1306→              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight">
+  1307→                Enterprise-Grade Capabilities,{' '}
+  1308→                <span className="text-orange-600">African-First Design</span>
+  1309→              </h2>
+  1310→            </Reveal>
+  1311→            <Reveal delay={0.2}>
+  1312→              <p className="mt-5 sm:mt-6 text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+  1313→                Workphelo is designed with the realities of African businesses in mind,
+  1314→                providing enterprise-grade capabilities while remaining affordable,
+  1315→                flexible, and easy to deploy.
+  1316→              </p>
+  1317→            </Reveal>
+  1318→
+  1319→            <StaggerReveal className="mt-10 sm:mt-16 grid sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+  1320→              {[
+  1321→                { icon: Building2, label: 'Affordable', desc: 'Pricing that works for businesses of every size across Africa' },
+  1322→                { icon: Settings, label: 'Flexible', desc: 'Highly customizable to match your specific workflow requirements' },
+  1323→                { icon: Zap, label: 'Easy to Deploy', desc: 'Cloud-based with minimal setup time and no complex infrastructure' },
+  1324→              ].map((item) => {
+  1325→                const Icon = item.icon;
+  1326→                return (
+  1327→                  <StaggerItem key={item.label} variants={scaleIn}>
+  1328→                    <motion.div
+  1329→                      whileHover={{ y: -4, transition: snappySpring }}
+  1330→                      whileTap={{ scale: 0.98 }}
+  1331→                      className="rounded-2xl sm:rounded-3xl bg-stone-50 border border-gray-100 p-6 sm:p-8 text-center h-full shadow-sm hover:shadow-md transition-shadow duration-500"
+  1332→                    >
+  1333→                      <motion.div
+  1334→                        className="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-300 flex items-center justify-center mb-4 sm:mb-5"
+  1335→                        whileHover={{ rotate: [0, -8, 8, 0], transition: { duration: 0.5 } }}
+  1336→                      >
+  1337→                        <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-blue-900" />
+  1338→                      </motion.div>
+  1339→                      <h3 className="text-base sm:text-lg font-semibold text-foreground">{item.label}</h3>
+  1340→                      <p className="mt-2 sm:mt-2.5 text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+  1341→                    </motion.div>
+  1342→                  </StaggerItem>
+  1343→                );
+  1344→              })}
+  1345→            </StaggerReveal>
+  1346→          </div>
+  1347→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+  1348→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+  1349→              <path d="M0 0L60 10C120 20 240 40 360 52.5C480 65 600 70 720 65C840 60 960 45 1080 37.5C1200 30 1320 30 1380 30L1440 30V100H0Z" fill="#fafaf9"/>
+  1350→            </svg>
+  1351→          </div>
+  1352→        </section>
+  1353→
+  1354→        {/* ===================== VALUE PROPOSITION ===================== */}
+  1355→        <section className="py-14 sm:py-24 lg:py-32 bg-stone-50/70 relative overflow-hidden cursor-dot">
+  1356→          <FloatingOrb size={120} color="amber" className="top-8 right-[5%] hidden sm:block" delay={0} />
+  1357→          <div className="max-w-4xl mx-auto px-5 sm:px-8">
+  1358→            <Reveal>
+  1359→              <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-gray-100 p-5 sm:p-14 lg:p-16 shadow-sm overflow-hidden card-shimmer">
+  1360→                {/* Subtle glow behind lock icon */}
+  1361→                <motion.div
+  1362→                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl"
+  1363→                  animate={{ opacity: [0.3, 0.6, 0.3] }}
+  1364→                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+  1365→                />
+  1366→                <div className="relative">
+  1367→                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-foreground text-center">
+  1368→                    Workphelo&apos;s Core Value Proposition
+  1369→                  </h2>
+  1370→                  <div className="mt-5 sm:mt-8 mx-auto max-w-2xl text-center">
+  1371→                    <p className="text-base sm:text-xl text-muted-foreground leading-relaxed italic">
+  1372→                      &ldquo;Workphelo unifies HR, Marketing, Sales, Accounting, Operations,
+  1373→                      Fleet Management, and Executive Reporting into one intelligent platform,
+  1374→                      giving organizations a single source of truth, a single login, and a
+  1375→                      complete view of their business.&rdquo;
+  1376→                    </p>
+  1377→                  </div>
+  1378→                </div>
+  1379→              </div>
+  1380→            </Reveal>
+  1381→          </div>
+  1382→          <div className="absolute bottom-0 left-0 right-0 -mb-1">
+  1383→            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[110%] h-auto block -ml-[5%] animate-wave-sway" preserveAspectRatio="none">
+  1384→              <path d="M0 100L60 90C120 80 240 60 360 50C480 40 600 40 720 45C840 50 960 60 1080 65C1200 70 1320 70 1380 70L1440 70V100H0Z" fill="#172554"/>
+  1385→            </svg>
+  1386→          </div>
+  1387→        </section>
+  1388→
+  1389→        {/* ===================== WAITLIST CTA ===================== */}
+  1390→        <section id="waitlist-cta" className="py-20 sm:py-28 lg:py-36 bg-blue-950 relative overflow-hidden cursor-dot">
+  1391→          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(234,88,12,0.08)_0%,_transparent_50%)]" />
+  1392→          {/* Decorative floating dots */}
+  1393→          {[...Array(4)].map((_, i) => (
+  1394→            <motion.div
+  1395→              key={`waitlist-particle-${i}`}
+  1396→              className="absolute rounded-full bg-orange-500/[0.06] pointer-events-none"
+  1397→              style={{
+  1398→                width: 6 + i * 4,
+  1399→                height: 6 + i * 4,
+  1400→                top: `${20 + i * 18}%`,
+  1401→                left: `${15 + i * 20}%`,
+  1402→              }}
+  1403→              animate={{
+  1404→                y: [0, -20, 0],
+  1405→                opacity: [0.3, 0.7, 0.3],
+  1406→              }}
+  1407→              transition={{
+  1408→                duration: 4 + i,
+  1409→                repeat: Infinity,
+  1410→                ease: 'easeInOut',
+  1411→                delay: i * 1.2,
+  1412→              }}
+  1413→            />
+  1414→          ))}
+  1415→          {/* Pulsing glow behind form */}
+  1416→          <motion.div
+  1417→            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-[100px]"
+  1418→            animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.3, 0.6, 0.3] }}
+  1419→            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+  1420→          />
+  1421→
+  1422→          <div className="relative max-w-3xl mx-auto px-5 sm:px-8 text-center">
+  1423→            <Reveal>
+  1424→              <Badge variant="secondary" className="mb-5 bg-orange-500/15 text-orange-300 border-orange-500/20">
+  1425→                Early Access
+  1426→              </Badge>
+  1427→            </Reveal>
+  1428→            <Reveal delay={0.1}>
+  1429→              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+  1430→                Be Among the First to
+  1431→                <br className="hidden sm:block" />
+  1432→                {' '}Experience Workphelo
+  1433→              </h2>
+  1434→            </Reveal>
+  1435→            <Reveal delay={0.2}>
+  1436→              <p className="mt-5 sm:mt-6 text-base sm:text-lg text-white/45 max-w-xl mx-auto">
+  1437→                Join our waitlist and get priority access when we launch. Help shape the
+  1438→                future of business management in Africa.
+  1439→              </p>
+  1440→            </Reveal>
+  1441→
+  1442→            {/* Stats row */}
+  1443→            <Reveal delay={0.3} className="mt-8 sm:mt-10 flex justify-center gap-8 sm:gap-12">
+  1444→              {[
+  1445→                { value: 5, suffix: '+', label: 'Core Modules' },
+  1446→                { value: 1, suffix: '', label: 'Unified Platform' },
+  1447→                { value: 24, suffix: '/7', label: 'Cloud Access' },
+  1448→              ].map((stat) => (
+  1449→                <div key={stat.label} className="text-center">
+  1450→                  <div className="text-2xl sm:text-3xl font-bold text-white">
+  1451→                    <CountUp target={stat.value} suffix={stat.suffix} />
+  1452→                  </div>
+  1453→                  <div className="text-xs sm:text-sm text-white/30 mt-1">{stat.label}</div>
+  1454→                </div>
+  1455→              ))}
+  1456→            </Reveal>
+  1457→
+  1458→            <Reveal delay={0.4} className="mt-8 sm:mt-12">
+  1459→              <WaitlistForm variant="section" />
+  1460→            </Reveal>
+  1461→          </div>
+  1462→        </section>
+  1463→      </main>
+  1464→
+  1465→      {/* ===================== FOOTER ===================== */}
+  1466→      <footer className="bg-blue-950 text-white/60 border-t border-white/[0.06] cursor-dot">
+  1467→        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-14 lg:py-20">
+  1468→          <StaggerReveal className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10" variant={staggerBottom}>
+  1469→            {/* Brand */}
+  1470→            <div className="col-span-2 lg:col-span-1">
+  1471→              <div className="mb-4 sm:mb-5">
+  1472→                <Image
+  1473→                  src="/images/workphelo-logo.png"
+  1474→                  alt="Workphelo"
+  1475→                  width={120}
+  1476→                  height={32}
+  1477→                  className="h-6 sm:h-7 w-auto brightness-0 invert"
+  1478→                />
+  1479→              </div>
+  1480→              <p className="text-xs sm:text-sm leading-relaxed max-w-xs text-white/40">
+  1481→                The all-in-one ERP platform built for African businesses. Unified,
+  1482→                intelligent, and affordable.
+  1483→              </p>
+  1484→            </div>
+  1485→
+  1486→            {/* Modules */}
+  1487→            <div>
+  1488→              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Modules</h4>
+  1489→              <ul className="space-y-0.5 text-xs sm:text-sm">
+  1490→                {['HR Management', 'Marketing & BD', 'Accounting', 'Operations'].map((m) => (
+  1491→                  <li key={m}>
+  1492→                    <motion.button
+  1493→                      onClick={() => scrollTo('modules')}
+  1494→                      whileTap={{ scale: 0.97 }}
+  1495→                      className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer min-h-[44px] flex items-center"
+  1496→                    >
+  1497→                      {m}
+  1498→                    </motion.button>
+  1499→                  </li>
+  1500→                ))}
+  1501→              </ul>
+  1502→            </div>
+  1503→
+  1504→            {/* Company */}
+  1505→            <div>
+  1506→              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Company</h4>
+  1507→              <ul className="space-y-0.5 text-xs sm:text-sm">
+  1508→                {[
+  1509→                  { label: 'About', id: 'about' },
+  1510→                  { label: 'Benefits', id: 'benefits' },
+  1511→                  { label: 'Dashboard', id: 'dashboard' },
+  1512→                  { label: 'Waitlist', id: 'waitlist-section' },
+  1513→                ].map((item) => (
+  1514→                  <li key={item.label}>
+  1515→                    <motion.button
+  1516→                      onClick={() => scrollTo(item.id)}
+  1517→                      whileTap={{ scale: 0.97 }}
+  1518→                      className="block py-2 text-white/40 hover:text-white transition-colors cursor-pointer min-h-[44px] flex items-center"
+  1519→                    >
+  1520→                      {item.label}
+  1521→                    </motion.button>
+  1522→                  </li>
+  1523→                ))}
+  1524→              </ul>
+  1525→            </div>
+  1526→
+  1527→            {/* Contact */}
+  1528→            <div className="col-span-2 sm:col-span-1">
+  1529→              <h4 className="text-[11px] sm:text-xs font-semibold text-white/80 uppercase tracking-widest mb-3 sm:mb-5">Powered By</h4>
+  1530→              <p className="text-xs sm:text-sm leading-relaxed text-white/40">
+  1531→                <span className="text-white/80 font-semibold text-sm sm:text-base">Datrix Tech Solutions</span>
+  1532→                <br />
+  1533→                Enterprise software for the African market.
+  1534→              </p>
+  1535→              <div className="mt-4 sm:mt-5">
+  1536→                <Button
+  1537→                  variant="outline"
+  1538→                  size="sm"
+  1539→                  onClick={() => scrollTo('waitlist-section')}
+  1540→                  className="rounded-full border-orange-500/30 text-orange-300 hover:bg-orange-500/10 hover:text-orange-200 hover:border-orange-500/50 min-h-[44px] cursor-pointer"
+  1541→                >
+  1542→                  Join Waitlist
+  1543→                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+  1544→                </Button>
+  1545→              </div>
+  1546→            </div>
+  1547→          </StaggerReveal>
+  1548→
+  1549→          <Separator className="my-8 sm:my-10 bg-white/[0.06]" />
+  1550→
+  1551→          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-white/25">
+  1552→            <p>&copy; {new Date().getFullYear()} Datrix Tech Solutions. All rights reserved.</p>
+  1553→            <p>Workphelo ERP — Built for Africa, Ready for the World.</p>
+  1554→          </div>
+  1555→        </div>
+  1556→      </footer>
+  1557→    </div>
+  1558→  );
+  1559→}
